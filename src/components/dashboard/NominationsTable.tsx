@@ -6,19 +6,21 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, Check, X, ExternalLink, User, Building } from "lucide-react";
+import { MoreHorizontal, Check, X, ExternalLink, User, Building, Camera } from "lucide-react";
 import { Nomination } from "@/lib/types";
 import { ConflictDialog } from "./ConflictDialog";
 import { EditWhyVoteDialog } from "./EditWhyVoteDialog";
+import { PhotoManagementDialog } from "@/components/admin/PhotoManagementDialog";
 import { getNomineeImage } from "@/lib/nominee-image";
 
 interface NominationsTableProps {
   nominations: Nomination[];
   onUpdateStatus: (id: string, status: "approved" | "rejected") => Promise<any>;
   onUpdateWhyVote?: (id: string, whyVote: string) => Promise<void>;
+  onPhotoUpdated?: (nominationId: string, imageUrl: string | null) => void;
 }
 
-export function NominationsTable({ nominations, onUpdateStatus, onUpdateWhyVote }: NominationsTableProps) {
+export function NominationsTable({ nominations, onUpdateStatus, onUpdateWhyVote, onPhotoUpdated }: NominationsTableProps) {
   const [updating, setUpdating] = useState<string | null>(null);
 
   const [conflictDialog, setConflictDialog] = useState<{
@@ -29,6 +31,11 @@ export function NominationsTable({ nominations, onUpdateStatus, onUpdateWhyVote 
   }>({ open: false, nominationId: "", nomineeName: "", conflictData: null });
 
   const [editWhyVoteDialog, setEditWhyVoteDialog] = useState<{
+    open: boolean;
+    nomination: Nomination | null;
+  }>({ open: false, nomination: null });
+
+  const [photoDialog, setPhotoDialog] = useState<{
     open: boolean;
     nomination: Nomination | null;
   }>({ open: false, nomination: null });
@@ -184,7 +191,7 @@ export function NominationsTable({ nominations, onUpdateStatus, onUpdateWhyVote 
                     )}
                     <DropdownMenuItem asChild>
                       <a 
-                        href={nomination.liveUrl} 
+                        href={nomination.liveUrl.startsWith('/') ? nomination.liveUrl : `/nominee/${nomination.liveUrl}`} 
                         target="_blank" 
                         rel="noopener noreferrer"
                       >
@@ -211,6 +218,13 @@ export function NominationsTable({ nominations, onUpdateStatus, onUpdateWhyVote 
                         Edit Why Vote
                       </DropdownMenuItem>
                     )}
+                    <DropdownMenuItem
+                      onClick={() => setPhotoDialog({ open: true, nomination })}
+                      className="flex items-center"
+                    >
+                      <Camera className="mr-2 h-4 w-4" />
+                      Manage Photo
+                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </TableCell>
@@ -246,6 +260,17 @@ export function NominationsTable({ nominations, onUpdateStatus, onUpdateWhyVote 
           }}
         />
       )}
+
+      <PhotoManagementDialog
+        open={photoDialog.open}
+        onOpenChange={(open) => setPhotoDialog(prev => ({ ...prev, open }))}
+        nomination={photoDialog.nomination}
+        onPhotoUpdated={(nominationId, imageUrl) => {
+          if (onPhotoUpdated) {
+            onPhotoUpdated(nominationId, imageUrl);
+          }
+        }}
+      />
     </div>
   );
 }

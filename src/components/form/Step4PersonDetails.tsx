@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { CountrySelect } from "@/components/ui/country-select";
 import { BusinessEmailSchema } from "@/lib/validation";
 import { z } from "zod";
 
@@ -130,9 +131,10 @@ export function Step4PersonDetails({ data, onNext, onBack }: Step4PersonDetailsP
                 <FormItem>
                   <FormLabel>Country *</FormLabel>
                   <FormControl>
-                    <Input 
-                      placeholder="e.g., United States, United Kingdom, Canada" 
-                      {...field} 
+                    <CountrySelect
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      placeholder="Select country..."
                     />
                   </FormControl>
                   <FormMessage />

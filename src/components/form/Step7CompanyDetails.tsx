@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { CountrySelect } from "@/components/ui/country-select";
 import { z } from "zod";
 
 const CompanyDetailsSchema = z.object({
@@ -88,9 +89,10 @@ export function Step7CompanyDetails({ data, onNext, onBack }: Step7CompanyDetail
                 <FormItem>
                   <FormLabel>Country *</FormLabel>
                   <FormControl>
-                    <Input 
-                      placeholder="e.g., United States, United Kingdom, Canada" 
-                      {...field} 
+                    <CountrySelect
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      placeholder="Select country..."
                     />
                   </FormControl>
                   <FormMessage />

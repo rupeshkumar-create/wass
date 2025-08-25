@@ -202,6 +202,13 @@ export default function AdminPage() {
     }
   };
 
+  const handlePhotoUpdated = (nominationId: string, imageUrl: string | null) => {
+    // Update local state to reflect the photo change
+    setNominations(prev =>
+      prev.map(n => n.id === nominationId ? { ...n, imageUrl } : n)
+    );
+  };
+
   const handleExport = () => {
     const params = new URLSearchParams();
     if (selectedCategory) params.set("category", selectedCategory);
@@ -387,6 +394,7 @@ export default function AdminPage() {
                               nominations={filteredNominations}
                               onUpdateStatus={handleUpdateStatus}
                               onUpdateWhyVote={handleUpdateWhyVote}
+                              onPhotoUpdated={handlePhotoUpdated}
                             />
                           </div>
                         </div>

@@ -12,8 +12,8 @@ export function getNomineeImage(nomination: Nomination): {
   const nominee = nomination.nominee;
   const name = nominee.name;
   
-  // Prefer image_url (Supabase Storage) over legacy base64
-  if (nomination.imageUrl) {
+  // Check for uploaded image URL (admin-uploaded or form-uploaded)
+  if (nomination.imageUrl && nomination.imageUrl.trim()) {
     return {
       src: nomination.imageUrl,
       isInitials: false,
@@ -22,7 +22,7 @@ export function getNomineeImage(nomination: Nomination): {
   }
   
   // Fallback to nominee imageUrl for backward compatibility
-  if (nominee.imageUrl) {
+  if (nominee.imageUrl && nominee.imageUrl.trim()) {
     return {
       src: nominee.imageUrl,
       isInitials: false,
@@ -47,7 +47,19 @@ export function getNomineeImage(nomination: Nomination): {
     };
   }
   
-  // Generate initials avatar as fallback
+  // No image found - return initials avatar
+  return getInitialsAvatar(name, nomination.category);
+}
+
+/**
+ * Generate an initials avatar for nominees without photos
+ */
+function getInitialsAvatar(name: string, category: string): {
+  src: string;
+  isInitials: boolean;
+  alt: string;
+} {
+  // Generate initials
   const initials = name
     .split(" ")
     .map(n => n[0])
@@ -62,53 +74,48 @@ export function getNomineeImage(nomination: Nomination): {
   }, 0);
   
   const colors = [
-    'bg-blue-500', 'bg-green-500', 'bg-purple-500', 'bg-red-500', 
-    'bg-yellow-500', 'bg-indigo-500', 'bg-pink-500', 'bg-teal-500'
+    '#3B82F6', '#10B981', '#8B5CF6', '#EF4444', 
+    '#F59E0B', '#6366F1', '#EC4899', '#14B8A6'
   ];
   
-  const colorClass = colors[Math.abs(hash) % colors.length];
+  const backgroundColor = colors[Math.abs(hash) % colors.length];
   
-  // Return data URL for initials avatar
-  const canvas = typeof document !== 'undefined' ? document.createElement('canvas') : null;
-  if (canvas) {
-    canvas.width = 256;
-    canvas.height = 256;
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-      // Background color
-      const colorMap: Record<string, string> = {
-        'bg-blue-500': '#3B82F6',
-        'bg-green-500': '#10B981',
-        'bg-purple-500': '#8B5CF6',
-        'bg-red-500': '#EF4444',
-        'bg-yellow-500': '#F59E0B',
-        'bg-indigo-500': '#6366F1',
-        'bg-pink-500': '#EC4899',
-        'bg-teal-500': '#14B8A6'
-      };
+  // Try to create canvas-based avatar for client-side
+  if (typeof document !== 'undefined') {
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = 256;
+      canvas.height = 256;
+      const ctx = canvas.getContext('2d');
       
-      ctx.fillStyle = colorMap[colorClass] || '#6B7280';
-      ctx.fillRect(0, 0, 256, 256);
-      
-      // Text
-      ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 96px system-ui, -apple-system, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(initials, 128, 128);
-      
-      return {
-        src: canvas.toDataURL(),
-        isInitials: true,
-        alt: `${name} initials - ${nomination.category}`
-      };
+      if (ctx) {
+        // Background
+        ctx.fillStyle = backgroundColor;
+        ctx.fillRect(0, 0, 256, 256);
+        
+        // Text
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = 'bold 96px system-ui, -apple-system, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(initials, 128, 128);
+        
+        return {
+          src: canvas.toDataURL(),
+          isInitials: true,
+          alt: `${name} initials - ${category}`
+        };
+      }
+    } catch (error) {
+      // Canvas creation failed, fall through to external service
     }
   }
   
-  // Server-side fallback - return a placeholder URL
+  // Server-side or canvas failed - use external avatar service
+  const bgColor = backgroundColor.replace('#', '');
   return {
-    src: `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&size=256&background=${colorClass.replace('bg-', '').replace('-500', '')}&color=fff&bold=true`,
+    src: `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&size=256&background=${bgColor}&color=fff&bold=true&format=png`,
     isInitials: true,
-    alt: `${name} initials - ${nomination.category}`
+    alt: `${name} initials - ${category}`
   };
 }

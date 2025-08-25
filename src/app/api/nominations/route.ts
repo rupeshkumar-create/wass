@@ -194,7 +194,7 @@ export async function GET(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   try {
     const body = await request.json();
-    const { id, status, moderatorNote, why_vote } = body;
+    const { id, status, moderatorNote, why_vote, imageUrl } = body;
 
     if (!id) {
       return NextResponse.json(
@@ -223,6 +223,16 @@ export async function PATCH(request: NextRequest) {
       if (why_vote.length > 1000) {
         return NextResponse.json(
           { error: "why_vote must be 1000 characters or less" },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Validate imageUrl if provided
+    if (imageUrl !== undefined) {
+      if (imageUrl !== null && typeof imageUrl !== 'string') {
+        return NextResponse.json(
+          { error: "imageUrl must be a string or null" },
           { status: 400 }
         );
       }
@@ -264,6 +274,10 @@ export async function PATCH(request: NextRequest) {
 
     if (why_vote !== undefined) {
       updateData.whyVoteForMe = why_vote.trim();
+    }
+
+    if (imageUrl !== undefined) {
+      updateData.imageUrl = imageUrl;
     }
 
     await nominationsStore.update(id, updateData);

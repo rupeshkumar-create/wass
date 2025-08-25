@@ -16,8 +16,12 @@ export default async function NomineeProfilePage({ params }: NomineePageProps) {
   // Get nominations from local storage
   const nominations = await nominationsStore.list();
   
-  // Find nomination by slug
-  const nomination = nominations.find(n => n.liveUrl === slug);
+  // Find nomination by slug - handle both full path and slug-only formats
+  const nomination = nominations.find(n => 
+    n.liveUrl === slug || 
+    n.liveUrl === `/nominee/${slug}` ||
+    n.liveUrl?.replace('/nominee/', '') === slug
+  );
 
   if (!nomination) {
     notFound();

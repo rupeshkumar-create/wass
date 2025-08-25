@@ -27,13 +27,17 @@ export function Step6PersonHeadshot({ imageUrl, personName, onNext, onBack }: St
 
   // Generate slug-safe path
   const generateSlug = (name: string) => {
+    if (!name || typeof name !== 'string') {
+      return 'nominee-' + Date.now();
+    }
     return name
       .toLowerCase()
       .trim()
       .replace(/[^a-z0-9\s-]/g, '') // Remove special chars
       .replace(/\s+/g, '-') // Replace spaces with hyphens
       .replace(/-+/g, '-') // Collapse multiple hyphens
-      .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
+      .replace(/^-|-$/g, '') // Remove leading/trailing hyphens
+      || 'nominee-' + Date.now(); // Fallback if empty after processing
   };
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
