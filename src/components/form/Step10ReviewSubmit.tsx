@@ -112,7 +112,7 @@ export function Step10ReviewSubmit({
         <div>
           <h3 className="font-semibold mb-2">Your Information</h3>
           <div className="space-y-1 text-sm">
-            <p><span className="font-medium">Name:</span> {nominator.name}</p>
+            <p><span className="font-medium">Name:</span> {nominator.name || `${nominator.firstName || ''} ${nominator.lastName || ''}`.trim()}</p>
             <p><span className="font-medium">Email:</span> {nominator.email}</p>
             {nominator.phone && (
               <p><span className="font-medium">Phone:</span> {nominator.phone}</p>

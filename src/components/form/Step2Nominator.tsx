@@ -18,14 +18,20 @@ export function Step2Nominator({ data, onNext, onBack }: Step2NominatorProps) {
   const form = useForm<NominatorData>({
     resolver: zodResolver(NominatorSchema),
     defaultValues: {
-      name: data.name || "",
+      firstName: data.firstName || "",
+      lastName: data.lastName || "",
       email: data.email || "",
       linkedin: data.linkedin || "",
     },
   });
 
   const onSubmit = (formData: NominatorData) => {
-    onNext(formData);
+    // Create a combined name for backward compatibility
+    const dataWithName = {
+      ...formData,
+      name: `${formData.firstName} ${formData.lastName}`.trim(),
+    };
+    onNext(dataWithName);
   };
 
   return (
@@ -39,19 +45,35 @@ export function Step2Nominator({ data, onNext, onBack }: Step2NominatorProps) {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Full Name *</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter your full name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="firstName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>First Name *</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter your first name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="lastName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Last Name *</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter your last name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             <FormField
               control={form.control}

@@ -1,10 +1,21 @@
 import { z } from "zod";
 import { MAX_FILE_SIZE, ALLOWED_IMAGE_TYPES, Category } from "./constants";
 
-// Business email validation (temporarily relaxed for testing)
+// Business email validation - blocks common personal email domains
+const PERSONAL_EMAIL_DOMAINS = [
+  'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com',
+  'icloud.com', 'me.com', 'mac.com', 'live.com', 'msn.com',
+  'ymail.com', 'rocketmail.com', 'protonmail.com', 'tutanota.com',
+  'mail.com', 'gmx.com', 'zoho.com', 'fastmail.com'
+];
+
 export const BusinessEmailSchema = z
   .string()
-  .email("Please enter a valid email address");
+  .email("Please enter a valid email address")
+  .refine((email) => {
+    const domain = email.split('@')[1]?.toLowerCase();
+    return domain && !PERSONAL_EMAIL_DOMAINS.includes(domain);
+  }, "Please use a business email address. Personal email domains (Gmail, Yahoo, etc.) are not allowed");
 
 // LinkedIn URL validation and normalization
 export const LinkedInSchema = z
@@ -68,9 +79,12 @@ export const FileSchema = z
 
 // Nominator schema
 export const NominatorSchema = z.object({
-  name: z.string().min(1, "Full name is required"),
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
   email: BusinessEmailSchema,
   linkedin: LinkedInSchema,
+  // Legacy support for existing data
+  name: z.string().optional(),
 });
 
 // Person nominee schema

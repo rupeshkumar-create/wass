@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
 
     // Apply filtering
     let filteredData = approvedNominations;
-    
+
     // Filter by category
     if (category) {
       console.log(`🔍 NOMINEES API - Filtering by category: "${category}"`);
@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
       filteredData = filteredData.filter(nomination => nomination.category === category);
       console.log(`🔍 NOMINEES API - Category filter result: ${filteredData.length} (was ${beforeCount})`);
     }
-    
+
     // Filter by type
     if (type) {
       console.log(`🔍 NOMINEES API - Filtering by type: "${type}"`);
@@ -42,18 +42,18 @@ export async function GET(request: NextRequest) {
       filteredData = filteredData.filter(nomination => nomination.type === type);
       console.log(`🔍 NOMINEES API - Type filter result: ${filteredData.length} (was ${beforeCount})`);
     }
-    
+
     // Filter by search query
     if (q) {
       console.log(`🔍 NOMINEES API - Filtering by search: "${q}"`);
       const beforeCount = filteredData.length;
-      filteredData = filteredData.filter(nomination => 
+      filteredData = filteredData.filter(nomination =>
         nomination.nominee.name?.toLowerCase().includes(q.toLowerCase()) ||
         nomination.category?.toLowerCase().includes(q.toLowerCase())
       );
       console.log(`🔍 NOMINEES API - Search filter result: ${filteredData.length} (was ${beforeCount})`);
     }
-    
+
     // Calculate vote counts for each nomination
     const nominationsWithVotes = filteredData.map(nomination => {
       const nominationVotes = votes.filter(v => v.nomineeId === nomination.id);
@@ -82,7 +82,7 @@ export async function GET(request: NextRequest) {
     }
 
     filteredData = nominationsWithVotes;
-    
+
     // Apply limit
     if (limit) {
       const limitNum = parseInt(limit);
