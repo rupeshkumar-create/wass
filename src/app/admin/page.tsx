@@ -14,6 +14,7 @@ import { FiltersBar } from "@/components/dashboard/FiltersBar";
 import { NominationsTable } from "@/components/dashboard/NominationsTable";
 import { Podium } from "@/components/dashboard/Podium";
 import { HubSpotPanel } from "@/components/dashboard/HubSpotPanel";
+import { HubSpotSyncPanel } from "@/components/admin/HubSpotSyncPanel";
 import { Nomination, Vote } from "@/lib/types";
 import { ADMIN_PASSCODE, CATEGORIES } from "@/lib/constants";
 import { useRealtimeVotes } from "@/hooks/useRealtimeVotes";
@@ -538,7 +539,7 @@ export default function AdminPage() {
                   </TabsContent>
 
                   <TabsContent value="hubspot" className="space-y-6">
-                    <HubSpotPanel />
+                    <HubSpotSyncPanel />
                   </TabsContent>
                 </Tabs>
               </div>
