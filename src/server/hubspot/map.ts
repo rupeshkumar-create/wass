@@ -310,13 +310,17 @@ function buildTicketContent(params: {
  */
 export function validateEnvironmentVariables(): void {
   const required = [
-    'HUBSPOT_TOKEN',
     'HUBSPOT_CONTACT_LINKEDIN_KEY',
     'HUBSPOT_COMPANY_LINKEDIN_KEY',
     'HUBSPOT_PIPELINE_ID',
     'HUBSPOT_STAGE_SUBMITTED',
     'HUBSPOT_STAGE_APPROVED',
   ];
+
+  // Check for HubSpot token (either HUBSPOT_ACCESS_TOKEN or HUBSPOT_TOKEN)
+  if (!process.env.HUBSPOT_ACCESS_TOKEN && !process.env.HUBSPOT_TOKEN) {
+    throw new Error('HUBSPOT_ACCESS_TOKEN or HUBSPOT_TOKEN environment variable is required');
+  }
 
   const missing = required.filter(key => !process.env[key]);
   

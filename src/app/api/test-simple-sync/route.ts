@@ -6,11 +6,11 @@ export async function POST(request: NextRequest) {
     
     console.log('Simple sync test with data:', JSON.stringify(body, null, 2));
     
-    const token = process.env.HUBSPOT_TOKEN;
+    const token = process.env.HUBSPOT_ACCESS_TOKEN || process.env.HUBSPOT_TOKEN;
     
     if (!token) {
       return NextResponse.json(
-        { success: false, error: 'HUBSPOT_TOKEN not configured' },
+        { success: false, error: 'HUBSPOT_ACCESS_TOKEN or HUBSPOT_TOKEN not configured' },
         { status: 500 }
       );
     }

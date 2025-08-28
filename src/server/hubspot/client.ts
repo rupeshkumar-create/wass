@@ -10,9 +10,9 @@ export class HubSpotClient {
   private readonly maxRetries = 6;
 
   constructor() {
-    this.token = process.env.HUBSPOT_TOKEN!;
+    this.token = process.env.HUBSPOT_ACCESS_TOKEN || process.env.HUBSPOT_TOKEN!;
     if (!this.token) {
-      throw new Error('HUBSPOT_TOKEN environment variable is required');
+      throw new Error('HUBSPOT_ACCESS_TOKEN or HUBSPOT_TOKEN environment variable is required');
     }
   }
 
@@ -204,7 +204,7 @@ export class HubSpotClient {
    * Check if HubSpot sync is enabled
    */
   static isEnabled(): boolean {
-    return process.env.HUBSPOT_SYNC_ENABLED === 'true' && !!process.env.HUBSPOT_TOKEN;
+    return process.env.HUBSPOT_SYNC_ENABLED === 'true' && !!(process.env.HUBSPOT_ACCESS_TOKEN || process.env.HUBSPOT_TOKEN);
   }
 }
 

@@ -139,7 +139,7 @@ export async function POST(request: NextRequest) {
     
     try {
       // Check if HubSpot sync is enabled
-      const hubspotEnabled = process.env.HUBSPOT_SYNC_ENABLED === 'true' && process.env.HUBSPOT_TOKEN;
+      const hubspotEnabled = process.env.HUBSPOT_SYNC_ENABLED === 'true' && (process.env.HUBSPOT_ACCESS_TOKEN || process.env.HUBSPOT_TOKEN);
       
       if (hubspotEnabled) {
         console.log('🔄 Starting HubSpot real-time sync...');
