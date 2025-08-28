@@ -1,11 +1,14 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Use standalone for Netlify deployment with API routes
-  output: 'standalone',
+  // Optimized for Vercel deployment
   images: {
-    unoptimized: true,
-    remotePatterns: []
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+    ]
   },
   eslint: {
     ignoreDuringBuilds: true,
