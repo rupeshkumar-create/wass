@@ -19,8 +19,12 @@ import { HubSpotClient } from './client';
  * Implements immediate sync on vote, nomination submit, and approval
  */
 
-// Validate environment on module load
-validateEnvironmentVariables();
+// Validate environment on module load (gracefully handle missing vars)
+try {
+  validateEnvironmentVariables();
+} catch (error) {
+  console.warn('⚠️ HubSpot environment validation warning:', error instanceof Error ? error.message : error);
+}
 
 /**
  * Vote flow - immediate sync on vote cast

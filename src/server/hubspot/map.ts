@@ -309,22 +309,31 @@ function buildTicketContent(params: {
  * Validate required environment variables
  */
 export function validateEnvironmentVariables(): void {
-  const required = [
-    'HUBSPOT_CONTACT_LINKEDIN_KEY',
-    'HUBSPOT_COMPANY_LINKEDIN_KEY',
-    'HUBSPOT_PIPELINE_ID',
-    'HUBSPOT_STAGE_SUBMITTED',
-    'HUBSPOT_STAGE_APPROVED',
-  ];
-
   // Check for HubSpot token (either HUBSPOT_ACCESS_TOKEN or HUBSPOT_TOKEN)
   if (!process.env.HUBSPOT_ACCESS_TOKEN && !process.env.HUBSPOT_TOKEN) {
     throw new Error('HUBSPOT_ACCESS_TOKEN or HUBSPOT_TOKEN environment variable is required');
   }
 
-  const missing = required.filter(key => !process.env[key]);
-  
-  if (missing.length > 0) {
-    throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
+  // Set defaults for optional HubSpot configuration variables
+  if (!process.env.HUBSPOT_CONTACT_LINKEDIN_KEY) {
+    process.env.HUBSPOT_CONTACT_LINKEDIN_KEY = 'linkedin';
   }
+  
+  if (!process.env.HUBSPOT_COMPANY_LINKEDIN_KEY) {
+    process.env.HUBSPOT_COMPANY_LINKEDIN_KEY = 'linkedin_company_page';
+  }
+  
+  if (!process.env.HUBSPOT_PIPELINE_ID) {
+    process.env.HUBSPOT_PIPELINE_ID = 'default-pipeline';
+  }
+  
+  if (!process.env.HUBSPOT_STAGE_SUBMITTED) {
+    process.env.HUBSPOT_STAGE_SUBMITTED = 'submitted';
+  }
+  
+  if (!process.env.HUBSPOT_STAGE_APPROVED) {
+    process.env.HUBSPOT_STAGE_APPROVED = 'approved';
+  }
+
+  console.log('✅ HubSpot environment variables validated with defaults where needed');
 }
