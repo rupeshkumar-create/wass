@@ -32,8 +32,8 @@ export function PhotoManagementDialog({
     setUpdating(true);
     try {
       // Update the nomination via API
-      const response = await fetch('/api/nominations', {
-        method: 'PATCH',
+      const response = await fetch('/api/nomination/approve', {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },

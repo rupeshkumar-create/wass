@@ -10,7 +10,7 @@ export function getNomineeImage(nomination: Nomination): {
   alt: string;
 } {
   const nominee = nomination.nominee;
-  const name = nominee.name;
+  const name = nominee.name || 'Unknown';
   
   // Check for uploaded image URL (admin-uploaded or form-uploaded)
   if (nomination.imageUrl && nomination.imageUrl.trim()) {
@@ -60,7 +60,8 @@ function getInitialsAvatar(name: string, category: string): {
   alt: string;
 } {
   // Generate initials
-  const initials = name
+  const safeName = name || 'Unknown';
+  const initials = safeName
     .split(" ")
     .map(n => n[0])
     .join("")
@@ -68,7 +69,7 @@ function getInitialsAvatar(name: string, category: string): {
     .slice(0, 2);
   
   // Generate a consistent color based on name hash
-  const hash = name.split('').reduce((a, b) => {
+  const hash = safeName.split('').reduce((a, b) => {
     a = ((a << 5) - a) + b.charCodeAt(0);
     return a & a;
   }, 0);
@@ -103,7 +104,7 @@ function getInitialsAvatar(name: string, category: string): {
         return {
           src: canvas.toDataURL(),
           isInitials: true,
-          alt: `${name} initials - ${category}`
+          alt: `${safeName} initials - ${category}`
         };
       }
     } catch (error) {
@@ -116,6 +117,6 @@ function getInitialsAvatar(name: string, category: string): {
   return {
     src: `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&size=256&background=${bgColor}&color=fff&bold=true&format=png`,
     isInitials: true,
-    alt: `${name} initials - ${category}`
+    alt: `${safeName} initials - ${category}`
   };
 }

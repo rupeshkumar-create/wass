@@ -24,7 +24,9 @@ interface FormData {
   
   // Step 4 (Person)
   personDetails: {
-    name: string;
+    firstName?: string;
+    lastName?: string;
+    name?: string; // For backward compatibility
     email: string;
     title?: string;
     country?: string;
@@ -77,37 +79,224 @@ export default function NominatePage() {
   const totalSteps = isPersonFlow ? 10 : 10; // Both flows have 10 steps
   const progress = (currentStep / totalSteps) * 100;
 
+  // Get subcategory ID (category is already the ID from constants)
+  const getSubcategoryId = (category: Category | null): string => {
+    if (!category) return '';
+    
+    // Category is already the subcategory ID from constants
+    return category;
+  };
+
+  const getCategoryGroupId = (category: Category | null): string => {
+    if (!category) return 'general';
+    
+    // Find the category config from constants
+    const categoryConfig = CATEGORIES.find(c => c.id === category);
+    if (!categoryConfig) return 'general';
+    
+    // Map group names to group IDs
+    const groupMap: Record<string, string> = {
+      'Role-Specific': 'role-specific',
+      'Company Awards': 'company-awards',
+      'Innovation & Tech': 'innovation-tech',
+      'Culture & Impact': 'culture-impact',
+      'Growth & Performance': 'growth-performance',
+      'Geographic': 'geographic',
+      'Special Recognition': 'special-recognition'
+    };
+    
+    return groupMap[categoryConfig.group] || 'general';
+  };
+
   const handleSubmit = async () => {
     setIsSubmitting(true);
     setSubmitResult(null);
 
     try {
+      // Debug logging
+      console.log('🚀 Form submission started with data:', formData);
+      
+      // Client-side validation
+      if (!formData.category) {
+        console.log('❌ Category validation failed');
+        setSubmitResult({ error: "Please select a category." });
+        setIsSubmitting(false);
+        return;
+      }
+
+      if (!formData.nominator.email || !formData.nominator.firstName || !formData.nominator.lastName) {
+        console.log('❌ Nominator validation failed:', {
+          hasEmail: !!formData.nominator.email,
+          hasFirstName: !!formData.nominator.firstName,
+          hasLastName: !!formData.nominator.lastName,
+          nominator: formData.nominator
+        });
+        setSubmitResult({ error: "Please fill out all nominator information." });
+        setIsSubmitting(false);
+        return;
+      }
+
+      if (isPersonFlow) {
+        // Check the actual properties that Step4PersonDetails sets
+        const hasFirstName = formData.personDetails.firstName || formData.personDetails.name?.split(' ')[0];
+        const hasLastName = formData.personDetails.lastName || formData.personDetails.name?.split(' ').slice(1).join(' ');
+        const hasEmail = formData.personDetails.email;
+        const hasTitle = formData.personDetails.title;
+        const hasWhy = formData.personDetails.whyVoteForMe;
+        const hasHeadshot = formData.imageUrl;
+        
+        console.log('👤 Person validation check:', {
+          hasFirstName: !!hasFirstName,
+          hasLastName: !!hasLastName,
+          hasEmail: !!hasEmail,
+          hasTitle: !!hasTitle,
+          hasWhy: !!hasWhy,
+          hasHeadshot: !!hasHeadshot,
+          imageUrl: formData.imageUrl
+        });
+        
+        if (!hasFirstName || !hasLastName || !hasEmail || !hasTitle || !hasWhy) {
+          console.log('❌ Person details validation failed');
+          setSubmitResult({ error: "Please fill out all nominee information." });
+          setIsSubmitting(false);
+          return;
+        }
+
+        if (!hasHeadshot) {
+          console.log('❌ Headshot validation failed');
+          setSubmitResult({ error: "Professional headshot is required for person nominations." });
+          setIsSubmitting(false);
+          return;
+        }
+      } else {
+        const hasName = formData.companyDetails.name;
+        const hasWebsite = formData.companyDetails.website;
+        const hasWhy = formData.companyDetails.whyVoteForMe;
+        const hasLogo = formData.companyImageUrl;
+
+        console.log('🏢 Company validation check:', {
+          hasName: !!hasName,
+          hasWebsite: !!hasWebsite,
+          hasWhy: !!hasWhy,
+          hasLogo: !!hasLogo,
+          companyImageUrl: formData.companyImageUrl
+        });
+
+        if (!hasName || !hasWebsite || !hasWhy) {
+          console.log('❌ Company details validation failed');
+          setSubmitResult({ error: "Please fill out all company information." });
+          setIsSubmitting(false);
+          return;
+        }
+
+        if (!hasLogo) {
+          console.log('❌ Company logo validation failed');
+          setSubmitResult({ error: "Company logo is required for company nominations." });
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
+      const subcategoryId = getSubcategoryId(formData.category);
+      const categoryGroupId = getCategoryGroupId(formData.category);
+      
+      console.log('📋 Category mapping:', {
+        originalCategory: formData.category,
+        subcategoryId,
+        categoryGroupId
+      });
+
+      // Validate subcategoryId before proceeding
+      if (!subcategoryId || subcategoryId.length === 0) {
+        console.error('❌ Invalid subcategoryId:', {
+          category: formData.category,
+          subcategoryId,
+          categoryGroupId
+        });
+        setSubmitResult({ error: "Invalid category selection. Please select a category again." });
+        setIsSubmitting(false);
+        return;
+      }
+
       const payload = isPersonFlow ? {
-        category: formData.category,
-        nominator: formData.nominator,
+        type: 'person' as const,
+        categoryGroupId,
+        subcategoryId,
+        nominator: {
+          email: formData.nominator.email || '',
+          firstname: formData.nominator.firstName || '',
+          lastname: formData.nominator.lastName || '',
+          linkedin: formData.nominator.linkedin || '',
+          nominatedDisplayName: formData.personDetails.name || `${formData.personDetails.firstName || ''} ${formData.personDetails.lastName || ''}`.trim()
+        },
         nominee: {
-          ...formData.personDetails,
-          linkedin: formData.personLinkedIn.linkedin,
-          imageUrl: formData.imageUrl,
+          firstname: formData.personDetails.firstName || formData.personDetails.name?.split(' ')[0] || '',
+          lastname: formData.personDetails.lastName || formData.personDetails.name?.split(' ').slice(1).join(' ') || '',
+          jobtitle: formData.personDetails.title || '',
+          email: formData.personDetails.email || '',
+          linkedin: formData.personLinkedIn.linkedin || '',
+          headshotUrl: formData.imageUrl || '',
+          whyMe: formData.personDetails.whyVoteForMe || ''
         },
       } : {
-        category: formData.category,
-        nominator: formData.nominator,
+        type: 'company' as const,
+        categoryGroupId,
+        subcategoryId,
+        nominator: {
+          email: formData.nominator.email || '',
+          firstname: formData.nominator.firstName || '',
+          lastname: formData.nominator.lastName || '',
+          linkedin: formData.nominator.linkedin || '',
+          nominatedDisplayName: formData.companyDetails.name || ''
+        },
         nominee: {
-          ...formData.companyDetails,
-          linkedin: formData.companyLinkedIn.linkedin,
-          imageUrl: formData.companyImageUrl,
+          name: formData.companyDetails.name || '',
+          website: formData.companyDetails.website || '',
+          linkedin: formData.companyLinkedIn.linkedin || '',
+          logoUrl: formData.companyImageUrl || '',
+          whyUs: formData.companyDetails.whyVoteForMe || ''
         },
       };
 
-      const response = await fetch("/api/nominations", {
+      console.log('📤 Payload to submit:', JSON.stringify(payload, null, 2));
+
+      console.log('🌐 Making API request to /api/nomination/submit');
+      
+      const response = await fetch("/api/nomination/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
+      console.log('📥 API response status:', response.status);
+      
       const result = await response.json();
-      setSubmitResult(result);
+      console.log('📥 API response body:', result);
+      
+      if (response.ok) {
+        console.log('✅ Submission successful!');
+        setSubmitResult({ success: true, ...result });
+      } else {
+        // API returned an error
+        console.error("❌ API error:", result);
+        console.error("❌ Payload that failed:", payload);
+        
+        // Show specific validation errors if available
+        let errorMessage = result.error || "Failed to submit nomination. Please try again.";
+        
+        if (result.details && Array.isArray(result.details)) {
+          const fieldErrors = result.details.map(detail => {
+            const field = detail.path ? detail.path.join('.') : 'unknown';
+            return `${field}: ${detail.message}`;
+          }).join(', ');
+          errorMessage = `Validation errors: ${fieldErrors}`;
+        }
+        
+        setSubmitResult({ 
+          error: errorMessage,
+          details: result.details 
+        });
+      }
 
     } catch (error) {
       console.error("Submission error:", error);
@@ -153,7 +342,14 @@ export default function NominatePage() {
           <Step4PersonDetails
             data={formData.personDetails}
             onNext={(data) => {
-              setFormData(prev => ({ ...prev, personDetails: data }));
+              console.log('📝 Step4 data received:', data);
+              // Ensure we have both individual fields and combined name
+              const updatedData = {
+                ...data,
+                name: `${data.firstName} ${data.lastName}`.trim()
+              };
+              console.log('📝 Updated person details:', updatedData);
+              setFormData(prev => ({ ...prev, personDetails: updatedData }));
               setCurrentStep(5);
             }}
             onBack={() => setCurrentStep(3)}
@@ -176,8 +372,9 @@ export default function NominatePage() {
         return (
           <Step6PersonHeadshot
             imageUrl={formData.imageUrl}
-            personName={formData.personDetails.name}
+            personName={formData.personDetails.name || `${formData.personDetails.firstName || ''} ${formData.personDetails.lastName || ''}`.trim()}
             onNext={(imageUrl) => {
+              console.log('📸 Headshot uploaded:', imageUrl);
               setFormData(prev => ({ ...prev, imageUrl }));
               setCurrentStep(10);
             }}
@@ -216,6 +413,7 @@ export default function NominatePage() {
             imageUrl={formData.companyImageUrl}
             companyName={formData.companyDetails.name}
             onNext={(imageUrl) => {
+              console.log('🏢 Company logo uploaded:', imageUrl);
               setFormData(prev => ({ ...prev, companyImageUrl: imageUrl }));
               setCurrentStep(10);
             }}
@@ -246,7 +444,10 @@ export default function NominatePage() {
             category={formData.category!}
             nominator={formData.nominator as NominatorData}
             nominee={nominee}
-            onSubmit={handleSubmit}
+            onSubmit={async () => {
+              console.log('🎯 Submit button clicked, calling handleSubmit');
+              await handleSubmit();
+            }}
             onBack={() => setCurrentStep(isPersonFlow ? 6 : 9)}
             isSubmitting={isSubmitting}
             submitResult={submitResult}

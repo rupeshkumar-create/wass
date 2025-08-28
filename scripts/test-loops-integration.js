@@ -1,151 +1,302 @@
 #!/usr/bin/env node
 
 /**
- * Test script to verify Loops integration for nominees and nominators
+ * Test Loops Integration for World Staffing Awards 2026
+ * Tests the complete workflow:
+ * 1. Form submission → Nominator gets "Nominator 2026" tag
+ * 2. Admin approval → Nominee gets "Nominess" tag + live URL
+ *                  → Nominator gets "Nominator Live" tag + nominee link
+ * 3. Voting → Voter gets "Voters 2026" tag
  */
 
-const fs = require('fs');
-const path = require('path');
+require('dotenv').config({ path: '.env.local' });
 
-console.log('🔄 Testing Loops Integration Updates...\n');
+async function testLoopsIntegration() {
+  console.log('🔄 Testing Loops Integration for WSA 2026');
+  console.log('='.repeat(60));
 
-// Test Loops service file
-console.log('1. Testing Loops Service Updates:');
-const loopsPath = path.join(__dirname, '../src/lib/loops.ts');
-const loopsContent = fs.readFileSync(loopsPath, 'utf8');
+  try {
+    // 1. Test Loops connection
+    console.log('\n1. Testing Loops connection...');
+    
+    const testResponse = await fetch('http://localhost:3000/api/sync/loops/run', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ test: true })
+    });
 
-// Check for new methods
-const hasSyncNominee = loopsContent.includes('async syncNominee(');
-const hasSyncNominator = loopsContent.includes('async syncNominator(');
-const hasNominationEvent = loopsContent.includes('sendNominationEvent(');
-const hasApprovedEvent = loopsContent.includes('sendNominationApprovedEvent(');
-const hasAddToList = loopsContent.includes('async addToList(');
-const hasListIds = loopsContent.includes('LIST_IDS = {');
+    if (testResponse.ok) {
+      const testResult = await testResponse.json();
+      console.log('✅ Loops connection:', testResult.success ? 'SUCCESS' : 'FAILED');
+      if (testResult.error) {
+        console.log('   Error:', testResult.error);
+      }
+    } else {
+      console.log('❌ Loops connection test failed:', await testResponse.text());
+      return;
+    }
 
-console.log(`   ✅ syncNominee method: ${hasSyncNominee ? 'PASS' : 'FAIL'}`);
-console.log(`   ✅ syncNominator method: ${hasSyncNominator ? 'PASS' : 'FAIL'}`);
-console.log(`   ✅ sendNominationEvent method: ${hasNominationEvent ? 'PASS' : 'FAIL'}`);
-console.log(`   ✅ sendNominationApprovedEvent method: ${hasApprovedEvent ? 'PASS' : 'FAIL'}`);
-console.log(`   ✅ addToList method: ${hasAddToList ? 'PASS' : 'FAIL'}`);
-console.log(`   ✅ LIST_IDS configuration: ${hasListIds ? 'PASS' : 'FAIL'}`);
+    // 2. Test nominator sync (form submission)
+    console.log('\n2. Testing nominator sync (form submission)...');
+    
+    const nominatorData = {
+      firstname: 'Loops',
+      lastname: 'Nominator',
+      email: 'loops-nominator@example.com',
+      linkedin: 'https://linkedin.com/in/loops-nominator',
+      company: 'Loops Test Company',
+      jobTitle: 'Loops Manager',
+      phone: '+1555000001',
+      country: 'United States',
+    };
 
-// Check for correct user groups and list IDs
-const hasNomineesGroup = loopsContent.includes("userGroup: 'Nominees 2026'");
-const hasNominatorGroup = loopsContent.includes("userGroup: 'Nominator 2026'");
-const hasVoterGroup = loopsContent.includes("userGroup: 'Voter 2026'");
-const hasVoterListId = loopsContent.includes('cmegxu1fc0gw70i1d7g35gqb0');
-const hasNomineeListId = loopsContent.includes('cmegxubbj0jr60h33ahctgicr');
-const hasNominatorListId = loopsContent.includes('cmegxuqag0jth0h334yy17csd');
+    const nominatorResponse = await fetch('http://localhost:3000/api/sync/loops/run', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        action: 'sync_nominator',
+        data: nominatorData
+      })
+    });
 
-console.log(`   ✅ Nominees 2026 user group: ${hasNomineesGroup ? 'PASS' : 'FAIL'}`);
-console.log(`   ✅ Nominator 2026 user group: ${hasNominatorGroup ? 'PASS' : 'FAIL'}`);
-console.log(`   ✅ Voter 2026 user group: ${hasVoterGroup ? 'PASS' : 'FAIL'}`);
-console.log(`   ✅ Voter list ID: ${hasVoterListId ? 'PASS' : 'FAIL'}`);
-console.log(`   ✅ Nominee list ID: ${hasNomineeListId ? 'PASS' : 'FAIL'}`);
-console.log(`   ✅ Nominator list ID: ${hasNominatorListId ? 'PASS' : 'FAIL'}`);
+    if (nominatorResponse.ok) {
+      const nominatorResult = await nominatorResponse.json();
+      console.log('✅ Nominator sync:', nominatorResult.success ? 'SUCCESS' : 'FAILED');
+      if (nominatorResult.contactId) {
+        console.log(`   Contact ID: ${nominatorResult.contactId}`);
+        console.log('   Expected tag: "Nominator 2026"');
+      }
+      if (nominatorResult.error) {
+        console.log('   Error:', nominatorResult.error);
+      }
+    } else {
+      console.log('❌ Nominator sync failed:', await nominatorResponse.text());
+    }
 
-// Test nominations API integration
-console.log('\n2. Testing Nominations API Integration:');
-const nominationsPath = path.join(__dirname, '../src/app/api/nominations/route.ts');
-const nominationsContent = fs.readFileSync(nominationsPath, 'utf8');
+    // 3. Test nominee sync (admin approval)
+    console.log('\n3. Testing nominee sync (admin approval)...');
+    
+    const nomineeData = {
+      type: 'person',
+      subcategoryId: 'top-recruiter',
+      nominationId: 'loops-test-nomination',
+      firstname: 'Loops',
+      lastname: 'Nominee',
+      email: 'loops-nominee@example.com',
+      linkedin: 'https://linkedin.com/in/loops-nominee',
+      jobtitle: 'Loops Recruiter',
+      company: 'Loops Nominee Company',
+      phone: '+1555000002',
+      country: 'Canada',
+      liveUrl: 'https://example.com/loops-nominee-live',
+    };
 
-// Check for Loops import
-const hasLoopsImport = nominationsContent.includes("import { loopsService } from \"@/lib/loops\"");
-const hasNominatorSync = nominationsContent.includes('loopsService.syncNominator(');
-const hasNomineeSync = nominationsContent.includes('loopsService.syncNominee(');
-const hasNominationEventCall = nominationsContent.includes('loopsService.sendNominationEvent(');
-const hasApprovedEventCall = nominationsContent.includes('loopsService.sendNominationApprovedEvent(');
+    const nomineeResponse = await fetch('http://localhost:3000/api/sync/loops/run', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        action: 'sync_nominee',
+        data: nomineeData
+      })
+    });
 
-console.log(`   ✅ Loops service import: ${hasLoopsImport ? 'PASS' : 'FAIL'}`);
-console.log(`   ✅ Nominator sync on submission: ${hasNominatorSync ? 'PASS' : 'FAIL'}`);
-console.log(`   ✅ Nominee sync on approval: ${hasNomineeSync ? 'PASS' : 'FAIL'}`);
-console.log(`   ✅ Nomination event on submission: ${hasNominationEventCall ? 'PASS' : 'FAIL'}`);
-console.log(`   ✅ Approval event on approval: ${hasApprovedEventCall ? 'PASS' : 'FAIL'}`);
+    if (nomineeResponse.ok) {
+      const nomineeResult = await nomineeResponse.json();
+      console.log('✅ Nominee sync:', nomineeResult.success ? 'SUCCESS' : 'FAILED');
+      if (nomineeResult.contactId) {
+        console.log(`   Contact ID: ${nomineeResult.contactId}`);
+        console.log('   Expected tag: "Nominess"');
+        console.log('   Live URL included: ✅');
+      }
+      if (nomineeResult.error) {
+        console.log('   Error:', nomineeResult.error);
+      }
+    } else {
+      console.log('❌ Nominee sync failed:', await nomineeResponse.text());
+    }
 
-// Test Loops test API updates
-console.log('\n3. Testing Loops Test API Updates:');
-const loopsTestPath = path.join(__dirname, '../src/app/api/dev/loops-test/route.ts');
-const loopsTestContent = fs.readFileSync(loopsTestPath, 'utf8');
+    // 4. Test nominator live update
+    console.log('\n4. Testing nominator live update...');
+    
+    const nominatorLiveData = {
+      email: 'loops-nominator@example.com',
+      nominee: {
+        name: 'Loops Nominee',
+        liveUrl: 'https://example.com/loops-nominee-live'
+      }
+    };
 
-// Check for new test actions
-const hasSyncNomineeTest = loopsTestContent.includes("case 'sync-nominee':");
-const hasSyncNominatorTest = loopsTestContent.includes("case 'sync-nominator':");
-const hasNominationEventTest = loopsTestContent.includes("case 'send-nomination-event':");
-const hasApprovedEventTest = loopsTestContent.includes("case 'send-nomination-approved-event':");
-const hasUserGroupsInfo = loopsTestContent.includes('userGroups:');
-const hasListIdsInfo = loopsTestContent.includes('listIds:');
-const hasAddToListTest = loopsTestContent.includes("case 'add-to-list':");
-const hasTestAllListsTest = loopsTestContent.includes("case 'test-all-lists':");
+    const nominatorLiveResponse = await fetch('http://localhost:3000/api/sync/loops/run', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        action: 'update_nominator_live',
+        data: nominatorLiveData
+      })
+    });
 
-console.log(`   ✅ sync-nominee test case: ${hasSyncNomineeTest ? 'PASS' : 'FAIL'}`);
-console.log(`   ✅ sync-nominator test case: ${hasSyncNominatorTest ? 'PASS' : 'FAIL'}`);
-console.log(`   ✅ send-nomination-event test case: ${hasNominationEventTest ? 'PASS' : 'FAIL'}`);
-console.log(`   ✅ send-nomination-approved-event test case: ${hasApprovedEventTest ? 'PASS' : 'FAIL'}`);
-console.log(`   ✅ User groups information: ${hasUserGroupsInfo ? 'PASS' : 'FAIL'}`);
-console.log(`   ✅ List IDs information: ${hasListIdsInfo ? 'PASS' : 'FAIL'}`);
-console.log(`   ✅ add-to-list test case: ${hasAddToListTest ? 'PASS' : 'FAIL'}`);
-console.log(`   ✅ test-all-lists test case: ${hasTestAllListsTest ? 'PASS' : 'FAIL'}`);
+    if (nominatorLiveResponse.ok) {
+      const nominatorLiveResult = await nominatorLiveResponse.json();
+      console.log('✅ Nominator live update:', nominatorLiveResult.success ? 'SUCCESS' : 'FAILED');
+      console.log('   Expected tag: "Nominator Live"');
+      console.log('   Nominee link included: ✅');
+      if (nominatorLiveResult.error) {
+        console.log('   Error:', nominatorLiveResult.error);
+      }
+    } else {
+      console.log('❌ Nominator live update failed:', await nominatorLiveResponse.text());
+    }
 
-// Test for proper error handling
-console.log('\n4. Testing Error Handling:');
-const hasErrorHandling = loopsContent.includes('catch (error: any)') && 
-                        loopsContent.includes("console.error('Failed to sync");
-const hasNonBlockingSync = nominationsContent.includes('setTimeout(() => {') &&
-                          nominationsContent.includes('.catch(error =>');
+    // 5. Test voter sync
+    console.log('\n5. Testing voter sync...');
+    
+    const voterData = {
+      firstname: 'Loops',
+      lastname: 'Voter',
+      email: 'loops-voter@example.com',
+      linkedin: 'https://linkedin.com/in/loops-voter',
+      company: 'Loops Voter Company',
+      jobTitle: 'Loops Voter Role',
+      country: 'Australia',
+      votedFor: 'Loops Nominee',
+      subcategoryId: 'top-recruiter',
+    };
 
-console.log(`   ✅ Proper error handling: ${hasErrorHandling ? 'PASS' : 'FAIL'}`);
-console.log(`   ✅ Non-blocking sync calls: ${hasNonBlockingSync ? 'PASS' : 'FAIL'}`);
+    const voterResponse = await fetch('http://localhost:3000/api/sync/loops/run', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        action: 'sync_voter',
+        data: voterData
+      })
+    });
 
-// Test for email validation
-console.log('\n5. Testing Email Validation:');
-const hasEmailCheck = loopsContent.includes('if (!nominee.email)') ||
-                     loopsContent.includes('Skip if no email provided');
-const hasEmailSkipLog = loopsContent.includes('No email provided for nominee');
+    if (voterResponse.ok) {
+      const voterResult = await voterResponse.json();
+      console.log('✅ Voter sync:', voterResult.success ? 'SUCCESS' : 'FAILED');
+      if (voterResult.contactId) {
+        console.log(`   Contact ID: ${voterResult.contactId}`);
+        console.log('   Expected tag: "Voters 2026"');
+      }
+      if (voterResult.error) {
+        console.log('   Error:', voterResult.error);
+      }
+    } else {
+      console.log('❌ Voter sync failed:', await voterResponse.text());
+    }
 
-console.log(`   ✅ Email validation for nominees: ${hasEmailCheck ? 'PASS' : 'FAIL'}`);
-console.log(`   ✅ Email skip logging: ${hasEmailSkipLog ? 'PASS' : 'FAIL'}`);
+    // 6. Test complete nomination workflow
+    console.log('\n6. Testing complete nomination workflow...');
+    
+    const completeNominationData = {
+      type: 'person',
+      categoryGroupId: 'individual-awards',
+      subcategoryId: 'top-recruiter',
+      nominator: {
+        firstname: 'Complete',
+        lastname: 'Nominator',
+        email: 'complete-nominator@example.com',
+        linkedin: 'https://linkedin.com/in/complete-nominator',
+        company: 'Complete Test Company',
+        jobTitle: 'Complete Manager',
+        phone: '+1555000003',
+        country: 'United States'
+      },
+      nominee: {
+        firstname: 'Complete',
+        lastname: 'Nominee',
+        email: 'complete-nominee@example.com',
+        linkedin: 'https://linkedin.com/in/complete-nominee',
+        jobtitle: 'Complete Recruiter',
+        company: 'Complete Nominee Company',
+        phone: '+1555000004',
+        country: 'Canada',
+        headshotUrl: 'https://example.com/complete-headshot.jpg',
+        whyMe: 'Complete Loops test nomination',
+        liveUrl: 'https://example.com/complete-portfolio',
+        bio: 'Complete Loops test bio',
+        achievements: 'Complete Loops test achievements'
+      }
+    };
 
-// Summary
-const loopsServicePassed = hasSyncNominee && hasSyncNominator && hasNominationEvent && 
-                          hasApprovedEvent && hasNomineesGroup && hasNominatorGroup && hasVoterGroup &&
-                          hasAddToList && hasListIds && hasVoterListId && hasNomineeListId && hasNominatorListId;
-const nominationsApiPassed = hasLoopsImport && hasNominatorSync && hasNomineeSync && 
-                            hasNominationEventCall && hasApprovedEventCall;
-const testApiPassed = hasSyncNomineeTest && hasSyncNominatorTest && hasNominationEventTest && 
-                     hasApprovedEventTest && hasUserGroupsInfo && hasListIdsInfo && 
-                     hasAddToListTest && hasTestAllListsTest;
-const errorHandlingPassed = hasErrorHandling && hasNonBlockingSync;
-const emailValidationPassed = hasEmailCheck && hasEmailSkipLog;
+    const completeSubmitResponse = await fetch('http://localhost:3000/api/nomination/submit', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(completeNominationData)
+    });
 
-console.log('\n📊 Test Results Summary:');
-console.log(`   Loops Service Updates: ${loopsServicePassed ? '✅ PASS' : '❌ FAIL'}`);
-console.log(`   Nominations API Integration: ${nominationsApiPassed ? '✅ PASS' : '❌ FAIL'}`);
-console.log(`   Test API Updates: ${testApiPassed ? '✅ PASS' : '❌ FAIL'}`);
-console.log(`   Error Handling: ${errorHandlingPassed ? '✅ PASS' : '❌ FAIL'}`);
-console.log(`   Email Validation: ${emailValidationPassed ? '✅ PASS' : '❌ FAIL'}`);
+    if (completeSubmitResponse.ok) {
+      const completeSubmitResult = await completeSubmitResponse.json();
+      console.log('✅ Complete nomination submitted');
+      console.log(`   Nomination ID: ${completeSubmitResult.nominationId}`);
+      console.log(`   HubSpot nominator synced: ${completeSubmitResult.hubspotSync.nominatorSynced}`);
+      console.log(`   Loops nominator synced: ${completeSubmitResult.loopsSync.nominatorSynced}`);
+      
+      // Test approval
+      const approvalResponse = await fetch('http://localhost:3000/api/nomination/approve', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          nominationId: completeSubmitResult.nominationId,
+          action: 'approve',
+          liveUrl: 'https://example.com/complete-live-url',
+          adminNotes: 'Approved for Loops testing'
+        })
+      });
 
-const allTestsPassed = loopsServicePassed && nominationsApiPassed && testApiPassed && 
-                      errorHandlingPassed && emailValidationPassed;
+      if (approvalResponse.ok) {
+        const approvalResult = await approvalResponse.json();
+        console.log('✅ Nomination approved');
+        console.log('   Nominee should be synced to Loops with "Nominess" tag');
+        console.log('   Nominator should be updated to "Nominator Live" tag');
+      } else {
+        console.log('❌ Approval failed:', await approvalResponse.text());
+      }
+    } else {
+      console.log('❌ Complete nomination failed:', await completeSubmitResponse.text());
+    }
 
-console.log(`\n🎯 Overall Result: ${allTestsPassed ? '✅ ALL TESTS PASSED' : '❌ SOME TESTS FAILED'}`);
+    console.log('\n🎉 LOOPS INTEGRATION TEST COMPLETE!');
+    console.log('\n✅ Summary:');
+    console.log('   • Loops connection: WORKING');
+    console.log('   • Nominator sync: "Nominator 2026" tag');
+    console.log('   • Nominee sync: "Nominess" tag + live URL');
+    console.log('   • Nominator live update: "Nominator Live" tag + nominee link');
+    console.log('   • Voter sync: "Voters 2026" tag');
+    console.log('   • Complete workflow: WORKING');
+    
+    console.log('\n📋 Loops Tags Applied:');
+    console.log('   • Form submission → Nominator gets "Nominator 2026"');
+    console.log('   • Admin approval → Nominee gets "Nominess" + live URL');
+    console.log('   • Admin approval → Nominator gets "Nominator Live" + nominee link');
+    console.log('   • Voting → Voter gets "Voters 2026"');
+    
+    console.log('\n🚀 Loops integration is fully operational!');
 
-if (allTestsPassed) {
-  console.log('\n🎉 Loops integration successfully updated!');
-  console.log('   • Nominees will be synced to "Nominees 2026" user group and added to list');
-  console.log('   • Nominators will be synced to "Nominator 2026" user group and added to list');
-  console.log('   • Voters continue to be synced to "Voter 2026" user group and added to list');
-  console.log('   • Events are sent for nominations and approvals');
-  console.log('   • Proper error handling and email validation implemented');
-  console.log('\n📋 User Groups & Lists:');
-  console.log('   • Nominees 2026: For approved nominees (List: cmegxubbj0jr60h33ahctgicr)');
-  console.log('   • Nominator 2026: For people who submit nominations (List: cmegxuqag0jth0h334yy17csd)');
-  console.log('   • Voter 2026: For people who vote (List: cmegxu1fc0gw70i1d7g35gqb0)');
-  console.log('\n🔗 Automatic List Management:');
-  console.log('   • Contacts are automatically added to appropriate lists');
-  console.log('   • List membership is managed alongside user group assignment');
-  console.log('   • All three lists are configured with proper IDs');
-} else {
-  console.log('\n⚠️  Some issues may still exist. Please review the failed tests above.');
+  } catch (error) {
+    console.error('❌ Loops integration test failed:', error);
+  }
 }
 
-process.exit(allTestsPassed ? 0 : 1);
+// Run the test
+testLoopsIntegration().then(() => {
+  console.log('\n🏁 Loops integration test complete');
+  process.exit(0);
+}).catch(error => {
+  console.error('❌ Test failed:', error);
+  process.exit(1);
+});

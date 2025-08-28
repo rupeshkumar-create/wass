@@ -1,209 +1,200 @@
 import { hubspotClient } from './client';
-import { searchCompanyByDomain, searchCompanyByName } from './search';
+import { searchCompanyByDomainOrName, extractDomain } from './search';
 
 /**
- * Company management utilities
+ * Company management with proper upsert semantics
+ * Upserts by domain (preferred) or name (fallback)
  */
 
-export interface CompanyProperties {
-  name: string;
-  domain?: string;
-  website?: string;
-  linkedin?: string;
-  wsa_year?: number;
-  wsa_role?: string;
-  wsa_live_url?: string;
-  [key: string]: any;
-}
-
-/**
- * Extract domain from website URL
- */
-function extractDomain(website: string): string | null {
-  try {
-    const url = new URL(website.startsWith('http') ? website : `https://${website}`);
-    return url.hostname.replace('www.', '');
-  } catch {
-    return null;
-  }
+export interface CompanyUpsertResult {
+  id: string;
+  created: boolean;
+  properties: Record<string, any>;
 }
 
 /**
  * Upsert company by domain or name
+ * - Search by domain first (if available), then by name
+ * - If exists: PATCH with non-empty fields only
+ * - If not exists: POST create new company
  */
-export async function upsertCompany(
-  properties: CompanyProperties,
-  idempotencyKey?: string
-): Promise<{ id: string; isNew: boolean }> {
-  const { name, website, domain: providedDomain } = properties;
-  
+export async function upsertCompanyByDomainOrName(
+  properties: Record<string, any>
+): Promise<CompanyUpsertResult> {
+  const name = properties.name;
   if (!name) {
-    throw new Error('Company name is required');
+    throw new Error('Company name is required for upsert');
   }
 
-  // Determine domain for search
-  let searchDomain = providedDomain;
-  if (!searchDomain && website) {
-    searchDomain = extractDomain(website);
-  }
-
-  let existingCompany = null;
-
-  // Try to find existing company by domain first
-  if (searchDomain) {
-    existingCompany = await searchCompanyByDomain(searchDomain);
-  }
-
-  // If not found by domain, try by name
-  if (!existingCompany) {
-    existingCompany = await searchCompanyByName(name);
-  }
-
-  if (existingCompany) {
-    // Update existing company
-    const updateProperties = { ...properties };
-    
-    // Set LinkedIn at the configured property key
-    if (properties.linkedin) {
-      updateProperties[process.env.HUBSPOT_COMPANY_LINKEDIN_KEY!] = properties.linkedin;
-      delete updateProperties.linkedin;
+  // Extract domain from website if not provided
+  let domain = properties.domain;
+  if (!domain && properties.website) {
+    domain = extractDomain(properties.website);
+    if (domain) {
+      properties.domain = domain;
     }
+  }
 
-    // Merge roles (don't overwrite existing)
-    if (properties.wsa_role && existingCompany.properties.wsa_role) {
-      const existingRoles = existingCompany.properties.wsa_role.split(';').filter(Boolean);
-      const newRole = properties.wsa_role;
+  const idempotencyKey = hubspotClient.generateIdempotencyKey();
+
+  try {
+    // Search for existing company
+    const existingCompany = await searchCompanyByDomainOrName({ domain, name });
+
+    if (existingCompany) {
+      // Update existing company
+      console.log(`Updating existing company: ${name} (${domain || 'no domain'})`);
       
-      if (!existingRoles.includes(newRole)) {
-        updateProperties.wsa_role = [...existingRoles, newRole].join(';');
-      } else {
-        // Role already exists, don't update it
-        delete updateProperties.wsa_role;
-      }
+      // Prepare update properties (only non-empty values)
+      const updateProps = { ...properties };
+      
+      // Remove empty/undefined values to avoid overwriting existing data
+      Object.keys(updateProps).forEach(key => {
+        if (updateProps[key] === undefined || updateProps[key] === null || updateProps[key] === '') {
+          delete updateProps[key];
+        }
+      });
+
+      const response = await hubspotClient.hubFetch(`/crm/v3/objects/companies/${existingCompany.id}`, {
+        method: 'PATCH',
+        body: { properties: updateProps },
+        idempotencyKey,
+      });
+
+      return {
+        id: existingCompany.id,
+        created: false,
+        properties: response.properties,
+      };
+    } else {
+      // Create new company
+      console.log(`Creating new company: ${name} (${domain || 'no domain'})`);
+      
+      const response = await hubspotClient.hubFetch('/crm/v3/objects/companies', {
+        method: 'POST',
+        body: { properties },
+        idempotencyKey,
+      });
+
+      return {
+        id: response.id,
+        created: true,
+        properties: response.properties,
+      };
     }
-
-    await hubspotClient.hubFetch(`/crm/v3/objects/companies/${existingCompany.id}`, {
-      method: 'PATCH',
-      body: { properties: updateProperties },
-      idempotencyKey: idempotencyKey || hubspotClient.generateIdempotencyKey(),
-    });
-
-    return { id: existingCompany.id, isNew: false };
-  } else {
-    // Create new company
-    const createProperties = { ...properties };
-    
-    // Set domain if we extracted it
-    if (searchDomain && !createProperties.domain) {
-      createProperties.domain = searchDomain;
-    }
-
-    // Set LinkedIn at the configured property key
-    if (properties.linkedin) {
-      createProperties[process.env.HUBSPOT_COMPANY_LINKEDIN_KEY!] = properties.linkedin;
-      delete createProperties.linkedin;
-    }
-
-    // Always set year for new companies
-    createProperties.wsa_year = 2026;
-
-    const response = await hubspotClient.hubFetch('/crm/v3/objects/companies', {
-      method: 'POST',
-      body: { properties: createProperties },
-      idempotencyKey: idempotencyKey || hubspotClient.generateIdempotencyKey(),
-    });
-
-    return { id: response.id, isNew: true };
-  }
-}
-
-/**
- * Create or update company nominee
- */
-export async function upsertCompanyNominee(nominee: {
-  name: string;
-  website?: string;
-  linkedin: string;
-  status?: 'submitted' | 'approved' | 'rejected';
-  liveUrl?: string;
-}): Promise<{ id: string; isNew: boolean }> {
-  return await upsertCompany({
-    name: nominee.name,
-    website: nominee.website,
-    linkedin: nominee.linkedin,
-    wsa_year: 2026,
-    wsa_role: 'Nominee_Company',
-    wsa_live_url: nominee.liveUrl,
-  });
-}
-
-/**
- * Update company with live URL (for approved nominees)
- */
-export async function updateCompanyLiveUrl(
-  companyId: string,
-  liveUrl: string
-): Promise<void> {
-  await hubspotClient.hubFetch(`/crm/v3/objects/companies/${companyId}`, {
-    method: 'PATCH',
-    body: {
-      properties: {
-        wsa_live_url: liveUrl,
-      },
-    },
-    idempotencyKey: hubspotClient.generateIdempotencyKey(),
-  });
-}
-
-/**
- * Get company by ID
- */
-export async function getCompanyById(companyId: string): Promise<any> {
-  try {
-    return await hubspotClient.hubFetch(`/crm/v3/objects/companies/${companyId}`, {
-      method: 'GET',
-    });
   } catch (error) {
-    console.error('Failed to get company by ID:', error);
-    return null;
+    console.error(`Failed to upsert company ${name}:`, error);
+    throw error;
   }
 }
 
 /**
- * Search for company nominee by LinkedIn URL
+ * Create or update company (legacy wrapper)
  */
-export async function searchCompanyByLinkedIn(linkedinUrl: string): Promise<any> {
+export async function createOrUpdateCompany(properties: Record<string, any>): Promise<CompanyUpsertResult> {
+  return upsertCompanyByDomainOrName(properties);
+}
+
+/**
+ * Update company with live URL (for approval flow)
+ */
+export async function updateCompanyLiveUrl(companyId: string, liveUrl: string): Promise<void> {
+  const idempotencyKey = hubspotClient.generateIdempotencyKey();
+
   try {
+    await hubspotClient.hubFetch(`/crm/v3/objects/companies/${companyId}`, {
+      method: 'PATCH',
+      body: {
+        properties: {
+          wsa_live_url: liveUrl,
+        },
+      },
+      idempotencyKey,
+    });
+
+    console.log(`Updated company ${companyId} with live URL`);
+  } catch (error) {
+    console.error(`Failed to update company ${companyId} live URL:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Search company by LinkedIn URL (alternative search method)
+ */
+export async function searchCompanyByLinkedIn(linkedinUrl: string): Promise<CompanyUpsertResult | null> {
+  try {
+    const linkedinKey = process.env.HUBSPOT_COMPANY_LINKEDIN_KEY!;
+    
     const response = await hubspotClient.hubFetch('/crm/v3/objects/companies/search', {
       method: 'POST',
       body: {
-        filterGroups: [
-          {
-            filters: [
-              {
-                propertyName: process.env.HUBSPOT_COMPANY_LINKEDIN_KEY!,
-                operator: 'EQ',
-                value: linkedinUrl,
-              },
-            ],
-          },
-        ],
+        filterGroups: [{
+          filters: [{
+            propertyName: linkedinKey,
+            operator: 'EQ',
+            value: linkedinUrl
+          }]
+        }],
         properties: [
           'name',
           'domain',
           'website',
-          process.env.HUBSPOT_COMPANY_LINKEDIN_KEY!,
+          linkedinKey,
           'wsa_year',
           'wsa_role',
-          'wsa_live_url',
-        ],
-        limit: 1,
-      },
+          'wsa_categories',
+          'wsa_logo_url',
+          'wsa_why_us',
+          'wsa_live_url'
+        ]
+      }
     });
 
-    return response.results?.[0] || null;
+    const company = response.results?.[0];
+    return company ? {
+      id: company.id,
+      created: false,
+      properties: company.properties
+    } : null;
   } catch (error) {
     console.error('Failed to search company by LinkedIn:', error);
     return null;
   }
+}
+
+/**
+ * Batch upsert companies
+ */
+export async function batchUpsertCompanies(
+  companiesData: Array<{ properties: Record<string, any> }>
+): Promise<CompanyUpsertResult[]> {
+  const results: CompanyUpsertResult[] = [];
+
+  // Process in batches to avoid rate limits
+  const batchSize = 10;
+  for (let i = 0; i < companiesData.length; i += batchSize) {
+    const batch = companiesData.slice(i, i + batchSize);
+    
+    const batchPromises = batch.map(({ properties }) =>
+      upsertCompanyByDomainOrName(properties)
+    );
+
+    const batchResults = await Promise.allSettled(batchPromises);
+    
+    batchResults.forEach((result, index) => {
+      if (result.status === 'fulfilled') {
+        results.push(result.value);
+      } else {
+        console.error(`Failed to upsert company ${batch[index].properties.name}:`, result.reason);
+      }
+    });
+
+    // Add delay between batches
+    if (i + batchSize < companiesData.length) {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  }
+
+  return results;
 }

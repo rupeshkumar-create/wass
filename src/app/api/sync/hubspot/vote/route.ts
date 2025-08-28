@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { syncVote } from '@/server/hubspot/sync';
+import { onVote } from '@/server/hubspot/sync';
 import { z } from 'zod';
 
 // Validation schema
@@ -35,8 +35,25 @@ export async function POST(request: NextRequest) {
       category: validatedData.category,
     });
 
-    // Sync to HubSpot
-    const result = await syncVote(validatedData);
+    // Sync to HubSpot using new sync system
+    const result = await onVote({
+      voter: {
+        email: validatedData.voter.email,
+        firstname: validatedData.voter.firstName,
+        lastname: validatedData.voter.lastName,
+        company: validatedData.voter.company,
+        linkedin: validatedData.voter.linkedin,
+      },
+      nominee: {
+        id: validatedData.nominee.id,
+        name: validatedData.nominee.name,
+        type: validatedData.nominee.type,
+        email: validatedData.nominee.email,
+        linkedin: validatedData.nominee.linkedin,
+      },
+      votedForDisplayName: validatedData.nominee.name,
+      subcategoryId: validatedData.subcategoryId,
+    });
     
     if (result.success) {
       console.log('HubSpot vote sync completed successfully');

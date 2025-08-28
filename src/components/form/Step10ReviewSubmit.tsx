@@ -54,16 +54,27 @@ export function Step10ReviewSubmit({
             }`} />
           </div>
           <CardTitle className="text-2xl">
-            {submitResult.duplicate ? "Already Nominated" : "Nomination Submitted!"}
+            {submitResult.duplicate ? "Already Nominated" : "Nomination Submitted Successfully!"}
           </CardTitle>
           <CardDescription>
             {submitResult.duplicate 
               ? submitResult.reason || "A nomination for this category with the same LinkedIn URL already exists."
-              : "Thank you for your nomination. It will be reviewed before appearing in the directory."
+              : "Thank you for your nomination. It has been submitted and will be reviewed before appearing in the directory."
             }
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
+          {submitResult.nominationId && (
+            <div className="bg-muted p-4 rounded-lg">
+              <p className="text-sm text-muted-foreground">
+                <span className="font-medium">Nomination ID:</span> {submitResult.nominationId}
+              </p>
+              <p className="text-sm text-muted-foreground mt-1">
+                <span className="font-medium">Status:</span> {submitResult.state || 'Submitted'}
+              </p>
+            </div>
+          )}
+
           {submitResult.liveUrl && (
             <div className="text-center">
               <Button asChild>

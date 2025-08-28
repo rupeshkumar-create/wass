@@ -1,14 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ALLOWED_IMAGE_TYPES, MAX_FILE_SIZE } from "@/lib/constants";
+import { uploadImage, generateStoragePath, getFileExtension } from "@/lib/supabase/storage";
 import crypto from "crypto";
-import fs from "fs";
-import path from "path";
 
 export const runtime = 'nodejs';
-
-
-export const dynamic = 'force-static';
-export const revalidate = false;
+export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   try {
@@ -42,41 +38,30 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // Build path
-    const dir = kind === 'logo' ? 'logos' : 'headshots';
+    // Generate storage path
     const name = slug ?? nomineeId ?? crypto.randomUUID();
-    
-    // Map MIME type to extension
-    const mimeToExt: Record<string, string> = {
-      'image/jpeg': 'jpg',
-      'image/jpg': 'jpg', 
-      'image/png': 'png',
-      'image/svg+xml': 'svg'
-    };
-    const ext = mimeToExt[file.type] || 'jpg';
-    const fileName = `${name}.${ext}`;
-    const filePath = `${dir}/${fileName}`;
+    const fileExtension = getFileExtension(file.type);
+    const storagePath = generateStoragePath(kind as 'headshot' | 'logo', name, fileExtension);
 
-    // Convert file to buffer
-    const buffer = await file.arrayBuffer();
-    
-    // Create uploads directory if it doesn't exist
-    const uploadsDir = path.join(process.cwd(), 'public', 'uploads', dir);
-    if (!fs.existsSync(uploadsDir)) {
-      fs.mkdirSync(uploadsDir, { recursive: true });
+    // Upload to Supabase Storage
+    const uploadResult = await uploadImage({
+      file,
+      bucket: 'images',
+      path: storagePath,
+      upsert: true
+    });
+
+    if (!uploadResult.success) {
+      return NextResponse.json({ 
+        ok: false, 
+        error: uploadResult.error || 'Upload failed' 
+      }, { status: 500 });
     }
-    
-    // Save file to local storage
-    const fullPath = path.join(uploadsDir, fileName);
-    fs.writeFileSync(fullPath, Buffer.from(buffer));
-
-    // Return public URL
-    const publicUrl = `/uploads/${filePath}`;
 
     return NextResponse.json({
       ok: true,
-      url: publicUrl,
-      path: filePath
+      url: uploadResult.url,
+      path: uploadResult.path
     });
 
   } catch (error) {

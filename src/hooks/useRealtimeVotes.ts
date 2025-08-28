@@ -23,15 +23,13 @@ export function useRealtimeVotes({
         // Poll for vote updates
         const id = setInterval(async () => {
             try {
-                let url = '/api/votes';
                 if (nomineeId) {
-                    url += `?nomineeId=${nomineeId}`;
-                }
-                
-                const response = await fetch(url);
-                if (response.ok) {
-                    const data = await response.json();
-                    onVoteUpdate(data);
+                    const url = `/api/votes/count?nominationId=${nomineeId}`;
+                    const response = await fetch(url);
+                    if (response.ok) {
+                        const data = await response.json();
+                        onVoteUpdate(data);
+                    }
                 }
             } catch (error) {
                 console.error('Error polling for vote updates:', error);

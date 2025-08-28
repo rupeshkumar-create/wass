@@ -1,54 +1,96 @@
 #!/usr/bin/env node
 
-const { execSync } = require('child_process');
+// Use node-fetch for Node.js compatibility
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
-console.log('🧪 Testing Specific Nominee Pages...');
-console.log('===================================');
+const BASE_URL = 'http://localhost:3000';
 
-// Test a few specific nominees
-const testNominees = [
-  'ayush-raj',
-  'complete-flow-test-nominee-2', 
-  'ayush',
-  'anu-manager',
-  'akash-kumar'
-];
+async function testSpecificNominee() {
+  console.log('🔍 TESTING SPECIFIC NOMINEE PAGE ISSUE\n');
 
-testNominees.forEach((slug, index) => {
-  console.log(`\n${index + 1}️⃣ Testing: ${slug}`);
-  console.log(`   URL: http://localhost:3000/nominee/${slug}`);
-  
   try {
-    // Test API first
-    const apiResult = execSync(`curl -s "http://localhost:3000/api/nominee/${slug}"`, { encoding: 'utf8' });
-    const apiData = JSON.parse(apiResult);
-    console.log(`   ✅ API: ${apiData.nominee?.name || 'No name'}`);
+    // 1. Get a nominee from API
+    console.log('1. Getting nominee from API...');
+    const apiResponse = await fetch(`${BASE_URL}/api/nominees?limit=1`);
+    const apiData = await apiResponse.json();
     
-    // Test page
-    const pageResult = execSync(`curl -s "http://localhost:3000/nominee/${slug}"`, { encoding: 'utf8' });
+    if (!apiData.success || !apiData.data || apiData.data.length === 0) {
+      console.log('❌ No nominees found in API');
+      return;
+    }
     
-    if (pageResult.includes('404') || pageResult.includes('This page could not be found')) {
-      console.log(`   ❌ Page: Shows 404 error`);
-    } else if (pageResult.includes(`Nominee: ${apiData.nominee?.name}`)) {
-      console.log(`   ✅ Page: Shows nominee data correctly`);
-    } else if (pageResult.includes('Nominee:')) {
-      console.log(`   ⚠️  Page: Shows nominee data but name might be different`);
+    const nominee = apiData.data[0];
+    console.log(`✅ Found nominee: ${nominee.nominee?.displayName}`);
+    console.log(`   ID: ${nominee.id}`);
+    console.log(`   Nominee ID: ${nominee.nomineeId}`);
+    
+    // 2. Test the individual page
+    console.log('\n2. Testing individual page...');
+    const pageUrl = `/nominee/${nominee.id}`;
+    console.log(`   URL: ${pageUrl}`);
+    
+    const pageResponse = await fetch(`${BASE_URL}${pageUrl}`);
+    console.log(`   Status: ${pageResponse.status}`);
+    
+    if (pageResponse.ok) {
+      const content = await pageResponse.text();
+      
+      // Check for 404 content
+      const has404Title = content.includes('404: This page could not be found');
+      const has404Text = content.includes('This page could not be found');
+      const hasNomineeName = content.includes(nominee.nominee?.displayName);
+      
+      console.log(`   Contains nominee name: ${hasNomineeName}`);
+      console.log(`   Contains 404 title: ${has404Title}`);
+      console.log(`   Contains 404 text: ${has404Text}`);
+      
+      if (hasNomineeName && !has404Title && !has404Text) {
+        console.log('   ✅ Page working correctly!');
+      } else if (hasNomineeName && (has404Title || has404Text)) {
+        console.log('   ⚠️  Page has content but also shows 404 error');
+        console.log('   This suggests the page component is working but Next.js is also rendering a 404');
+      } else {
+        console.log('   ❌ Page not working correctly');
+      }
+      
+      // Check if it's a Next.js routing issue
+      if (content.includes('__next_f')) {
+        console.log('   📋 This is a Next.js hydrated page');
+      }
+      
     } else {
-      console.log(`   ❓ Page: Unknown state`);
+      console.log(`   ❌ Page failed with status: ${pageResponse.status}`);
+    }
+    
+    // 3. Test with different nominee IDs
+    console.log('\n3. Testing with different IDs...');
+    
+    const testIds = [
+      nominee.id,
+      nominee.nomineeId,
+      'invalid-id'
+    ];
+    
+    for (const testId of testIds) {
+      try {
+        const testResponse = await fetch(`${BASE_URL}/nominee/${testId}`);
+        console.log(`   ${testId}: ${testResponse.status}`);
+        
+        if (testResponse.ok) {
+          const testContent = await testResponse.text();
+          const hasName = testContent.includes(nominee.nominee?.displayName);
+          const has404 = testContent.includes('404: This page could not be found');
+          console.log(`     Has name: ${hasName}, Has 404: ${has404}`);
+        }
+      } catch (error) {
+        console.log(`   ${testId}: Error - ${error.message}`);
+      }
     }
     
   } catch (error) {
-    console.log(`   ❌ Error: ${error.message}`);
+    console.error('❌ Test failed:', error.message);
   }
-});
+}
 
-console.log('\n🎯 Try these working URLs in your browser:');
-testNominees.forEach(slug => {
-  console.log(`   http://localhost:3000/nominee/${slug}`);
-});
-
-console.log('\n💡 If you see 404 errors, try:');
-console.log('   1. Hard refresh (Ctrl+F5 or Cmd+Shift+R)');
-console.log('   2. Clear browser cache');
-console.log('   3. Try in incognito/private mode');
-console.log('   4. Restart the development server');
+// Run the test
+testSpecificNominee();

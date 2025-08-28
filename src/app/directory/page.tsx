@@ -17,6 +17,11 @@ function DirectoryContent() {
   const [nominees, setNominees] = useState<NominationWithVotes[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
   
   // Get filter state from URL parameters
   const searchQuery = searchParams.get("q") || "";
@@ -25,6 +30,8 @@ function DirectoryContent() {
 
   // Fetch data with server-side filtering
   useEffect(() => {
+    if (!isClient) return;
+    
     const fetchData = async () => {
       try {
         setLoading(true);
@@ -42,7 +49,13 @@ function DirectoryContent() {
         });
         
         if (!response.ok) throw new Error("Failed to fetch nominees");
-        let data = await response.json();
+        const result = await response.json();
+        
+        if (!result.success) {
+          throw new Error(result.error || 'Failed to fetch nominees');
+        }
+        
+        let data = result.data || [];
         
         console.log('🔍 Directory - Raw data from API:', data.length, 'nominees');
         console.log('🔍 Directory - Active filters:', { selectedCategory, selectedType, searchQuery });
@@ -68,10 +81,12 @@ function DirectoryContent() {
         if (searchQuery) {
           console.log('🔍 Directory - Applying search filter:', searchQuery);
           const beforeCount = data.length;
-          data = data.filter((nominee: any) => 
-            nominee.nominee?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            nominee.category?.toLowerCase().includes(searchQuery.toLowerCase())
-          );
+          data = data.filter((nominee: any) => {
+            const name = nominee.nominee?.name || nominee.displayName || nominee.name || '';
+            const category = nominee.category || '';
+            return name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                   category.toLowerCase().includes(searchQuery.toLowerCase());
+          });
           console.log('🔍 Directory - Search filter result:', data.length, '(was', beforeCount, ')');
         }
         
@@ -86,7 +101,7 @@ function DirectoryContent() {
     };
 
     fetchData();
-  }, [selectedCategory, selectedType, searchQuery]);
+  }, [selectedCategory, selectedType, searchQuery, isClient]);
 
   // Real-time vote updates
   const handleVoteUpdate = useCallback(() => {
@@ -104,7 +119,9 @@ function DirectoryContent() {
         },
       })
         .then(res => res.json())
-        .then(data => {
+        .then(result => {
+          if (!result.success) return;
+          let data = result.data || [];
           console.log('🔍 Vote Update - Raw data:', data.length, 'nominees');
           
           // Apply client-side filtering
@@ -119,10 +136,12 @@ function DirectoryContent() {
           }
           
           if (searchQuery) {
-            data = data.filter((nominee: any) => 
-              nominee.nominee?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              nominee.category?.toLowerCase().includes(searchQuery.toLowerCase())
-            );
+            data = data.filter((nominee: any) => {
+              const name = nominee.nominee?.name || nominee.displayName || nominee.name || '';
+              const category = nominee.category || '';
+              return name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                     category.toLowerCase().includes(searchQuery.toLowerCase());
+            });
           }
           
           console.log('🔍 Vote Update - Final result:', data.length, 'nominees');
@@ -250,7 +269,13 @@ function DirectoryContent() {
 
         {/* Grid */}
         <ScrollReveal delay={0.2}>
-          <Grid nominations={nominees} />
+          {nominees && nominees.length > 0 ? (
+            <Grid nominations={nominees} />
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">No nominees found.</p>
+            </div>
+          )}
         </ScrollReveal>
 
         {/* Sticky Vote Button */}

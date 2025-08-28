@@ -46,21 +46,24 @@ export function VoteDialog({ open, onOpenChange, nomination, onVoteSuccess }: Vo
     setResult(null);
 
     try {
-      const response = await fetch("/api/votes", {
+      const response = await fetch("/api/vote", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          nomineeId: nomination.id,
-          category: nomination.category,
-          voter: data,
+          subcategoryId: nomination.category,
+          votedForDisplayName: nomination.nominee.name,
+          firstname: data.firstName,
+          lastname: data.lastName,
+          email: data.email,
+          linkedin: data.linkedin,
         }),
       });
 
       const result = await response.json();
 
-      if (response.ok && result.success) {
-        setResult(result);
-        onVoteSuccess(result.total);
+      if (response.ok && result.ok) {
+        setResult({ success: true, total: result.newVoteCount });
+        onVoteSuccess(result.newVoteCount);
         // Reset form
         form.reset();
         // Close dialog after a delay
@@ -68,19 +71,18 @@ export function VoteDialog({ open, onOpenChange, nomination, onVoteSuccess }: Vo
           onOpenChange(false);
           setResult(null);
         }, 3000);
-      } else if (result.blocked) {
-        // Handle duplicate vote or other blocking scenarios
-        setResult(result);
-      } else if (result.error === "Validation failed") {
+      } else if (result.error === "ALREADY_VOTED") {
+        // Handle duplicate vote
+        setResult({ blocked: true, message: result.message });
+      } else if (result.error === "Invalid vote data") {
         // Handle validation errors
-        try {
-          const validationErrors = JSON.parse(result.details);
+        if (result.details && Array.isArray(result.details)) {
           let errorMessage = "Please check your information:";
           
-          validationErrors.forEach((err: any) => {
-            if (err.path.includes("email")) {
+          result.details.forEach((err: any) => {
+            if (err.path && err.path.includes("email")) {
               errorMessage += "\n• " + err.message;
-            } else if (err.path.includes("linkedin")) {
+            } else if (err.path && err.path.includes("linkedin")) {
               errorMessage += "\n• " + err.message;
             } else {
               errorMessage += "\n• " + err.message;
@@ -88,7 +90,7 @@ export function VoteDialog({ open, onOpenChange, nomination, onVoteSuccess }: Vo
           });
           
           setResult({ message: errorMessage });
-        } catch {
+        } else {
           setResult({ message: "Please check your information and try again." });
         }
       } else {

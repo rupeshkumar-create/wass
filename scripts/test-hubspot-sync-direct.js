@@ -26,7 +26,7 @@ async function testHubSpotSyncDirect() {
     const response = await fetch('https://api.hubapi.com/crm/v3/objects/contacts', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${process.env.HUBSPOT_PRIVATE_APP_TOKEN}`,
+        'Authorization': `Bearer ${process.env.HUBSPOT_TOKEN}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(contactData)
@@ -49,7 +49,7 @@ async function testHubSpotSyncDirect() {
     const searchResponse = await fetch('https://api.hubapi.com/crm/v3/objects/contacts/search', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${process.env.HUBSPOT_PRIVATE_APP_TOKEN}`,
+        'Authorization': `Bearer ${process.env.HUBSPOT_TOKEN}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({

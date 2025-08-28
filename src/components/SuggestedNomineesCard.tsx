@@ -17,20 +17,35 @@ interface SuggestedNomineesCardProps {
 export function SuggestedNomineesCard({ currentNomineeId, currentCategory }: SuggestedNomineesCardProps) {
   const [suggestions, setSuggestions] = useState<NominationWithVotes[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isClient) return;
     async function fetchSuggestions() {
       try {
         setLoading(true);
         
         // Fetch top nominees, excluding current one
-        const response = await fetch('/api/nominees?sort=votes_desc&limit=8', {
+        const response = await fetch(`/api/nominees?sort=votes_desc&limit=8&_t=${Date.now()}`, {
           cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+          },
         });
         
         if (!response.ok) throw new Error('Failed to fetch suggestions');
         
-        const data: NominationWithVotes[] = await response.json();
+        const result = await response.json();
+        
+        if (!result.success) {
+          throw new Error(result.error || 'Failed to fetch suggestions');
+        }
+        
+        const data: NominationWithVotes[] = result.data || [];
         
         // Filter out current nominee and mix categories
         let filtered = data.filter(nominee => nominee.id !== currentNomineeId);
@@ -57,7 +72,7 @@ export function SuggestedNomineesCard({ currentNomineeId, currentCategory }: Sug
     }
 
     fetchSuggestions();
-  }, [currentNomineeId, currentCategory]);
+  }, [currentNomineeId, currentCategory, isClient]);
 
   if (loading) {
     return (
@@ -129,7 +144,7 @@ export function SuggestedNomineesCard({ currentNomineeId, currentCategory }: Sug
                     </p>
                   </div>
                   <Button asChild variant="ghost" size="sm" className="h-8 px-3 text-xs flex-shrink-0">
-                    <Link href={`/nominee/${nominee.liveUrl}`}>
+                    <Link href={`/nominee/${nominee.id}`}>
                       View
                     </Link>
                   </Button>

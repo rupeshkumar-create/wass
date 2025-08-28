@@ -1,44 +1,34 @@
 import { hubspotClient } from './client';
 
 /**
- * Search utilities for finding existing HubSpot records
+ * Search functions for HubSpot objects
  */
 
-export interface SearchFilter {
-  propertyName: string;
-  operator: 'EQ' | 'NEQ' | 'LT' | 'LTE' | 'GT' | 'GTE' | 'BETWEEN' | 'IN' | 'NOT_IN' | 'HAS_PROPERTY' | 'NOT_HAS_PROPERTY' | 'CONTAINS_TOKEN' | 'NOT_CONTAINS_TOKEN';
-  value: string | number | boolean;
+export interface ContactSearchResult {
+  id: string;
+  properties: Record<string, any>;
 }
 
-export interface SearchResult {
-  total: number;
-  results: Array<{
-    id: string;
-    properties: Record<string, any>;
-    createdAt: string;
-    updatedAt: string;
-  }>;
+export interface CompanySearchResult {
+  id: string;
+  properties: Record<string, any>;
 }
 
 /**
- * Search contacts by email
+ * Search for contact by email (primary identifier)
  */
-export async function searchContactByEmail(email: string): Promise<SearchResult['results'][0] | null> {
+export async function searchContactByEmail(email: string): Promise<ContactSearchResult | null> {
   try {
     const response = await hubspotClient.hubFetch('/crm/v3/objects/contacts/search', {
       method: 'POST',
       body: {
-        filterGroups: [
-          {
-            filters: [
-              {
-                propertyName: 'email',
-                operator: 'EQ',
-                value: email,
-              },
-            ],
-          },
-        ],
+        filterGroups: [{
+          filters: [{
+            propertyName: 'email',
+            operator: 'EQ',
+            value: email
+          }]
+        }],
         properties: [
           'email',
           'firstname',
@@ -53,10 +43,12 @@ export async function searchContactByEmail(email: string): Promise<SearchResult[
           'wsa_voted_for_display_name',
           'wsa_voted_subcategory_id',
           'wsa_vote_timestamp',
-          'wsa_live_url',
-        ],
-        limit: 1,
-      },
+          'wsa_categories',
+          'wsa_headshot_url',
+          'wsa_why_me',
+          'wsa_live_url'
+        ]
+      }
     });
 
     return response.results?.[0] || null;
@@ -67,24 +59,42 @@ export async function searchContactByEmail(email: string): Promise<SearchResult[
 }
 
 /**
- * Search companies by domain
+ * Search for company by domain (preferred) or name (fallback)
  */
-export async function searchCompanyByDomain(domain: string): Promise<SearchResult['results'][0] | null> {
+export async function searchCompanyByDomainOrName(params: {
+  domain?: string;
+  name: string;
+}): Promise<CompanySearchResult | null> {
+  try {
+    // First try by domain if available
+    if (params.domain) {
+      const domainResult = await searchCompanyByDomain(params.domain);
+      if (domainResult) return domainResult;
+    }
+
+    // Fallback to name search
+    return await searchCompanyByName(params.name);
+  } catch (error) {
+    console.error('Failed to search company:', error);
+    return null;
+  }
+}
+
+/**
+ * Search for company by domain
+ */
+export async function searchCompanyByDomain(domain: string): Promise<CompanySearchResult | null> {
   try {
     const response = await hubspotClient.hubFetch('/crm/v3/objects/companies/search', {
       method: 'POST',
       body: {
-        filterGroups: [
-          {
-            filters: [
-              {
-                propertyName: 'domain',
-                operator: 'EQ',
-                value: domain,
-              },
-            ],
-          },
-        ],
+        filterGroups: [{
+          filters: [{
+            propertyName: 'domain',
+            operator: 'EQ',
+            value: domain
+          }]
+        }],
         properties: [
           'name',
           'domain',
@@ -92,10 +102,12 @@ export async function searchCompanyByDomain(domain: string): Promise<SearchResul
           process.env.HUBSPOT_COMPANY_LINKEDIN_KEY!,
           'wsa_year',
           'wsa_role',
-          'wsa_live_url',
-        ],
-        limit: 1,
-      },
+          'wsa_categories',
+          'wsa_logo_url',
+          'wsa_why_us',
+          'wsa_live_url'
+        ]
+      }
     });
 
     return response.results?.[0] || null;
@@ -106,24 +118,20 @@ export async function searchCompanyByDomain(domain: string): Promise<SearchResul
 }
 
 /**
- * Search companies by name (fallback when no domain)
+ * Search for company by name
  */
-export async function searchCompanyByName(name: string): Promise<SearchResult['results'][0] | null> {
+export async function searchCompanyByName(name: string): Promise<CompanySearchResult | null> {
   try {
     const response = await hubspotClient.hubFetch('/crm/v3/objects/companies/search', {
       method: 'POST',
       body: {
-        filterGroups: [
-          {
-            filters: [
-              {
-                propertyName: 'name',
-                operator: 'EQ',
-                value: name,
-              },
-            ],
-          },
-        ],
+        filterGroups: [{
+          filters: [{
+            propertyName: 'name',
+            operator: 'EQ',
+            value: name
+          }]
+        }],
         properties: [
           'name',
           'domain',
@@ -131,10 +139,12 @@ export async function searchCompanyByName(name: string): Promise<SearchResult['r
           process.env.HUBSPOT_COMPANY_LINKEDIN_KEY!,
           'wsa_year',
           'wsa_role',
-          'wsa_live_url',
-        ],
-        limit: 1,
-      },
+          'wsa_categories',
+          'wsa_logo_url',
+          'wsa_why_us',
+          'wsa_live_url'
+        ]
+      }
     });
 
     return response.results?.[0] || null;
@@ -145,37 +155,36 @@ export async function searchCompanyByName(name: string): Promise<SearchResult['r
 }
 
 /**
- * Search tickets by custom property
+ * Search for ticket by unique properties
  */
-export async function searchTicketByNominee(
-  nomineeDisplayName: string,
-  subcategoryId: string
-): Promise<SearchResult['results'][0] | null> {
+export async function searchTicketByNomination(params: {
+  nominatorEmail: string;
+  subcategoryId: string;
+  nomineeDisplayName: string;
+}): Promise<{ id: string; properties: Record<string, any> } | null> {
   try {
     const response = await hubspotClient.hubFetch('/crm/v3/objects/tickets/search', {
       method: 'POST',
       body: {
-        filterGroups: [
-          {
-            filters: [
-              {
-                propertyName: 'wsa_nominee_display_name',
-                operator: 'EQ',
-                value: nomineeDisplayName,
-              },
-              {
-                propertyName: 'wsa_subcategory_id',
-                operator: 'EQ',
-                value: subcategoryId,
-              },
-              {
-                propertyName: 'wsa_year',
-                operator: 'EQ',
-                value: 2026,
-              },
-            ],
-          },
-        ],
+        filterGroups: [{
+          filters: [
+            {
+              propertyName: 'wsa_nominator_email',
+              operator: 'EQ',
+              value: params.nominatorEmail
+            },
+            {
+              propertyName: 'wsa_subcategory_id',
+              operator: 'EQ',
+              value: params.subcategoryId
+            },
+            {
+              propertyName: 'wsa_nominee_display_name',
+              operator: 'EQ',
+              value: params.nomineeDisplayName
+            }
+          ]
+        }],
         properties: [
           'subject',
           'content',
@@ -190,44 +199,26 @@ export async function searchTicketByNominee(
           'wsa_image_url',
           'wsa_nominator_email',
           'wsa_live_url',
-          'wsa_approval_timestamp',
-        ],
-        limit: 1,
-      },
+          'wsa_approval_timestamp'
+        ]
+      }
     });
 
     return response.results?.[0] || null;
   } catch (error) {
-    console.error('Failed to search ticket by nominee:', error);
+    console.error('Failed to search ticket:', error);
     return null;
   }
 }
 
 /**
- * Generic search function
+ * Extract domain from website URL
  */
-export async function searchObjects(
-  objectType: 'contacts' | 'companies' | 'tickets',
-  filters: SearchFilter[],
-  properties: string[] = [],
-  limit: number = 10
-): Promise<SearchResult> {
+export function extractDomain(website: string): string | null {
   try {
-    const response = await hubspotClient.hubFetch(`/crm/v3/objects/${objectType}/search`, {
-      method: 'POST',
-      body: {
-        filterGroups: [{ filters }],
-        properties,
-        limit,
-      },
-    });
-
-    return {
-      total: response.total || 0,
-      results: response.results || [],
-    };
-  } catch (error) {
-    console.error(`Failed to search ${objectType}:`, error);
-    return { total: 0, results: [] };
+    const url = new URL(website.startsWith('http') ? website : `https://${website}`);
+    return url.hostname.replace('www.', '');
+  } catch {
+    return null;
   }
 }

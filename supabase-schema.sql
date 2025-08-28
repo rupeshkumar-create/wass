@@ -1,196 +1,131 @@
--- World Staffing Awards 2026 - Database Schema
--- Run this in your Supabase SQL Editor
+-- WSA 2026 Supabase Database Schema
+-- Run this in Supabase SQL Editor to set up the database
 
--- 1. Enum types
-CREATE TYPE wsa_status AS ENUM ('pending','approved','rejected');
-CREATE TYPE wsa_type AS ENUM ('person','company');
+-- Extensions
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- 2. Nominations table
-CREATE TABLE IF NOT EXISTS nominations (
+-- NOMINATIONS: person/company nominees
+CREATE TABLE IF NOT EXISTS public.nominations (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  category TEXT NOT NULL,
-  type wsa_type NOT NULL,
+  type TEXT NOT NULL CHECK (type IN ('person','company')),
+  category_group_id TEXT NOT NULL,
+  subcategory_id TEXT NOT NULL,
+  state TEXT NOT NULL DEFAULT 'submitted' CHECK (state IN ('submitted','approved','rejected')),
   
-  -- Nominator (never public)
-  nominator_name TEXT NOT NULL,
-  nominator_email TEXT NOT NULL,
-  nominator_phone TEXT,
+  -- person fields
+  firstname TEXT,
+  lastname TEXT,
+  jobtitle TEXT,
+  person_email TEXT,
+  person_linkedin TEXT,
+  headshot_url TEXT, -- Required for person nominations, enforced at application level
+  why_me TEXT,
   
-  -- Public facing nominee fields (email stays private)
-  nominee_name TEXT NOT NULL,
-  nominee_email TEXT,             -- keep private
-  nominee_title TEXT,
-  nominee_country TEXT,
+  -- company fields
   company_name TEXT,
+  company_domain TEXT,
   company_website TEXT,
-  company_country TEXT,
+  company_linkedin TEXT,
+  logo_url TEXT,
+  why_us TEXT,
   
-  -- Canonical LinkedIn for dedupe (person / company)
-  linkedin_norm TEXT NOT NULL,
-  
-  -- Media
-  image_url TEXT,                 -- Supabase Storage public URL
-  
-  -- Routing/visibility
-  live_slug TEXT NOT NULL UNIQUE,
-  status wsa_status NOT NULL DEFAULT 'pending',
-  unique_key TEXT NOT NULL,       -- for compatibility
-  moderated_at TIMESTAMPTZ,
-  moderated_by TEXT,
-  moderator_note TEXT,
-  why_vote_for_me TEXT CHECK (char_length(why_vote_for_me) <= 1000),
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+  -- shared
+  live_url TEXT,
+  votes INT NOT NULL DEFAULT 0,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Prevent duplicates: one nominee per category by LinkedIn
-CREATE UNIQUE INDEX IF NOT EXISTS nominations_unique_per_cat 
-  ON nominations (lower(category), lower(linkedin_norm));
+CREATE INDEX IF NOT EXISTS idx_nominations_subcat ON public.nominations(subcategory_id);
+CREATE INDEX IF NOT EXISTS idx_nominations_state ON public.nominations(state);
 
--- 3. Voters table (for reporting and normalization)
-CREATE TABLE IF NOT EXISTS voters (
+-- NOMINATORS: one per email+subcategory (status moves to approved when nominee is approved)
+CREATE TABLE IF NOT EXISTS public.nominators (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  first_name TEXT NOT NULL,
-  last_name TEXT NOT NULL,
-  email TEXT NOT NULL,              -- business email
-  linkedin_norm TEXT NOT NULL,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+  email TEXT NOT NULL,
+  firstname TEXT NOT NULL,
+  lastname TEXT NOT NULL,
+  linkedin TEXT,
+  nominated_display_name TEXT NOT NULL,
+  category_group_id TEXT NOT NULL,
+  subcategory_id TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'submitted' CHECK (status IN ('submitted','approved','rejected')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Unique constraints for voters (using indexes)
-CREATE UNIQUE INDEX IF NOT EXISTS voters_email_unique 
-  ON voters (lower(email));
-CREATE UNIQUE INDEX IF NOT EXISTS voters_linkedin_unique 
-  ON voters (lower(linkedin_norm));
+CREATE UNIQUE INDEX IF NOT EXISTS uniq_nominator_email_subcat ON public.nominators (lower(email), subcategory_id);
 
--- 4. Votes table
-CREATE TABLE IF NOT EXISTS votes (
+-- VOTERS: one vote per email+subcategory
+CREATE TABLE IF NOT EXISTS public.voters (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  nominee_id UUID NOT NULL REFERENCES nominations(id) ON DELETE CASCADE,
-  category TEXT NOT NULL,
-  voter_id UUID REFERENCES voters(id) ON DELETE SET NULL,
-  voter_email TEXT NOT NULL,
-  voter_linkedin_norm TEXT NOT NULL,
-  ip INET,
-  ua TEXT,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+  email TEXT NOT NULL,
+  firstname TEXT NOT NULL,
+  lastname TEXT NOT NULL,
+  linkedin TEXT NOT NULL,
+  subcategory_id TEXT NOT NULL,
+  voted_for_display_name TEXT NOT NULL,
+  vote_timestamp TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- One-vote rules (both guarantees)
--- A) Only one vote per voter per category (prevents switching nominees)
-CREATE UNIQUE INDEX IF NOT EXISTS one_vote_per_category 
-  ON votes (lower(voter_linkedin_norm), lower(category));
+CREATE UNIQUE INDEX IF NOT EXISTS uniq_vote_email_subcat ON public.voters (lower(email), subcategory_id);
 
--- B) Only one vote per voter per nominee (extra guard)
-CREATE UNIQUE INDEX IF NOT EXISTS one_vote_per_nominee 
-  ON votes (lower(voter_linkedin_norm), nominee_id, lower(category));
+-- OUTBOX: durable queue for later HubSpot sync (no external calls in this task)
+CREATE TABLE IF NOT EXISTS public.hubspot_outbox (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  event_type TEXT NOT NULL CHECK (event_type IN ('nomination_submitted','nomination_approved','vote_cast')),
+  payload JSONB NOT NULL,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','processing','done','dead')),
+  attempt_count INT NOT NULL DEFAULT 0,
+  last_error TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
 
--- 5. Performance indexes
-CREATE INDEX IF NOT EXISTS votes_nominee_idx ON votes (nominee_id);
-CREATE INDEX IF NOT EXISTS nominations_status_cat_idx ON nominations (status, category);
-CREATE INDEX IF NOT EXISTS nominations_created_at_idx ON nominations (created_at DESC);
-CREATE INDEX IF NOT EXISTS nominations_slug_idx ON nominations (live_slug);
+CREATE INDEX IF NOT EXISTS idx_outbox_status_created ON public.hubspot_outbox(status, created_at);
 
--- 6. Public-safe view (no emails) for front-end reads
-CREATE OR REPLACE VIEW public_nominees AS
-SELECT 
-  n.id,
-  n.category,
-  n.type,
-  n.nominee_name,
-  n.nominee_title,
-  n.nominee_country,
-  n.company_name,
-  n.company_website,
-  n.company_country,
-  n.linkedin_norm,
-  n.image_url,
-  n.live_slug,
-  n.status,
-  n.created_at,
-  n.why_vote_for_me,                                   -- <- NEW
-  COALESCE(vc.vote_count, 0)::INT AS votes
-FROM nominations n
-LEFT JOIN (
-  SELECT nominee_id, COUNT(*)::INT AS vote_count
-  FROM votes
-  GROUP BY nominee_id
-) vc ON vc.nominee_id = n.id
-WHERE n.status = 'approved';
+-- Optional: public view for directory (approved only)
+CREATE OR REPLACE VIEW public.public_nominees AS
+SELECT
+  id,
+  type,
+  subcategory_id,
+  CASE 
+    WHEN type='person' THEN COALESCE(firstname,'') || ' ' || COALESCE(lastname,'')
+    ELSE COALESCE(company_name,'')
+  END AS display_name,
+  COALESCE(live_url,'') AS live_url,
+  votes
+FROM public.nominations
+WHERE state='approved';
 
--- 7. Row Level Security (RLS) policies
-ALTER TABLE nominations ENABLE ROW LEVEL SECURITY;
-ALTER TABLE votes ENABLE ROW LEVEL SECURITY;
-ALTER TABLE voters ENABLE ROW LEVEL SECURITY;
-
--- Public: can only read approved nominations
-CREATE POLICY public_read_approved ON nominations 
-  FOR SELECT USING (status = 'approved');
-
--- Only service role can insert/update/delete nominations
-CREATE POLICY srv_write_nominations ON nominations 
-  FOR ALL TO service_role USING (true) WITH CHECK (true);
-
--- Votes: no public select (privacy); only service_role can write
-CREATE POLICY srv_write_votes ON votes 
-  FOR ALL TO service_role USING (true) WITH CHECK (true);
-
--- Voters table: only service_role read/write
-CREATE POLICY srv_write_voters ON voters 
-  FOR ALL TO service_role USING (true) WITH CHECK (true);
-
--- 8. Vote casting function (server-side guard)
-CREATE OR REPLACE FUNCTION cast_vote(
-  p_nominee UUID,
-  p_category TEXT,
-  p_first TEXT,
-  p_last TEXT,
-  p_email TEXT,
-  p_linkedin_norm TEXT,
-  p_ip INET,
-  p_ua TEXT
-) RETURNS TABLE(success BOOLEAN, total INT, message TEXT) 
-LANGUAGE plpgsql AS $$
-DECLARE 
-  v_voter UUID;
-  v_total INT;
-  v_nominee_status wsa_status;
+-- Triggers to keep updated_at fresh
+CREATE OR REPLACE FUNCTION public.set_updated_at() RETURNS TRIGGER AS $$
 BEGIN
-  -- Check if nominee exists and is approved
-  SELECT status INTO v_nominee_status 
-  FROM nominations 
-  WHERE id = p_nominee AND category = p_category;
-  
-  IF v_nominee_status IS NULL THEN
-    RETURN QUERY SELECT false, 0, 'Nominee not found';
-  END IF;
-  
-  IF v_nominee_status != 'approved' THEN
-    RETURN QUERY SELECT false, 0, 'Nominee not available for voting';
-  END IF;
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END; 
+$$ LANGUAGE plpgsql;
 
-  -- Upsert voter
-  INSERT INTO voters (first_name, last_name, email, linkedin_norm)
-  VALUES (p_first, p_last, p_email, p_linkedin_norm)
-  ON CONFLICT (lower(email)) DO UPDATE SET 
-    linkedin_norm = EXCLUDED.linkedin_norm,
-    first_name = EXCLUDED.first_name,
-    last_name = EXCLUDED.last_name
-  RETURNING id INTO v_voter;
+DROP TRIGGER IF EXISTS set_updated_at_nominations ON public.nominations;
+CREATE TRIGGER set_updated_at_nominations 
+  BEFORE UPDATE ON public.nominations
+  FOR EACH ROW EXECUTE PROCEDURE public.set_updated_at();
 
-  -- Insert vote (unique indexes enforce one-vote policy)
-  INSERT INTO votes (nominee_id, category, voter_id, voter_email, voter_linkedin_norm, ip, ua)
-  VALUES (p_nominee, p_category, v_voter, p_email, p_linkedin_norm, p_ip, p_ua);
+DROP TRIGGER IF EXISTS set_updated_at_nominators ON public.nominators;
+CREATE TRIGGER set_updated_at_nominators 
+  BEFORE UPDATE ON public.nominators
+  FOR EACH ROW EXECUTE PROCEDURE public.set_updated_at();
 
-  SELECT COUNT(*) INTO v_total FROM votes WHERE nominee_id = p_nominee;
-  RETURN QUERY SELECT true, v_total, 'Vote cast successfully';
+DROP TRIGGER IF EXISTS set_updated_at_outbox ON public.hubspot_outbox;
+CREATE TRIGGER set_updated_at_outbox 
+  BEFORE UPDATE ON public.hubspot_outbox
+  FOR EACH ROW EXECUTE PROCEDURE public.set_updated_at();
 
-EXCEPTION
-  WHEN unique_violation THEN
-    -- Check which constraint was violated
-    IF SQLERRM LIKE '%one_vote_per_category%' THEN
-      RETURN QUERY SELECT false, 0, 'ALREADY_VOTED_IN_CATEGORY';
-    ELSE
-      RETURN QUERY SELECT false, 0, 'ALREADY_VOTED_FOR_THIS_NOMINEE';
-    END IF;
-END;
-$$;
+-- Enable RLS (Service Role key bypasses this)
+ALTER TABLE public.nominations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.nominators ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.voters ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.hubspot_outbox ENABLE ROW LEVEL SECURITY;

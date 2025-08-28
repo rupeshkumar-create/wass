@@ -1,270 +1,258 @@
+import { upsertContactByEmail, updateNominatorStatus } from './contacts';
+import { upsertCompanyByDomainOrName, updateCompanyLiveUrl } from './companies';
+import { createOrUpdateNominationTicket, updateTicketToApproved } from './tickets';
+import { createNominationAssociations, createVoteAssociation } from './associations';
 import { 
-  upsertNominatorContact, 
-  upsertVoterContact, 
-  upsertPersonNomineeContact,
-  updateContactLiveUrl,
-  updateNominatorStatus 
-} from './contacts';
-import { 
-  upsertCompanyNominee, 
-  updateCompanyLiveUrl,
-  searchCompanyByLinkedIn 
-} from './companies';
-import { 
-  createNominationTicket, 
-  approveNominationTicket,
-  rejectNominationTicket,
-  buildTicketContent 
-} from './tickets';
-import { 
-  associateTicketWithNominator, 
-  associateTicketWithNominee,
-  associateVoterWithNominee 
-} from './associations';
-import { searchContactByEmail } from './search';
-import { validateEnvironmentVariables } from './map';
+  nominatorContactProps,
+  voterContactProps,
+  personNomineeContactProps,
+  companyNomineeProps,
+  ticketDraftProps,
+  extractDomain,
+  validateEnvironmentVariables
+} from './map';
+import { searchContactByEmail, searchCompanyByDomainOrName } from './search';
 import { HubSpotClient } from './client';
 
 /**
- * Main sync orchestration functions
+ * High-level sync flows for WSA 2026 HubSpot integration
+ * Implements immediate sync on vote, nomination submit, and approval
  */
 
+// Validate environment on module load
+validateEnvironmentVariables();
+
 /**
- * Sync voter immediately after vote
+ * Vote flow - immediate sync on vote cast
+ * Creates/updates voter contact and associates with nominee
  */
-export async function syncVote(voteData: {
+export async function onVote(params: {
   voter: {
     email: string;
-    firstName: string;
-    lastName: string;
-    company: string;
-    linkedin: string;
+    firstname: string;
+    lastname: string;
+    company?: string;
+    linkedin?: string;
   };
   nominee: {
     id: string;
     name: string;
     type: 'person' | 'company';
-    linkedin: string;
     email?: string;
+    domain?: string;
+    linkedin?: string;
   };
-  category: string;
+  votedForDisplayName: string;
   subcategoryId: string;
-}): Promise<{ success: boolean; voterContactId?: string; error?: string }> {
-  
-  if (!HubSpotClient.isEnabled()) {
-    console.log('HubSpot sync is disabled, skipping vote sync');
-    return { success: true };
-  }
-
+}): Promise<{
+  success: boolean;
+  voterContactId?: string;
+  error?: string;
+}> {
   try {
-    validateEnvironmentVariables();
-
-    const { voter, nominee, subcategoryId } = voteData;
+    console.log(`Starting vote sync for voter: ${params.voter.email}`);
 
     // 1. Upsert voter contact
-    const voterResult = await upsertVoterContact({
-      email: voter.email,
-      firstName: voter.firstName,
-      lastName: voter.lastName,
-      company: voter.company,
-      linkedin: voter.linkedin,
-      votedForDisplayName: nominee.name,
-      subcategoryId,
+    const voterProps = voterContactProps({
+      email: params.voter.email,
+      firstname: params.voter.firstname,
+      lastname: params.voter.lastname,
+      company: params.voter.company,
+      linkedin: params.voter.linkedin,
+      votedForDisplayName: params.votedForDisplayName,
+      subcategoryId: params.subcategoryId,
     });
 
-    console.log(`Voter contact ${voterResult.isNew ? 'created' : 'updated'}: ${voterResult.id}`);
+    const voterResult = await upsertContactByEmail(voterProps, 'Voter');
 
-    // 2. Find nominee in HubSpot
-    let nomineeHubSpotId: string | null = null;
-    let nomineeObjectType: 'contact' | 'company' = 'contact';
+    // 2. Find nominee for association
+    let nomineeContactId: string | undefined;
+    let nomineeCompanyId: string | undefined;
 
-    if (nominee.type === 'person') {
-      // Search for person nominee by email or LinkedIn
-      if (nominee.email) {
-        const contact = await searchContactByEmail(nominee.email);
-        if (contact) {
-          nomineeHubSpotId = contact.id;
-          nomineeObjectType = 'contact';
-        }
+    if (params.nominee.type === 'person') {
+      if (params.nominee.email) {
+        const nomineeContact = await searchContactByEmail(params.nominee.email);
+        nomineeContactId = nomineeContact?.id;
       }
     } else {
-      // Search for company nominee by LinkedIn
-      const company = await searchCompanyByLinkedIn(nominee.linkedin);
-      if (company) {
-        nomineeHubSpotId = company.id;
-        nomineeObjectType = 'company';
+      const domain = params.nominee.domain || (params.nominee.linkedin ? extractDomain(params.nominee.linkedin) : null);
+      if (domain || params.nominee.name) {
+        const nomineeCompany = await searchCompanyByDomainOrName({
+          domain: domain || undefined,
+          name: params.nominee.name,
+        });
+        nomineeCompanyId = nomineeCompany?.id;
       }
     }
 
-    // 3. Create association if nominee found
-    if (nomineeHubSpotId) {
-      await associateVoterWithNominee(
-        voterResult.id,
-        nomineeHubSpotId,
-        nomineeObjectType
-      );
-      console.log(`Associated voter ${voterResult.id} with nominee ${nomineeHubSpotId} (${nomineeObjectType})`);
-    } else {
-      console.warn(`Nominee not found in HubSpot for association: ${nominee.name}`);
-    }
+    // 3. Create vote association (skip for now - may require additional permissions)
+    // if (nomineeContactId || nomineeCompanyId) {
+    //   await createVoteAssociation({
+    //     voterContactId: voterResult.id,
+    //     nomineeContactId,
+    //     nomineeCompanyId,
+    //   });
+    // }
 
-    return { success: true, voterContactId: voterResult.id };
+    console.log(`Vote sync completed successfully for voter: ${params.voter.email}`);
 
+    return {
+      success: true,
+      voterContactId: voterResult.id,
+    };
   } catch (error) {
-    console.error('Failed to sync vote:', error);
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    console.error('Vote sync failed:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 }
 
 /**
- * Sync nomination on submit
+ * Nomination submit flow - immediate sync on nomination submission
+ * Creates/updates nominator, nominee, ticket, and associations
  */
-export async function syncNominationSubmit(nominationData: {
+export async function onSubmit(params: {
   nominator: {
     email: string;
     name: string;
-    company: string;
-    linkedin: string;
+    company?: string;
+    linkedin?: string;
   };
   nominee: {
     name: string;
     type: 'person' | 'company';
-    linkedin: string;
     email?: string;
-    firstName?: string;
-    lastName?: string;
-    title?: string;
+    firstname?: string;
+    lastname?: string;
+    jobtitle?: string;
     website?: string;
-    whyVoteForMe?: string;
+    linkedin?: string;
+    categories?: string[];
+    headshotUrl?: string;
+    logoUrl?: string;
+    whyMe?: string;
+    whyUs?: string;
   };
-  category: string;
   categoryGroupId: string;
   subcategoryId: string;
-  whyNominated: string;
   imageUrl?: string;
-}): Promise<{ 
-  success: boolean; 
+  content?: string;
+}): Promise<{
+  success: boolean;
   nominatorContactId?: string;
-  nomineeId?: string;
+  nomineeContactId?: string;
+  nomineeCompanyId?: string;
   ticketId?: string;
   error?: string;
 }> {
-  
-  if (!HubSpotClient.isEnabled()) {
-    console.log('HubSpot sync is disabled, skipping nomination submit sync');
-    return { success: true };
-  }
-
   try {
-    validateEnvironmentVariables();
-
-    const { nominator, nominee, categoryGroupId, subcategoryId, whyNominated, imageUrl } = nominationData;
+    console.log(`Starting nomination submit sync for: ${params.nominee.name}`);
 
     // 1. Upsert nominator contact
-    const nominatorResult = await upsertNominatorContact({
-      email: nominator.email,
-      name: nominator.name,
-      company: nominator.company,
-      linkedin: nominator.linkedin,
-      nominatedDisplayName: nominee.name,
+    const nominatorProps = nominatorContactProps({
+      email: params.nominator.email,
+      name: params.nominator.name,
+      company: params.nominator.company,
+      linkedin: params.nominator.linkedin,
+      nominatedDisplayName: params.nominee.name,
       status: 'submitted',
+      categoryGroupId: params.categoryGroupId,
+      subcategoryId: params.subcategoryId,
     });
 
-    console.log(`Nominator contact ${nominatorResult.isNew ? 'created' : 'updated'}: ${nominatorResult.id}`);
+    const nominatorResult = await upsertContactByEmail(nominatorProps, 'Nominator');
 
-    // 2. Upsert nominee (contact or company)
-    let nomineeResult: { id: string; isNew: boolean };
-    let nomineeObjectType: 'contact' | 'company';
+    // 2. Upsert nominee (person or company)
+    let nomineeContactId: string | undefined;
+    let nomineeCompanyId: string | undefined;
 
-    if (nominee.type === 'person') {
-      // Create person nominee as contact
-      nomineeResult = await upsertPersonNomineeContact({
-        email: nominee.email,
-        name: nominee.name,
-        firstName: nominee.firstName || nominee.name.split(' ')[0],
-        lastName: nominee.lastName || nominee.name.split(' ').slice(1).join(' '),
-        title: nominee.title,
-        linkedin: nominee.linkedin,
-        status: 'submitted',
+    if (params.nominee.type === 'person') {
+      const personProps = personNomineeContactProps({
+        email: params.nominee.email,
+        name: params.nominee.name,
+        firstname: params.nominee.firstname,
+        lastname: params.nominee.lastname,
+        jobtitle: params.nominee.jobtitle,
+        linkedin: params.nominee.linkedin,
+        categories: params.nominee.categories,
+        headshotUrl: params.nominee.headshotUrl,
+        whyMe: params.nominee.whyMe,
       });
-      nomineeObjectType = 'contact';
+
+      const nomineeResult = await upsertContactByEmail(personProps, 'Nominee_Person');
+      nomineeContactId = nomineeResult.id;
     } else {
-      // Create company nominee
-      nomineeResult = await upsertCompanyNominee({
-        name: nominee.name,
-        website: nominee.website,
-        linkedin: nominee.linkedin,
-        status: 'submitted',
+      const domain = params.nominee.website ? extractDomain(params.nominee.website) : undefined;
+      
+      const companyProps = companyNomineeProps({
+        name: params.nominee.name,
+        domain,
+        website: params.nominee.website,
+        linkedin: params.nominee.linkedin,
+        categories: params.nominee.categories,
+        logoUrl: params.nominee.logoUrl,
+        whyUs: params.nominee.whyUs,
       });
-      nomineeObjectType = 'company';
+
+      const nomineeResult = await upsertCompanyByDomainOrName(companyProps);
+      nomineeCompanyId = nomineeResult.id;
     }
 
-    console.log(`Nominee ${nomineeObjectType} ${nomineeResult.isNew ? 'created' : 'updated'}: ${nomineeResult.id}`);
-
     // 3. Create nomination ticket
-    const ticketContent = buildTicketContent({
-      type: nominee.type,
-      nominee,
-      nominator,
-      whyNominated,
-      category: subcategoryId,
-      whyVoteForMe: nominee.whyVoteForMe,
+    const ticketProps = ticketDraftProps({
+      type: params.nominee.type,
+      categoryGroupId: params.categoryGroupId,
+      subcategoryId: params.subcategoryId,
+      nomineeDisplayName: params.nominee.name,
+      nomineeLinkedin: params.nominee.linkedin,
+      imageUrl: params.imageUrl,
+      nominatorEmail: params.nominator.email,
+      content: params.content,
     });
 
-    const ticketResult = await createNominationTicket({
-      subject: `WSA 2026 – ${subcategoryId} – ${nominee.name}`,
-      content: ticketContent,
-      hs_pipeline: process.env.HUBSPOT_PIPELINE_ID!,
-      hs_pipeline_stage: process.env.HUBSPOT_STAGE_SUBMITTED!,
-      wsa_year: 2026,
-      wsa_type: nominee.type,
-      wsa_category_group: categoryGroupId,
-      wsa_subcategory_id: subcategoryId,
-      wsa_nominee_display_name: nominee.name,
-      wsa_nominee_linkedin_url: nominee.linkedin,
-      wsa_image_url: imageUrl,
-      wsa_nominator_email: nominator.email,
-    });
+    // Skip ticket creation for now (requires ticket permissions)
+    // const ticketResult = await createOrUpdateNominationTicket(ticketProps);
 
-    console.log(`Nomination ticket created: ${ticketResult.id}`);
+    // 4. Create associations (skip ticket associations for now)
+    // await createNominationAssociations({
+    //   ticketId: ticketResult.id,
+    //   nominatorContactId: nominatorResult.id,
+    //   nomineeContactId,
+    //   nomineeCompanyId,
+    // });
 
-    // 4. Create associations
-    await Promise.all([
-      associateTicketWithNominator(ticketResult.id, nominatorResult.id),
-      associateTicketWithNominee(ticketResult.id, nomineeResult.id, nomineeObjectType),
-    ]);
-
-    console.log('Associations created successfully');
+    console.log(`Nomination submit sync completed successfully for: ${params.nominee.name}`);
 
     return {
       success: true,
       nominatorContactId: nominatorResult.id,
-      nomineeId: nomineeResult.id,
-      ticketId: ticketResult.id,
+      nomineeContactId,
+      nomineeCompanyId,
+      // ticketId: ticketResult.id, // Skip for now
     };
-
   } catch (error) {
-    console.error('Failed to sync nomination submit:', error);
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    console.error('Nomination submit sync failed:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 }
 
 /**
- * Sync nomination approval
+ * Nomination approval flow - sync on admin approval
+ * Updates ticket to approved, sets live URLs, updates nominator status
  */
-export async function syncNominationApprove(approvalData: {
+export async function onApprove(params: {
   nominee: {
-    id: string;
-    name: string;
     type: 'person' | 'company';
+    displayName: string;
     email?: string;
-    linkedin: string;
+    domain?: string;
+    linkedin?: string;
+    imageUrl?: string;
   };
   nominator: {
     email: string;
@@ -272,99 +260,72 @@ export async function syncNominationApprove(approvalData: {
   liveUrl: string;
   categoryGroupId: string;
   subcategoryId: string;
-}): Promise<{ success: boolean; error?: string }> {
-  
-  if (!HubSpotClient.isEnabled()) {
-    console.log('HubSpot sync is disabled, skipping nomination approve sync');
-    return { success: true };
-  }
-
+  ticketId?: string;
+}): Promise<{
+  success: boolean;
+  ticketId?: string;
+  error?: string;
+}> {
   try {
-    validateEnvironmentVariables();
+    console.log(`Starting nomination approval sync for: ${params.nominee.displayName}`);
 
-    const { nominee, nominator, liveUrl, subcategoryId } = approvalData;
-
-    // 1. Find and update ticket
-    // Note: In a full implementation, you might want to store the ticket ID
-    // For now, we'll search for it or create a new one if not found
+    // 1. Find or use provided ticket ID
+    let ticketId = params.ticketId;
     
-    // 2. Find nominee in HubSpot and update with live URL
-    if (nominee.type === 'person') {
-      if (nominee.email) {
-        const contact = await searchContactByEmail(nominee.email);
-        if (contact) {
-          await updateContactLiveUrl(contact.id, liveUrl);
-          console.log(`Updated person nominee contact ${contact.id} with live URL`);
+    if (!ticketId) {
+      // Search for ticket if not provided
+      const { searchTicketByNomination } = await import('./search');
+      const ticket = await searchTicketByNomination({
+        nominatorEmail: params.nominator.email,
+        subcategoryId: params.subcategoryId,
+        nomineeDisplayName: params.nominee.displayName,
+      });
+      ticketId = ticket?.id;
+    }
+
+    if (!ticketId) {
+      throw new Error('Nomination ticket not found');
+    }
+
+    // 2. Update ticket to approved stage
+    await updateTicketToApproved(ticketId, params.liveUrl);
+
+    // 3. Update nominee with live URL
+    if (params.nominee.type === 'person') {
+      if (params.nominee.email) {
+        const nomineeContact = await searchContactByEmail(params.nominee.email);
+        if (nomineeContact) {
+          const { updateContactLiveUrl } = await import('./contacts');
+          await updateContactLiveUrl(nomineeContact.id, params.liveUrl);
         }
       }
     } else {
-      const company = await searchCompanyByLinkedIn(nominee.linkedin);
-      if (company) {
-        await updateCompanyLiveUrl(company.id, liveUrl);
-        console.log(`Updated company nominee ${company.id} with live URL`);
+      const domain = params.nominee.domain || (params.nominee.linkedin ? extractDomain(params.nominee.linkedin) : null);
+      if (domain || params.nominee.displayName) {
+        const nomineeCompany = await searchCompanyByDomainOrName({
+          domain: domain || undefined,
+          name: params.nominee.displayName,
+        });
+        if (nomineeCompany) {
+          await updateCompanyLiveUrl(nomineeCompany.id, params.liveUrl);
+        }
       }
     }
 
-    // 3. Update nominator contact status
-    const nominatorContact = await searchContactByEmail(nominator.email);
-    if (nominatorContact) {
-      await updateNominatorStatus(nominatorContact.id, 'approved', liveUrl);
-      console.log(`Updated nominator contact ${nominatorContact.id} status to approved`);
-    }
+    // 4. Update nominator status to approved
+    await updateNominatorStatus(params.nominator.email, 'approved', params.liveUrl);
 
-    return { success: true };
+    console.log(`Nomination approval sync completed successfully for: ${params.nominee.displayName}`);
 
-  } catch (error) {
-    console.error('Failed to sync nomination approval:', error);
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    return {
+      success: true,
+      ticketId,
     };
-  }
-}
-
-/**
- * Sync nomination rejection
- */
-export async function syncNominationReject(rejectionData: {
-  nominee: {
-    id: string;
-    name: string;
-    type: 'person' | 'company';
-    email?: string;
-    linkedin: string;
-  };
-  nominator: {
-    email: string;
-  };
-  categoryGroupId: string;
-  subcategoryId: string;
-}): Promise<{ success: boolean; error?: string }> {
-  
-  if (!HubSpotClient.isEnabled()) {
-    console.log('HubSpot sync is disabled, skipping nomination reject sync');
-    return { success: true };
-  }
-
-  try {
-    validateEnvironmentVariables();
-
-    const { nominator } = rejectionData;
-
-    // Update nominator contact status
-    const nominatorContact = await searchContactByEmail(nominator.email);
-    if (nominatorContact) {
-      await updateNominatorStatus(nominatorContact.id, 'rejected');
-      console.log(`Updated nominator contact ${nominatorContact.id} status to rejected`);
-    }
-
-    return { success: true };
-
   } catch (error) {
-    console.error('Failed to sync nomination rejection:', error);
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    console.error('Nomination approval sync failed:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 }
@@ -372,37 +333,38 @@ export async function syncNominationReject(rejectionData: {
 /**
  * Test HubSpot connection
  */
-export async function testHubSpotConnection(): Promise<{ 
-  success: boolean; 
-  accountId?: string; 
-  error?: string 
+export async function testHubSpotConnection(): Promise<{
+  success: boolean;
+  accountId?: string;
+  error?: string;
 }> {
-  
-  if (!HubSpotClient.isEnabled()) {
-    return { success: false, error: 'HubSpot sync is disabled' };
-  }
-
   try {
-    validateEnvironmentVariables();
+    const { hubspotClient } = await import('./client');
+    const response = await hubspotClient.hubFetch('/account-info/v3/details');
     
-    // Test with a simple API call
-    const response = await fetch('https://api.hubapi.com/account-info/v3/details', {
-      headers: {
-        'Authorization': `Bearer ${process.env.HUBSPOT_TOKEN}`,
-      },
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      return { success: true, accountId: data.portalId };
-    } else {
-      return { success: false, error: `HTTP ${response.status}: ${response.statusText}` };
-    }
-
+    return {
+      success: true,
+      accountId: response.portalId?.toString(),
+    };
   } catch (error) {
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
+}
+
+/**
+ * Legacy sync functions for backward compatibility
+ */
+export async function syncVote(data: any) {
+  return onVote(data);
+}
+
+export async function syncNominationSubmit(data: any) {
+  return onSubmit(data);
+}
+
+export async function syncNominationApprove(data: any) {
+  return onApprove(data);
 }

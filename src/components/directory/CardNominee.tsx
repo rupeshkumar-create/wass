@@ -17,6 +17,16 @@ interface CardNomineeProps {
 export function CardNominee({ nomination }: CardNomineeProps) {
   const isPersonNomination = nomination.type === "person";
   const nomineeData = nomination.nominee;
+  
+  // Add safety check for nomination data
+  if (!nomination || !nomineeData) {
+    console.warn('CardNominee: Invalid nomination data', nomination);
+    return null;
+  }
+  
+  // Get display name without mutating the original object
+  const displayName = nomineeData.name || nomination.displayName || nomination.name || 'Unknown';
+  
   const imageData = getNomineeImage(nomination);
 
   return (
@@ -68,7 +78,7 @@ export function CardNominee({ nomination }: CardNomineeProps) {
             {/* Name */}
             <div className="mb-2">
               <h3 className="font-semibold text-sm text-slate-900 group-hover:text-orange-600 transition-colors duration-200 line-clamp-2 leading-tight">
-                {nomineeData.name}
+                {displayName}
               </h3>
             </div>
 
@@ -95,7 +105,7 @@ export function CardNominee({ nomination }: CardNomineeProps) {
                 size="sm" 
                 className="px-4 py-1.5 bg-orange-500 hover:bg-orange-600 text-white transition-all duration-200 text-xs rounded-md h-8 font-medium"
               >
-                <Link href={`/nominee/${nomination.liveUrl}`}>
+                <Link href={`/nominee/${nomination.id}`}>
                   View
                 </Link>
               </Button>

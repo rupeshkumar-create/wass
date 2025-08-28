@@ -40,34 +40,34 @@ const rankColors = {
 // Group categories for better organization
 const categoryGroups = [
   {
-    id: "role-specific",
+    id: "role-specific-excellence",
     label: "Role-Specific Excellence",
-    categories: CATEGORIES.filter(c => c.group === "Role-Specific")
+    categories: CATEGORIES.filter(c => c.group === "role-specific-excellence")
   },
   {
-    id: "innovation",
+    id: "innovation-technology",
     label: "Innovation & Technology",
-    categories: CATEGORIES.filter(c => c.group === "Innovation & Tech")
+    categories: CATEGORIES.filter(c => c.group === "innovation-technology")
   },
   {
-    id: "culture",
+    id: "culture-impact",
     label: "Culture & Impact",
-    categories: CATEGORIES.filter(c => c.group === "Culture & Impact")
+    categories: CATEGORIES.filter(c => c.group === "culture-impact")
   },
   {
-    id: "performance",
+    id: "growth-performance",
     label: "Growth & Performance",
-    categories: CATEGORIES.filter(c => c.group === "Growth & Performance")
+    categories: CATEGORIES.filter(c => c.group === "growth-performance")
   },
   {
-    id: "geographic",
+    id: "geographic-excellence",
     label: "Geographic Excellence",
-    categories: CATEGORIES.filter(c => c.group === "Geographic")
+    categories: CATEGORIES.filter(c => c.group === "geographic-excellence")
   },
   {
-    id: "special",
+    id: "special-recognition",
     label: "Special Recognition",
-    categories: CATEGORIES.filter(c => c.group === "Special Recognition")
+    categories: CATEGORIES.filter(c => c.group === "special-recognition")
   }
 ];
 

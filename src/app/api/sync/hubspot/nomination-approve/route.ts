@@ -1,15 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { syncNominationApprove } from '@/server/hubspot/sync';
+import { onApprove } from '@/server/hubspot/sync';
 import { z } from 'zod';
 
 // Validation schema
 const NominationApproveSyncSchema = z.object({
   nominee: z.object({
-    id: z.string(),
-    name: z.string().min(1),
     type: z.enum(['person', 'company']),
+    displayName: z.string().min(1),
     email: z.string().email().optional(),
-    linkedin: z.string().url(),
+    domain: z.string().optional(),
+    linkedin: z.string().url().optional(),
+    imageUrl: z.string().url().optional(),
   }),
   nominator: z.object({
     email: z.string().email(),
@@ -17,6 +18,7 @@ const NominationApproveSyncSchema = z.object({
   liveUrl: z.string().url(),
   categoryGroupId: z.string().min(1),
   subcategoryId: z.string().min(1),
+  ticketId: z.string().optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -26,22 +28,39 @@ export async function POST(request: NextRequest) {
     // Validate request body
     const validatedData = NominationApproveSyncSchema.parse(body);
     
-    console.log('Starting HubSpot nomination approve sync for:', {
-      nominee: validatedData.nominee.name,
+    console.log('Starting HubSpot nomination approval sync for:', {
+      nominee: validatedData.nominee.displayName,
       nominator: validatedData.nominator.email,
       liveUrl: validatedData.liveUrl,
     });
 
-    // Sync to HubSpot
-    const result = await syncNominationApprove(validatedData);
+    // Sync to HubSpot using new sync system
+    const result = await onApprove({
+      nominee: {
+        type: validatedData.nominee.type,
+        displayName: validatedData.nominee.displayName,
+        email: validatedData.nominee.email,
+        domain: validatedData.nominee.domain,
+        linkedin: validatedData.nominee.linkedin,
+        imageUrl: validatedData.nominee.imageUrl,
+      },
+      nominator: {
+        email: validatedData.nominator.email,
+      },
+      liveUrl: validatedData.liveUrl,
+      categoryGroupId: validatedData.categoryGroupId,
+      subcategoryId: validatedData.subcategoryId,
+      ticketId: validatedData.ticketId,
+    });
     
     if (result.success) {
-      console.log('HubSpot nomination approve sync completed successfully');
+      console.log('HubSpot nomination approval sync completed successfully');
       return NextResponse.json({
         success: true,
+        ticketId: result.ticketId,
       });
     } else {
-      console.error('HubSpot nomination approve sync failed:', result.error);
+      console.error('HubSpot nomination approval sync failed:', result.error);
       return NextResponse.json(
         {
           success: false,
@@ -52,14 +71,14 @@ export async function POST(request: NextRequest) {
     }
 
   } catch (error) {
-    console.error('Nomination approve sync API error:', error);
+    console.error('Nomination approval sync API error:', error);
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         {
           success: false,
           error: 'Invalid request data',
-          details: error.errors,
+          details: error.issues,
         },
         { status: 400 }
       );

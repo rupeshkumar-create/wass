@@ -9,7 +9,8 @@ interface GridProps {
 }
 
 export function Grid({ nominations }: GridProps) {
-  if (nominations.length === 0) {
+  // Safety check for nominations array
+  if (!nominations || !Array.isArray(nominations) || nominations.length === 0) {
     return (
       <div className="text-center py-12">
         <p className="text-muted-foreground">No nominees found matching your criteria.</p>
@@ -19,8 +20,16 @@ export function Grid({ nominations }: GridProps) {
 
   // Group nominations by category group
   const groupedNominations = nominations.reduce((acc, nomination) => {
+    // Add safety check for nomination and category
+    if (!nomination || !nomination.category) {
+      console.warn('Invalid nomination:', nomination);
+      return acc;
+    }
+    
     const categoryConfig = CATEGORIES.find(c => c.id === nomination.category);
     const group = categoryConfig?.group || "Other";
+    
+
     
     if (!acc[group]) {
       acc[group] = [];

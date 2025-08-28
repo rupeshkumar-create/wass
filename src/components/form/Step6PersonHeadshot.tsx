@@ -124,7 +124,7 @@ export function Step6PersonHeadshot({ imageUrl, personName, onNext, onBack }: St
 
   const handleNext = () => {
     if (!uploadedUrl) {
-      setError("Please upload a headshot");
+      setError("Professional headshot is required to continue");
       return;
     }
     onNext(uploadedUrl);
@@ -133,9 +133,9 @@ export function Step6PersonHeadshot({ imageUrl, personName, onNext, onBack }: St
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle>Professional Headshot</CardTitle>
+        <CardTitle>Professional Headshot *</CardTitle>
         <CardDescription>
-          Upload a professional headshot of the nominee
+          Upload a professional headshot of the nominee (required)
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">

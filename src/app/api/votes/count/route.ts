@@ -1,26 +1,60 @@
 import { NextRequest, NextResponse } from "next/server";
-import { votesStore } from "@/lib/storage/local-json";
+import { createClient } from '@supabase/supabase-js';
 
-export const dynamic = 'force-static';
-export const revalidate = false;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL!;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+
+const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false
+  }
+});
+
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
-
-
   try {
     const { searchParams } = new URL(request.url);
+    const nominationId = searchParams.get("nominationId");
     const nomineeId = searchParams.get("nomineeId");
 
-    if (!nomineeId) {
-      return NextResponse.json({ error: "nomineeId is required" }, { status: 400 });
+    if (!nominationId && !nomineeId) {
+      return NextResponse.json({ error: "nominationId or nomineeId is required" }, { status: 400 });
     }
 
-    const votes = await votesStore.listByNominee(nomineeId);
-    const total = votes.length;
+    let query = supabaseAdmin
+      .from('votes')
+      .select('id', { count: 'exact' });
+
+    if (nominationId) {
+      query = query.eq('nomination_id', nominationId);
+    } else if (nomineeId) {
+      // If using nomineeId, we need to join with nominations to get the nomination_id
+      const { data: nominations } = await supabaseAdmin
+        .from('nominations')
+        .select('id')
+        .eq('nominee_id', nomineeId);
+      
+      if (nominations && nominations.length > 0) {
+        const nominationIds = nominations.map(n => n.id);
+        query = query.in('nomination_id', nominationIds);
+      } else {
+        return NextResponse.json({ total: 0, nomineeId });
+      }
+    }
+
+    const { count, error } = await query;
+
+    if (error) {
+      console.error('Failed to count votes:', error);
+      throw new Error(`Failed to count votes: ${error.message}`);
+    }
 
     return NextResponse.json({ 
-      total,
-      nomineeId 
+      total: count || 0,
+      nominationId,
+      nomineeId
     });
 
   } catch (error) {

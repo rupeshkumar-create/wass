@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { syncNominationSubmit } from '@/server/hubspot/sync';
+import { onSubmit } from '@/server/hubspot/sync';
 import { z } from 'zod';
 
 // Validation schema
@@ -19,7 +19,7 @@ const NominationSubmitSyncSchema = z.object({
     lastName: z.string().optional(),
     title: z.string().optional(),
     website: z.string().url().optional(),
-    whyVoteForMe: z.string().optional(),
+
   }),
   category: z.string().min(1),
   categoryGroupId: z.string().min(1),
@@ -41,15 +41,41 @@ export async function POST(request: NextRequest) {
       category: validatedData.category,
     });
 
-    // Sync to HubSpot
-    const result = await syncNominationSubmit(validatedData);
+    // Sync to HubSpot using new sync system
+    const result = await onSubmit({
+      nominator: {
+        email: validatedData.nominator.email,
+        name: validatedData.nominator.name,
+        company: validatedData.nominator.company,
+        linkedin: validatedData.nominator.linkedin,
+      },
+      nominee: {
+        name: validatedData.nominee.name,
+        type: validatedData.nominee.type,
+        email: validatedData.nominee.email,
+        firstname: validatedData.nominee.firstName,
+        lastname: validatedData.nominee.lastName,
+        jobtitle: validatedData.nominee.title,
+        website: validatedData.nominee.website,
+        linkedin: validatedData.nominee.linkedin,
+        categories: [validatedData.subcategoryId],
+        headshotUrl: validatedData.imageUrl,
+        logoUrl: validatedData.imageUrl,
+
+      },
+      categoryGroupId: validatedData.categoryGroupId,
+      subcategoryId: validatedData.subcategoryId,
+      imageUrl: validatedData.imageUrl,
+      content: validatedData.whyNominated,
+    });
     
     if (result.success) {
       console.log('HubSpot nomination submit sync completed successfully');
       return NextResponse.json({
         success: true,
         nominatorContactId: result.nominatorContactId,
-        nomineeId: result.nomineeId,
+        nomineeContactId: result.nomineeContactId,
+        nomineeCompanyId: result.nomineeCompanyId,
         ticketId: result.ticketId,
       });
     } else {
@@ -71,7 +97,7 @@ export async function POST(request: NextRequest) {
         {
           success: false,
           error: 'Invalid request data',
-          details: error.errors,
+          details: error.issues,
         },
         { status: 400 }
       );

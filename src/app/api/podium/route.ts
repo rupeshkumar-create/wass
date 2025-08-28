@@ -1,6 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { nominationsStore, votesStore } from "@/lib/storage/local-json";
+import { createClient } from '@supabase/supabase-js';
 import { CATEGORIES } from "@/lib/constants";
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+
+const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false
+  }
+});
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -11,9 +21,9 @@ export type PodiumItem = {
   name: string;
   category: string;
   type: "person" | "company";
-  image: string | null;
+  image_url: string | null;
   votes: number;
-  liveUrl: string;
+  live_slug: string;
 };
 
 export async function GET(request: NextRequest) {
@@ -37,48 +47,31 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get all nominations and votes from local storage
-    const nominations = await nominationsStore.list();
-    const votes = await votesStore.list();
-    
-    // Filter approved nominations for this category
-    const categoryNominations = nominations.filter(n => 
-      n.status === 'approved' && n.category === category
-    );
+    // Get approved nominations for this category using the new schema
+    const { data: nominees, error } = await supabase
+      .from('public_nominees')
+      .select('*')
+      .eq('subcategory_id', category)
+      .order('votes', { ascending: false })
+      .order('approved_at', { ascending: true })
+      .order('display_name', { ascending: true })
+      .limit(3);
 
-    // Calculate vote counts and sort
-    const nominationsWithVotes = categoryNominations.map(nomination => {
-      const nominationVotes = votes.filter(v => v.nomineeId === nomination.id);
-      return {
-        ...nomination,
-        voteCount: nominationVotes.length
-      };
-    });
-
-    // Sort by votes (desc), then by creation date (asc), then by name (asc)
-    nominationsWithVotes.sort((a, b) => {
-      if (b.voteCount !== a.voteCount) {
-        return b.voteCount - a.voteCount;
-      }
-      if (a.createdAt !== b.createdAt) {
-        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-      }
-      return a.nominee.name.localeCompare(b.nominee.name);
-    });
-
-    // Get top 3
-    const top3 = nominationsWithVotes.slice(0, 3);
+    if (error) {
+      console.error('Podium query error:', error);
+      throw error;
+    }
 
     // Transform to podium items
-    const podiumItems: PodiumItem[] = top3.map((nomination, index) => ({
+    const podiumItems: PodiumItem[] = (nominees || []).map((nominee, index) => ({
       rank: (index + 1) as 1 | 2 | 3,
-      nomineeId: nomination.id,
-      name: nomination.nominee.name,
-      category: nomination.category,
-      type: nomination.type,
-      image: nomination.nominee.imageUrl || null,
-      votes: nomination.voteCount,
-      liveUrl: nomination.liveUrl,
+      nomineeId: nominee.nominee_id,
+      name: nominee.display_name,
+      category: nominee.subcategory_id,
+      type: nominee.type,
+      image_url: nominee.image_url || null,
+      votes: nominee.votes,
+      live_slug: nominee.live_url || '',
     }));
 
     return NextResponse.json(

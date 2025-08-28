@@ -1,0 +1,3883 @@
+
+> world-staffing-awards@0.1.0 dev
+> next dev --turbopack
+
+   ▲ Next.js 15.4.6 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.1.5:3000
+   - Environments: .env.local, .env
+
+ ✓ Starting...
+ ✓ Ready in 886ms
+ ○ Compiling /api/sync/hubspot/nomination-submit ...
+ ✓ Compiled /api/sync/hubspot/nomination-submit in 693ms
+Nomination submit sync API error: Error [ZodError]: [
+  {
+    "expected": "object",
+    "code": "invalid_type",
+    "path": [
+      "nominator"
+    ],
+    "message": "Invalid input: expected object, received undefined"
+  },
+  {
+    "expected": "object",
+    "code": "invalid_type",
+    "path": [
+      "nominee"
+    ],
+    "message": "Invalid input: expected object, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "category"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "categoryGroupId"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "subcategoryId"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "whyNominated"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  }
+]
+    at POST (src/app/api/sync/hubspot/nomination-submit/route.ts:36:53)
+  34 |     
+  35 |     // Validate request body
+> 36 |     const validatedData = NominationSubmitSyncSchema.parse(body);
+     |                                                     ^
+  37 |     
+  38 |     console.log('Starting HubSpot nomination submit sync for:', {
+  39 |       nominator: validatedData.nominator.email,
+ POST /api/sync/hubspot/nomination-submit 400 in 863ms
+ ✓ Compiled /api/nomination/submit in 242ms
+Processing nomination submission: {
+  type: 'person',
+  subcategoryId: 'top-recruiter-hubspot-test',
+  nominatorEmail: 'hubspot.test@example.com'
+}
+Nomination submitted successfully: 38100de0-1bc8-4151-93b4-873624ab2cb8
+ POST /api/nomination/submit 201 in 1155ms
+Nomination submit sync API error: Error [ZodError]: [
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "nominator",
+      "name"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "nominator",
+      "company"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "nominee",
+      "name"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "code": "invalid_value",
+    "values": [
+      "person",
+      "company"
+    ],
+    "path": [
+      "nominee",
+      "type"
+    ],
+    "message": "Invalid option: expected one of \"person\"|\"company\""
+  }
+]
+    at POST (src/app/api/sync/hubspot/nomination-submit/route.ts:36:53)
+  34 |     
+  35 |     // Validate request body
+> 36 |     const validatedData = NominationSubmitSyncSchema.parse(body);
+     |                                                     ^
+  37 |     
+  38 |     console.log('Starting HubSpot nomination submit sync for:', {
+  39 |       nominator: validatedData.nominator.email,
+ POST /api/sync/hubspot/nomination-submit 400 in 98ms
+ ✓ Compiled /api/sync/hubspot/run in 55ms
+Processing up to 3 HubSpot sync items...
+Found 3 pending items to process
+Processing nomination_submitted for item 3d897ed5-eab5-4ed9-bf1f-27ca678656ce
+Syncing nomination_submitted to HubSpot: 0f06c6a0-2360-4403-a73d-fb09449ab5e6
+Nomination submit sync API error: Error [ZodError]: [
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "nominator",
+      "name"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "nominator",
+      "company"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "nominee",
+      "name"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "code": "invalid_value",
+    "values": [
+      "person",
+      "company"
+    ],
+    "path": [
+      "nominee",
+      "type"
+    ],
+    "message": "Invalid option: expected one of \"person\"|\"company\""
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "category"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "categoryGroupId"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "whyNominated"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  }
+]
+    at POST (src/app/api/sync/hubspot/nomination-submit/route.ts:36:53)
+  34 |     
+  35 |     // Validate request body
+> 36 |     const validatedData = NominationSubmitSyncSchema.parse(body);
+     |                                                     ^
+  37 |     
+  38 |     console.log('Starting HubSpot nomination submit sync for:', {
+  39 |       nominator: validatedData.nominator.email,
+ POST /api/sync/hubspot/nomination-submit 400 in 220ms
+Failed to process item 3d897ed5-eab5-4ed9-bf1f-27ca678656ce: Error: HubSpot nomination sync failed: Invalid request data
+    at POST (src/app/api/sync/hubspot/run/route.ts:88:20)
+  86 |             if (!submitResponse.ok) {
+  87 |               const submitError = await submitResponse.json();
+> 88 |               throw new Error(`HubSpot nomination sync failed: ${submitError.error}`);
+     |                    ^
+  89 |             }
+  90 |             
+  91 |             console.log('✅ Nomination synced to HubSpot');
+Processing nomination_approved for item b0a52e24-f780-4f3f-8ea4-c4677d253440
+Syncing nomination_approved to HubSpot: 0f06c6a0-2360-4403-a73d-fb09449ab5e6
+ ✓ Compiled /api/sync/hubspot/nomination-approve in 71ms
+Nomination approval sync API error: Error [ZodError]: [
+  {
+    "expected": "object",
+    "code": "invalid_type",
+    "path": [
+      "nominee"
+    ],
+    "message": "Invalid input: expected object, received undefined"
+  },
+  {
+    "expected": "object",
+    "code": "invalid_type",
+    "path": [
+      "nominator"
+    ],
+    "message": "Invalid input: expected object, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "categoryGroupId"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "subcategoryId"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  }
+]
+    at POST (src/app/api/sync/hubspot/nomination-approve/route.ts:29:54)
+  27 |     
+  28 |     // Validate request body
+> 29 |     const validatedData = NominationApproveSyncSchema.parse(body);
+     |                                                      ^
+  30 |     
+  31 |     console.log('Starting HubSpot nomination approval sync for:', {
+  32 |       nominee: validatedData.nominee.displayName,
+ POST /api/sync/hubspot/nomination-approve 400 in 173ms
+Failed to process item b0a52e24-f780-4f3f-8ea4-c4677d253440: Error: HubSpot approval sync failed: Invalid request data
+    at POST (src/app/api/sync/hubspot/run/route.ts:110:20)
+  108 |             if (!approveResponse.ok) {
+  109 |               const approveError = await approveResponse.json();
+> 110 |               throw new Error(`HubSpot approval sync failed: ${approveError.error}`);
+      |                    ^
+  111 |             }
+  112 |             
+  113 |             console.log('✅ Nomination approval synced to HubSpot');
+Processing vote_cast for item 901e6988-8135-44d6-9fbd-9b08a6fd519e
+Syncing vote_cast to HubSpot: cb2b0750-719e-4856-9652-ae7678b3fea0
+ ✓ Compiled /api/sync/hubspot/vote in 64ms
+Vote sync API error: Error [ZodError]: [
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "voter",
+      "firstName"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "voter",
+      "lastName"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "voter",
+      "company"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "object",
+    "code": "invalid_type",
+    "path": [
+      "nominee"
+    ],
+    "message": "Invalid input: expected object, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "category"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  }
+]
+    at POST (src/app/api/sync/hubspot/vote/route.ts:30:41)
+  28 |     
+  29 |     // Validate request body
+> 30 |     const validatedData = VoteSyncSchema.parse(body);
+     |                                         ^
+  31 |     
+  32 |     console.log('Starting HubSpot vote sync for:', {
+  33 |       voter: validatedData.voter.email,
+ POST /api/sync/hubspot/vote 400 in 173ms
+Failed to process item 901e6988-8135-44d6-9fbd-9b08a6fd519e: Error: HubSpot vote sync failed: Invalid request data
+    at POST (src/app/api/sync/hubspot/run/route.ts:134:20)
+  132 |             if (!voteResponse.ok) {
+  133 |               const voteError = await voteResponse.json();
+> 134 |               throw new Error(`HubSpot vote sync failed: ${voteError.error}`);
+      |                    ^
+  135 |             }
+  136 |             
+  137 |             console.log('✅ Vote synced to HubSpot');
+HubSpot sync completed: 0 succeeded, 3 failed
+ POST /api/sync/hubspot/run?limit=3 200 in 1393ms
+Processing nomination submission: {
+  type: 'person',
+  subcategoryId: 'top-recruiter-hubspot-test',
+  nominatorEmail: 'hubspot.test@example.com'
+}
+Nomination submitted successfully: 6071fcfb-07c3-4a93-90d4-8114116cc2f6
+ POST /api/nomination/submit 201 in 825ms
+Nomination submit sync API error: Error [ZodError]: [
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "nominator",
+      "name"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "nominator",
+      "company"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "nominee",
+      "name"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "code": "invalid_value",
+    "values": [
+      "person",
+      "company"
+    ],
+    "path": [
+      "nominee",
+      "type"
+    ],
+    "message": "Invalid option: expected one of \"person\"|\"company\""
+  }
+]
+    at POST (src/app/api/sync/hubspot/nomination-submit/route.ts:36:53)
+  34 |     
+  35 |     // Validate request body
+> 36 |     const validatedData = NominationSubmitSyncSchema.parse(body);
+     |                                                     ^
+  37 |     
+  38 |     console.log('Starting HubSpot nomination submit sync for:', {
+  39 |       nominator: validatedData.nominator.email,
+ POST /api/sync/hubspot/nomination-submit 400 in 70ms
+Processing up to 3 HubSpot sync items...
+Found 3 pending items to process
+Processing nomination_approved for item b0a52e24-f780-4f3f-8ea4-c4677d253440
+Syncing nomination_approved to HubSpot: 0f06c6a0-2360-4403-a73d-fb09449ab5e6
+Starting HubSpot nomination approval sync for: {
+  nominee: 'Sarah Johnson',
+  nominator: 'unknown@example.com',
+  liveUrl: 'https://wsa2026.com/nominees/sarah-johnson'
+}
+Starting nomination approval sync for: Sarah Johnson
+[1099ed1b] HubSpot POST /crm/v3/objects/tickets/search { hasBody: true, idempotencyKey: 'undefined...' }
+[1099ed1b] Response: 403 Forbidden
+[1099ed1b] Client error: {
+  status: 403,
+  message: 'HubSpot API error: 403 Forbidden',
+  data: {
+    status: 'error',
+    message: "The scope needed for this API call isn't available for public use. If you have questions, contact support or post in our developer forum.",
+    correlationId: '129e3342-f3c7-43ec-9362-07a18f6382ac',
+    links: {
+      support: 'https://help.hubspot.com/',
+      forum: 'https://community.hubspot.com/t5/APIs-Integrations/bd-p/integrations'
+    },
+    category: 'MISSING_SCOPES'
+  }
+}
+Failed to search ticket: Error [HubSpotError]: HubSpot API error: 403 Forbidden
+    at HubSpotClient.hubFetch (src/server/hubspot/client.ts:97:22)
+    at async searchTicketByNomination (src/server/hubspot/search.ts:166:21)
+    at async onApprove (src/server/hubspot/sync.ts:277:21)
+    at async POST (src/app/api/sync/hubspot/nomination-approve/route.ts:38:19)
+   95 |
+   96 |         // Client error - don't retry
+>  97 |         const error = new HubSpotError(
+      |                      ^
+   98 |           `HubSpot API error: ${response.status} ${response.statusText}`,
+   99 |           response.status,
+  100 |           this.redactPII(errorData) {
+  status: 403,
+  data: [Object]
+}
+Nomination approval sync failed: Error: Nomination ticket not found
+    at onApprove (src/server/hubspot/sync.ts:286:12)
+    at async POST (src/app/api/sync/hubspot/nomination-approve/route.ts:38:19)
+  284 |
+  285 |     if (!ticketId) {
+> 286 |       throw new Error('Nomination ticket not found');
+      |            ^
+  287 |     }
+  288 |
+  289 |     // 2. Update ticket to approved stage
+HubSpot nomination approval sync failed: Nomination ticket not found
+ POST /api/sync/hubspot/nomination-approve 500 in 764ms
+Failed to process item b0a52e24-f780-4f3f-8ea4-c4677d253440: Error: HubSpot approval sync failed: Nomination ticket not found
+    at POST (src/app/api/sync/hubspot/run/route.ts:136:20)
+  134 |             if (!approveResponse.ok) {
+  135 |               const approveError = await approveResponse.json();
+> 136 |               throw new Error(`HubSpot approval sync failed: ${approveError.error}`);
+      |                    ^
+  137 |             }
+  138 |             
+  139 |             console.log('✅ Nomination approval synced to HubSpot');
+Processing vote_cast for item 901e6988-8135-44d6-9fbd-9b08a6fd519e
+Syncing vote_cast to HubSpot: cb2b0750-719e-4856-9652-ae7678b3fea0
+Starting HubSpot vote sync for: {
+  voter: 'vote.tester@example.com',
+  nominee: 'Sarah Johnson',
+  category: 'top-recruiter-2024'
+}
+Starting vote sync for voter: vote.tester@example.com
+[335a0ab0] HubSpot POST /crm/v3/objects/contacts/search { hasBody: true, idempotencyKey: 'undefined...' }
+[335a0ab0] Response: 200 OK
+Creating new contact: vote.tester@example.com
+[e28b699b] HubSpot POST /crm/v3/objects/contacts { hasBody: true, idempotencyKey: 'c42b565e...' }
+[e28b699b] Response: 201 Created
+Vote sync completed successfully for voter: vote.tester@example.com
+HubSpot vote sync completed successfully
+ POST /api/sync/hubspot/vote 200 in 974ms
+✅ Vote synced to HubSpot
+Processing nomination_submitted for item 803aae0d-603e-4c56-9778-d2b7c0622835
+Syncing nomination_submitted to HubSpot: 38100de0-1bc8-4151-93b4-873624ab2cb8
+Nomination submit sync API error: Error [ZodError]: [
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "categoryGroupId"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  }
+]
+    at POST (src/app/api/sync/hubspot/nomination-submit/route.ts:36:53)
+  34 |     
+  35 |     // Validate request body
+> 36 |     const validatedData = NominationSubmitSyncSchema.parse(body);
+     |                                                     ^
+  37 |     
+  38 |     console.log('Starting HubSpot nomination submit sync for:', {
+  39 |       nominator: validatedData.nominator.email,
+ POST /api/sync/hubspot/nomination-submit 400 in 57ms
+Failed to process item 803aae0d-603e-4c56-9778-d2b7c0622835: Error: HubSpot nomination sync failed: Invalid request data
+    at POST (src/app/api/sync/hubspot/run/route.ts:105:20)
+  103 |             if (!submitResponse.ok) {
+  104 |               const submitError = await submitResponse.json();
+> 105 |               throw new Error(`HubSpot nomination sync failed: ${submitError.error}`);
+      |                    ^
+  106 |             }
+  107 |             
+  108 |             console.log('✅ Nomination synced to HubSpot');
+HubSpot sync completed: 1 succeeded, 2 failed
+ POST /api/sync/hubspot/run?limit=3 200 in 3117ms
+ POST /api/sync/hubspot/run 401 in 39ms
+ ○ Compiling /_not-found/page ...
+ ✓ Compiled /_not-found/page in 4.2s
+ ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /api/integrations/hubspot/stats 404 in 4340ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ POST /api/test/hubspot-wsa 404 in 70ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ POST /api/test/hubspot-wsa 404 in 195ms
+ ✓ Compiled /api/nominations in 100ms
+POST /api/nominations error: Error [ZodError]: [
+  {
+    "code": "invalid_union",
+    "errors": [],
+    "note": "No matching discriminator",
+    "discriminator": "type",
+    "path": [
+      "type"
+    ],
+    "message": "Invalid input"
+  }
+]
+    at POST (src/app/api/nominations/route.ts:56:48)
+  54 |     
+  55 |     // Validate input
+> 56 |     const validatedData = NominationInputSchema.parse(body);
+     |                                                ^
+  57 |     
+  58 |     console.log('Creating nomination:', {
+  59 |       type: validatedData.type,
+ POST /api/nominations 400 in 203ms
+Starting HubSpot vote sync for: {
+  voter: 'status-test-voter-1756143678681@example.com',
+  nominee: 'StatusTest Nominee',
+  category: 'status-test-category'
+}
+Starting vote sync for voter: status-test-voter-1756143678681@example.com
+[75f363bf] HubSpot POST /crm/v3/objects/contacts/search { hasBody: true, idempotencyKey: 'undefined...' }
+[75f363bf] Response: 200 OK
+Creating new contact: status-test-voter-1756143678681@example.com
+[9383145e] HubSpot POST /crm/v3/objects/contacts { hasBody: true, idempotencyKey: '32d5eb40...' }
+[9383145e] Response: 201 Created
+Vote sync completed successfully for voter: status-test-voter-1756143678681@example.com
+HubSpot vote sync completed successfully
+ POST /api/sync/hubspot/vote 200 in 1099ms
+POST /api/nomination/submit error: Error [ZodError]: [
+  {
+    "code": "invalid_value",
+    "values": [
+      "person",
+      "company"
+    ],
+    "path": [
+      "type"
+    ],
+    "message": "Invalid option: expected one of \"person\"|\"company\""
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "categoryGroupId"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "subcategoryId"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "object",
+    "code": "invalid_type",
+    "path": [
+      "nominator"
+    ],
+    "message": "Invalid input: expected object, received undefined"
+  },
+  {
+    "code": "invalid_union",
+    "errors": [
+      [
+        {
+          "expected": "object",
+          "code": "invalid_type",
+          "path": [],
+          "message": "Invalid input: expected object, received undefined"
+        }
+      ],
+      [
+        {
+          "expected": "object",
+          "code": "invalid_type",
+          "path": [],
+          "message": "Invalid input: expected object, received undefined"
+        }
+      ]
+    ],
+    "path": [
+      "nominee"
+    ],
+    "message": "Invalid input"
+  }
+]
+    at POST (src/app/api/nomination/submit/route.ts:11:49)
+   9 |     
+  10 |     // Validate input
+> 11 |     const validatedData = NominationSubmitSchema.parse(body);
+     |                                                 ^
+  12 |     
+  13 |     console.log('Processing nomination submission:', {
+  14 |       type: validatedData.type,
+ POST /api/nomination/submit 400 in 91ms
+ ✓ Compiled /api/vote in 89ms
+POST /api/vote error: Error [ZodError]: [
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "email"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "firstname"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "lastname"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "linkedin"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "subcategoryId"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "votedForDisplayName"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  }
+]
+    at POST (src/app/api/vote/route.ts:11:37)
+   9 |     
+  10 |     // Validate input
+> 11 |     const validatedData = VoteSchema.parse(body);
+     |                                     ^
+  12 |     
+  13 |     console.log('Processing vote:', {
+  14 |       subcategoryId: validatedData.subcategoryId,
+ POST /api/vote 400 in 154ms
+Vote sync API error: Error [ZodError]: [
+  {
+    "expected": "object",
+    "code": "invalid_type",
+    "path": [
+      "voter"
+    ],
+    "message": "Invalid input: expected object, received undefined"
+  },
+  {
+    "expected": "object",
+    "code": "invalid_type",
+    "path": [
+      "nominee"
+    ],
+    "message": "Invalid input: expected object, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "category"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "subcategoryId"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  }
+]
+    at POST (src/app/api/sync/hubspot/vote/route.ts:30:41)
+  28 |     
+  29 |     // Validate request body
+> 30 |     const validatedData = VoteSyncSchema.parse(body);
+     |                                         ^
+  31 |     
+  32 |     console.log('Starting HubSpot vote sync for:', {
+  33 |       voter: validatedData.voter.email,
+ POST /api/sync/hubspot/vote 400 in 43ms
+Starting HubSpot vote sync for: {
+  voter: 'final-e2e-voter-1756143795459@example.com',
+  nominee: 'FinalE2E Nominee',
+  category: 'final-e2e-category'
+}
+Starting vote sync for voter: final-e2e-voter-1756143795459@example.com
+[094b2ef3] HubSpot POST /crm/v3/objects/contacts/search { hasBody: true, idempotencyKey: 'undefined...' }
+[094b2ef3] Response: 200 OK
+Creating new contact: final-e2e-voter-1756143795459@example.com
+[caa9497f] HubSpot POST /crm/v3/objects/contacts { hasBody: true, idempotencyKey: '1df9e5ee...' }
+[caa9497f] Response: 201 Created
+Vote sync completed successfully for voter: final-e2e-voter-1756143795459@example.com
+HubSpot vote sync completed successfully
+ POST /api/sync/hubspot/vote 200 in 1189ms
+POST /api/nomination/submit error: Error [ZodError]: [
+  {
+    "code": "invalid_value",
+    "values": [
+      "person",
+      "company"
+    ],
+    "path": [
+      "type"
+    ],
+    "message": "Invalid option: expected one of \"person\"|\"company\""
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "categoryGroupId"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "subcategoryId"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "object",
+    "code": "invalid_type",
+    "path": [
+      "nominator"
+    ],
+    "message": "Invalid input: expected object, received undefined"
+  },
+  {
+    "code": "invalid_union",
+    "errors": [
+      [
+        {
+          "expected": "object",
+          "code": "invalid_type",
+          "path": [],
+          "message": "Invalid input: expected object, received undefined"
+        }
+      ],
+      [
+        {
+          "expected": "object",
+          "code": "invalid_type",
+          "path": [],
+          "message": "Invalid input: expected object, received undefined"
+        }
+      ]
+    ],
+    "path": [
+      "nominee"
+    ],
+    "message": "Invalid input"
+  }
+]
+    at POST (src/app/api/nomination/submit/route.ts:11:49)
+   9 |     
+  10 |     // Validate input
+> 11 |     const validatedData = NominationSubmitSchema.parse(body);
+     |                                                 ^
+  12 |     
+  13 |     console.log('Processing nomination submission:', {
+  14 |       type: validatedData.type,
+ POST /api/nomination/submit 400 in 68ms
+POST /api/vote error: Error [ZodError]: [
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "email"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "firstname"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "lastname"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "linkedin"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "subcategoryId"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "votedForDisplayName"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  }
+]
+    at POST (src/app/api/vote/route.ts:11:37)
+   9 |     
+  10 |     // Validate input
+> 11 |     const validatedData = VoteSchema.parse(body);
+     |                                     ^
+  12 |     
+  13 |     console.log('Processing vote:', {
+  14 |       subcategoryId: validatedData.subcategoryId,
+ POST /api/vote 400 in 75ms
+Vote sync API error: Error [ZodError]: [
+  {
+    "expected": "object",
+    "code": "invalid_type",
+    "path": [
+      "voter"
+    ],
+    "message": "Invalid input: expected object, received undefined"
+  },
+  {
+    "expected": "object",
+    "code": "invalid_type",
+    "path": [
+      "nominee"
+    ],
+    "message": "Invalid input: expected object, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "category"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "subcategoryId"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  }
+]
+    at POST (src/app/api/sync/hubspot/vote/route.ts:30:41)
+  28 |     
+  29 |     // Validate request body
+> 30 |     const validatedData = VoteSyncSchema.parse(body);
+     |                                         ^
+  31 |     
+  32 |     console.log('Starting HubSpot vote sync for:', {
+  33 |       voter: validatedData.voter.email,
+ POST /api/sync/hubspot/vote 400 in 42ms
+Starting HubSpot vote sync for: {
+  voter: 'final-e2e-voter-1756143826555@example.com',
+  nominee: 'FinalE2E Nominee',
+  category: 'final-e2e-category'
+}
+Starting vote sync for voter: final-e2e-voter-1756143826555@example.com
+[823da636] HubSpot POST /crm/v3/objects/contacts/search { hasBody: true, idempotencyKey: 'undefined...' }
+[823da636] Response: 200 OK
+Creating new contact: final-e2e-voter-1756143826555@example.com
+[438795bd] HubSpot POST /crm/v3/objects/contacts { hasBody: true, idempotencyKey: '39441506...' }
+[438795bd] Response: 201 Created
+Vote sync completed successfully for voter: final-e2e-voter-1756143826555@example.com
+HubSpot vote sync completed successfully
+ POST /api/sync/hubspot/vote 200 in 1163ms
+ ○ Compiling /nominate ...
+ ✓ Compiled /nominate in 597ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /nominate. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /nominate 200 in 639ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /nominate. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /nominate 200 in 34ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /nominate. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /nominate 200 in 41ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /nominate. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /nominate 200 in 13ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /nominate. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /nominate 200 in 13ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /nominate. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /nominate 200 in 13ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /nominate. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /nominate 200 in 13ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /nominate. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /nominate 200 in 14ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /nominate. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /nominate 200 in 13ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /nominate. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /nominate 200 in 13ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /nominate. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /nominate 200 in 14ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /nominate. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /nominate 200 in 14ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /nominate. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /nominate 200 in 15ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /nominate. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /nominate 200 in 18ms
+ ✓ Compiled / in 400ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET / 200 in 428ms
+ ✓ Compiled /api/podium in 56ms
+ GET /api/podium?category=Top%20Recruiter 200 in 76ms
+ GET /api/nominations 200 in 636ms
+ GET /api/nominations 200 in 632ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /nominate. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /nominate 200 in 22ms
+Processing nomination submission: {
+  type: 'person',
+  subcategoryId: 'top-recruiter',
+  nominatorEmail: 'test.nominator@example.com'
+}
+Nomination submitted successfully: a493ca6e-6e02-4763-9a31-45d03f6c2f7f
+ POST /api/nomination/submit 201 in 1017ms
+Processing nomination submission: {
+  type: 'company',
+  subcategoryId: 'ai-platform',
+  nominatorEmail: 'test.nominator2@example.com'
+}
+Nomination submitted successfully: 55a2c5e3-f09b-4d25-981c-61abd5191c25
+ POST /api/nomination/submit 201 in 421ms
+POST /api/nomination/submit error: Error [ZodError]: [
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "categoryGroupId"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "subcategoryId"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "origin": "string",
+    "code": "invalid_format",
+    "format": "email",
+    "pattern": "/^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$/",
+    "path": [
+      "nominator",
+      "email"
+    ],
+    "message": "Invalid email address"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "nominator",
+      "firstname"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "nominator",
+      "lastname"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "nominator",
+      "nominatedDisplayName"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "code": "invalid_union",
+    "errors": [
+      [
+        {
+          "expected": "object",
+          "code": "invalid_type",
+          "path": [],
+          "message": "Invalid input: expected object, received undefined"
+        }
+      ],
+      [
+        {
+          "expected": "object",
+          "code": "invalid_type",
+          "path": [],
+          "message": "Invalid input: expected object, received undefined"
+        }
+      ]
+    ],
+    "path": [
+      "nominee"
+    ],
+    "message": "Invalid input"
+  }
+]
+    at POST (src/app/api/nomination/submit/route.ts:11:49)
+   9 |     
+  10 |     // Validate input
+> 11 |     const validatedData = NominationSubmitSchema.parse(body);
+     |                                                 ^
+  12 |     
+  13 |     console.log('Processing nomination submission:', {
+  14 |       type: validatedData.type,
+ POST /api/nomination/submit 400 in 77ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /nominate. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /nominate 200 in 285ms
+POST /api/nomination/submit error: Error [ZodError]: [
+  {
+    "code": "invalid_value",
+    "values": [
+      "person",
+      "company"
+    ],
+    "path": [
+      "type"
+    ],
+    "message": "Invalid option: expected one of \"person\"|\"company\""
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "categoryGroupId"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "subcategoryId"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "object",
+    "code": "invalid_type",
+    "path": [
+      "nominator"
+    ],
+    "message": "Invalid input: expected object, received undefined"
+  },
+  {
+    "code": "invalid_union",
+    "errors": [
+      [
+        {
+          "expected": "object",
+          "code": "invalid_type",
+          "path": [],
+          "message": "Invalid input: expected object, received undefined"
+        }
+      ],
+      [
+        {
+          "expected": "object",
+          "code": "invalid_type",
+          "path": [],
+          "message": "Invalid input: expected object, received undefined"
+        }
+      ]
+    ],
+    "path": [
+      "nominee"
+    ],
+    "message": "Invalid input"
+  }
+]
+    at POST (src/app/api/nomination/submit/route.ts:11:49)
+   9 |     
+  10 |     // Validate input
+> 11 |     const validatedData = NominationSubmitSchema.parse(body);
+     |                                                 ^
+  12 |     
+  13 |     console.log('Processing nomination submission:', {
+  14 |       type: validatedData.type,
+ POST /api/nomination/submit 400 in 49ms
+POST /api/vote error: Error [ZodError]: [
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "email"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "firstname"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "lastname"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "linkedin"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "subcategoryId"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "votedForDisplayName"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  }
+]
+    at POST (src/app/api/vote/route.ts:11:37)
+   9 |     
+  10 |     // Validate input
+> 11 |     const validatedData = VoteSchema.parse(body);
+     |                                     ^
+  12 |     
+  13 |     console.log('Processing vote:', {
+  14 |       subcategoryId: validatedData.subcategoryId,
+ POST /api/vote 400 in 41ms
+ ✓ Compiled /api/nominees in 88ms
+ POST /api/nominees 405 in 104ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /nominate. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /nominate 200 in 83ms
+ ✓ Compiled /api/uploads/image in 113ms
+ POST /api/uploads/image 200 in 159ms
+Processing nomination submission: {
+  type: 'person',
+  subcategoryId: 'test-category',
+  nominatorEmail: 'test@example.com'
+}
+Nomination submitted successfully: 53a3efe2-14d7-4fad-8c53-f6765a0a5523
+ POST /api/nomination/submit 201 in 607ms
+ GET /api/nomination/submit 405 in 13ms
+POST /api/nomination/submit error: Error [ZodError]: [
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "subcategoryId"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "nominator",
+      "nominatedDisplayName"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "nominee",
+      "firstname"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "nominee",
+      "lastname"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "nominee",
+      "jobtitle"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "invalid_format",
+    "format": "email",
+    "pattern": "/^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$/",
+    "path": [
+      "nominee",
+      "email"
+    ],
+    "message": "Invalid email address"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "nominee",
+      "whyMe"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  }
+]
+    at POST (src/app/api/nomination/submit/route.ts:11:49)
+   9 |     
+  10 |     // Validate input
+> 11 |     const validatedData = NominationSubmitSchema.parse(body);
+     |                                                 ^
+  12 |     
+  13 |     console.log('Processing nomination submission:', {
+  14 |       type: validatedData.type,
+ POST /api/nomination/submit 400 in 56ms
+ ✓ Compiled in 170ms
+ ✓ Compiled in 261ms
+ ✓ Compiled in 64ms
+Processing nomination submission: {
+  type: 'person',
+  subcategoryId: 'top-recruiter',
+  nominatorEmail: 'john.doe@company.com'
+}
+Nomination submitted successfully: b9f65656-65bf-4021-b9fb-4a08139be5ca
+ POST /api/nomination/submit 201 in 1695ms
+Processing nomination submission: {
+  type: 'company',
+  subcategoryId: 'top-ai-driven-staffing-platform',
+  nominatorEmail: 'nominator@company.com'
+}
+Nomination submitted successfully: 4199ffd1-7577-476e-a6ff-62a7c45d42f8
+ POST /api/nomination/submit 201 in 308ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /nominate. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /nominate 200 in 310ms
+Processing nomination submission: {
+  type: 'person',
+  subcategoryId: 'top-recruiter',
+  nominatorEmail: 'test@company.com'
+}
+Nomination submitted successfully: 95d2ebcb-bc2b-4413-8173-052fb517c711
+ POST /api/nomination/submit 201 in 377ms
+POST /api/nomination/submit error: Error [ZodError]: [
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "categoryGroupId"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "subcategoryId"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "invalid_format",
+    "format": "email",
+    "pattern": "/^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$/",
+    "path": [
+      "nominator",
+      "email"
+    ],
+    "message": "Invalid email address"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "nominator",
+      "firstname"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "nominator",
+      "lastname"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "nominator",
+      "nominatedDisplayName"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "nominee",
+      "firstname"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "nominee",
+      "lastname"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "nominee",
+      "jobtitle"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "invalid_format",
+    "format": "email",
+    "pattern": "/^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$/",
+    "path": [
+      "nominee",
+      "email"
+    ],
+    "message": "Invalid email address"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "nominee",
+      "whyMe"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  }
+]
+    at POST (src/app/api/nomination/submit/route.ts:11:49)
+   9 |     
+  10 |     // Validate input
+> 11 |     const validatedData = NominationSubmitSchema.parse(body);
+     |                                                 ^
+  12 |     
+  13 |     console.log('Processing nomination submission:', {
+  14 |       type: validatedData.type,
+ POST /api/nomination/submit 400 in 58ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /nominate. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /nominate 200 in 69ms
+ POST /api/uploads/image 200 in 38ms
+ ✓ Compiled in 208ms
+POST /api/nomination/submit error: Error [ZodError]: [
+  {
+    "origin": "string",
+    "code": "invalid_format",
+    "format": "email",
+    "pattern": "/^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$/",
+    "path": [
+      "nominator",
+      "email"
+    ],
+    "message": "Invalid email address"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "nominator",
+      "firstname"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "nominator",
+      "lastname"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "nominator",
+      "nominatedDisplayName"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "nominee",
+      "firstname"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "nominee",
+      "lastname"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "nominee",
+      "jobtitle"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "invalid_format",
+    "format": "email",
+    "pattern": "/^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$/",
+    "path": [
+      "nominee",
+      "email"
+    ],
+    "message": "Invalid email address"
+  },
+  {
+    "code": "invalid_format",
+    "format": "url",
+    "path": [
+      "nominee",
+      "headshotUrl"
+    ],
+    "message": "Invalid URL"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "nominee",
+      "whyMe"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  }
+]
+    at POST (src/app/api/nomination/submit/route.ts:11:49)
+   9 |     
+  10 |     // Validate input
+> 11 |     const validatedData = NominationSubmitSchema.parse(body);
+     |                                                 ^
+  12 |     
+  13 |     console.log('Processing nomination submission:', {
+  14 |       type: validatedData.type,
+ POST /api/nomination/submit 400 in 114ms
+Processing nomination submission: {
+  type: 'person',
+  subcategoryId: 'top-recruiter',
+  nominatorEmail: 'john.doe@company.com'
+}
+Nomination submitted successfully: 23185259-71f4-4ea0-87c7-2504c742bb6f
+ POST /api/nomination/submit 201 in 793ms
+ ✓ Compiled in 106ms
+ ✓ Compiled in 182ms
+Processing nomination submission: {
+  type: 'person',
+  subcategoryId: 'top-recruiter',
+  nominatorEmail: 'john.doe@company.com'
+}
+Nomination submitted successfully: 7bb7f27b-b9c7-4626-94ec-a90ddc41834f
+ POST /api/nomination/submit 201 in 728ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /nominate. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /nominate 200 in 270ms
+POST /api/nomination/submit error: Error [ZodError]: [
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "categoryGroupId"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "subcategoryId"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "invalid_format",
+    "format": "email",
+    "pattern": "/^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$/",
+    "path": [
+      "nominator",
+      "email"
+    ],
+    "message": "Invalid email address"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "nominator",
+      "firstname"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "nominator",
+      "lastname"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "nominator",
+      "nominatedDisplayName"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "nominee",
+      "firstname"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "nominee",
+      "lastname"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "nominee",
+      "jobtitle"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "invalid_format",
+    "format": "email",
+    "pattern": "/^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$/",
+    "path": [
+      "nominee",
+      "email"
+    ],
+    "message": "Invalid email address"
+  },
+  {
+    "code": "invalid_format",
+    "format": "url",
+    "path": [
+      "nominee",
+      "headshotUrl"
+    ],
+    "message": "Invalid URL"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "nominee",
+      "whyMe"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  }
+]
+    at POST (src/app/api/nomination/submit/route.ts:11:49)
+   9 |     
+  10 |     // Validate input
+> 11 |     const validatedData = NominationSubmitSchema.parse(body);
+     |                                                 ^
+  12 |     
+  13 |     console.log('Processing nomination submission:', {
+  14 |       type: validatedData.type,
+ POST /api/nomination/submit 400 in 44ms
+Processing nomination submission: {
+  type: 'person',
+  subcategoryId: 'top-recruiter',
+  nominatorEmail: 'complete.test@company.com'
+}
+Nomination submitted successfully: 065c31ef-00b9-4313-bcdf-73a51aa34a9d
+ POST /api/nomination/submit 201 in 632ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /nominate. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /nominate 200 in 80ms
+ POST /api/uploads/image 200 in 34ms
+ ✓ Compiled in 220ms
+ ✓ Compiled in 61ms
+ ✓ Compiled in 51ms
+ ✓ Compiled in 46ms
+Processing nomination submission: {
+  type: 'person',
+  subcategoryId: 'top-recruiter',
+  nominatorEmail: 'john.doe@company.com'
+}
+Nomination submitted successfully: f88a48a6-ead6-4d45-91ec-15f5c31dfcd4
+ POST /api/nomination/submit 201 in 1471ms
+ ✓ Compiled in 188ms
+POST /api/nomination/submit error: Error [ZodError]: [
+  {
+    "code": "invalid_format",
+    "format": "url",
+    "path": [
+      "nominee",
+      "headshotUrl"
+    ],
+    "message": "Invalid URL"
+  }
+]
+    at POST (src/app/api/nomination/submit/route.ts:11:49)
+   9 |     
+  10 |     // Validate input
+> 11 |     const validatedData = NominationSubmitSchema.parse(body);
+     |                                                 ^
+  12 |     
+  13 |     console.log('Processing nomination submission:', {
+  14 |       type: validatedData.type,
+ POST /api/nomination/submit 400 in 105ms
+POST /api/nomination/submit error: Error [ZodError]: [
+  {
+    "code": "invalid_format",
+    "format": "url",
+    "path": [
+      "nominee",
+      "headshotUrl"
+    ],
+    "message": "Invalid URL"
+  }
+]
+    at POST (src/app/api/nomination/submit/route.ts:11:49)
+   9 |     
+  10 |     // Validate input
+> 11 |     const validatedData = NominationSubmitSchema.parse(body);
+     |                                                 ^
+  12 |     
+  13 |     console.log('Processing nomination submission:', {
+  14 |       type: validatedData.type,
+ POST /api/nomination/submit 400 in 92ms
+ ✓ Compiled in 79ms
+ ✓ Compiled in 82ms
+POST /api/nomination/submit error: Error [ZodError]: [
+  {
+    "code": "invalid_union",
+    "errors": [
+      [
+        {
+          "expected": "string",
+          "code": "invalid_type",
+          "path": [
+            "headshotUrl"
+          ],
+          "message": "Invalid input: expected string, received undefined"
+        }
+      ],
+      [
+        {
+          "expected": "string",
+          "code": "invalid_type",
+          "path": [
+            "name"
+          ],
+          "message": "Invalid input: expected string, received undefined"
+        },
+        {
+          "expected": "string",
+          "code": "invalid_type",
+          "path": [
+            "whyUs"
+          ],
+          "message": "Invalid input: expected string, received undefined"
+        }
+      ]
+    ],
+    "path": [
+      "nominee"
+    ],
+    "message": "Invalid input"
+  }
+]
+    at POST (src/app/api/nomination/submit/route.ts:11:49)
+   9 |     
+  10 |     // Validate input
+> 11 |     const validatedData = NominationSubmitSchema.parse(body);
+     |                                                 ^
+  12 |     
+  13 |     console.log('Processing nomination submission:', {
+  14 |       type: validatedData.type,
+ POST /api/nomination/submit 400 in 214ms
+ POST /api/uploads/image 200 in 254ms
+Processing nomination submission: {
+  type: 'person',
+  subcategoryId: 'recruiter-of-the-year',
+  nominatorEmail: 'test@example.com'
+}
+Nomination submitted successfully: b20b7307-31f7-4001-b886-bbca6a0c1286
+ POST /api/nomination/submit 201 in 683ms
+POST /api/nomination/submit error: Error [ZodError]: [
+  {
+    "code": "invalid_format",
+    "format": "url",
+    "path": [
+      "nominee",
+      "headshotUrl"
+    ],
+    "message": "Invalid URL"
+  }
+]
+    at POST (src/app/api/nomination/submit/route.ts:11:49)
+   9 |     
+  10 |     // Validate input
+> 11 |     const validatedData = NominationSubmitSchema.parse(body);
+     |                                                 ^
+  12 |     
+  13 |     console.log('Processing nomination submission:', {
+  14 |       type: validatedData.type,
+ POST /api/nomination/submit 400 in 102ms
+POST /api/nomination/submit error: Error [ZodError]: [
+  {
+    "code": "invalid_format",
+    "format": "url",
+    "path": [
+      "nominee",
+      "headshotUrl"
+    ],
+    "message": "Invalid URL"
+  }
+]
+    at POST (src/app/api/nomination/submit/route.ts:11:49)
+   9 |     
+  10 |     // Validate input
+> 11 |     const validatedData = NominationSubmitSchema.parse(body);
+     |                                                 ^
+  12 |     
+  13 |     console.log('Processing nomination submission:', {
+  14 |       type: validatedData.type,
+ POST /api/nomination/submit 400 in 59ms
+ GET /api/nominees 200 in 3543ms
+ GET /api/nominees?subcategoryId=top-recruiter 200 in 3429ms
+ GET /api/nominees 200 in 167ms
+ GET /api/nominees?subcategoryId=top-recruiter 200 in 110ms
+ GET /api/nominees 200 in 132ms
+ GET /api/nominees?subcategoryId=top-recruiter 200 in 119ms
+ GET /api/nominees 200 in 114ms
+POST /api/nomination/submit error: Error [ZodError]: [
+  {
+    "code": "invalid_format",
+    "format": "url",
+    "path": [
+      "nominee",
+      "headshotUrl"
+    ],
+    "message": "Invalid URL"
+  }
+]
+    at POST (src/app/api/nomination/submit/route.ts:11:49)
+   9 |     
+  10 |     // Validate input
+> 11 |     const validatedData = NominationSubmitSchema.parse(body);
+     |                                                 ^
+  12 |     
+  13 |     console.log('Processing nomination submission:', {
+  14 |       type: validatedData.type,
+ POST /api/nomination/submit 400 in 99ms
+POST /api/nomination/submit error: Error [ZodError]: [
+  {
+    "code": "invalid_format",
+    "format": "url",
+    "path": [
+      "nominee",
+      "headshotUrl"
+    ],
+    "message": "Invalid URL"
+  }
+]
+    at POST (src/app/api/nomination/submit/route.ts:11:49)
+   9 |     
+  10 |     // Validate input
+> 11 |     const validatedData = NominationSubmitSchema.parse(body);
+     |                                                 ^
+  12 |     
+  13 |     console.log('Processing nomination submission:', {
+  14 |       type: validatedData.type,
+ POST /api/nomination/submit 400 in 57ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /nominate. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /nominate 200 in 232ms
+ GET /api/nominees 200 in 422ms
+ POST /api/uploads/image 200 in 357ms
+POST /api/nomination/submit error: Error [ZodError]: [
+  {
+    "code": "invalid_union",
+    "errors": [
+      [
+        {
+          "expected": "string",
+          "code": "invalid_type",
+          "path": [
+            "headshotUrl"
+          ],
+          "message": "Invalid input: expected string, received undefined"
+        }
+      ],
+      [
+        {
+          "expected": "string",
+          "code": "invalid_type",
+          "path": [
+            "name"
+          ],
+          "message": "Invalid input: expected string, received undefined"
+        },
+        {
+          "expected": "string",
+          "code": "invalid_type",
+          "path": [
+            "whyUs"
+          ],
+          "message": "Invalid input: expected string, received undefined"
+        }
+      ]
+    ],
+    "path": [
+      "nominee"
+    ],
+    "message": "Invalid input"
+  }
+]
+    at POST (src/app/api/nomination/submit/route.ts:11:49)
+   9 |     
+  10 |     // Validate input
+> 11 |     const validatedData = NominationSubmitSchema.parse(body);
+     |                                                 ^
+  12 |     
+  13 |     console.log('Processing nomination submission:', {
+  14 |       type: validatedData.type,
+ POST /api/nomination/submit 400 in 69ms
+Processing nomination submission: {
+  type: 'person',
+  subcategoryId: 'recruiter-of-the-year',
+  nominatorEmail: 'test.nominator@company.com'
+}
+Nomination submitted successfully: 77d95c82-e4e7-49e2-97e5-2f2d8a3568db
+ POST /api/nomination/submit 201 in 334ms
+ GET /api/nominees?subcategoryId=recruiter-of-the-year 200 in 90ms
+ POST /api/uploads/image 200 in 253ms
+Processing nomination submission: {
+  type: 'company',
+  subcategoryId: 'staffing-company-of-the-year',
+  nominatorEmail: 'company.nominator@example.com'
+}
+Nomination submitted successfully: eae20386-3c1c-40e3-8d16-439fd781f441
+ POST /api/nomination/submit 201 in 316ms
+ POST /api/uploads/image 200 in 575ms
+Processing nomination submission: {
+  type: 'person',
+  subcategoryId: 'top-recruiter',
+  nominatorEmail: 'dajemi9865@ahanim.com'
+}
+Nomination submitted successfully: 5d5755b2-607d-41d1-9e31-e6128c27d72a
+ POST /api/nomination/submit 201 in 354ms
+Processing nomination submission: {
+  type: 'person',
+  subcategoryId: 'top-recruiter',
+  nominatorEmail: 'dajemi9865@ahanim.com'
+}
+Nomination submitted successfully: 95dedd4e-3fef-4f81-bca5-1cd1cb33d4c7
+ POST /api/nomination/submit 201 in 322ms
+Processing nomination submission: {
+  type: 'person',
+  subcategoryId: 'top-recruiter',
+  nominatorEmail: 'dajemi9865@ahanim.com'
+}
+Nomination submitted successfully: 84f6c83d-3225-4e1a-bb84-3e272fb0e6e8
+ POST /api/nomination/submit 201 in 386ms
+Processing nomination submission: {
+  type: 'person',
+  subcategoryId: 'top-recruiter',
+  nominatorEmail: 'dajemi9865@ahanim.com'
+}
+Nomination submitted successfully: 47958afb-180e-44f9-8d62-9603695a8d4b
+ POST /api/nomination/submit 201 in 535ms
+Processing nomination submission: {
+  type: 'person',
+  subcategoryId: 'top-recruiter',
+  nominatorEmail: 'dajemi9865@ahanim.com'
+}
+Nomination submitted successfully: 2e5350b4-bedb-41ae-9dcb-a9fb2819dd67
+ POST /api/nomination/submit 201 in 727ms
+Processing nomination submission: {
+  type: 'person',
+  subcategoryId: 'top-recruiter',
+  nominatorEmail: 'dajemi9865@ahanim.com'
+}
+Nomination submitted successfully: a92ab424-d0f8-45e0-abf6-e4d48acb1f66
+ POST /api/nomination/submit 201 in 361ms
+Processing nomination submission: {
+  type: 'person',
+  subcategoryId: 'top-recruiter',
+  nominatorEmail: 'dajemi9865@ahanim.com'
+}
+Nomination submitted successfully: 29eb593f-2c4e-42af-beda-ac3d5524637c
+ POST /api/nomination/submit 201 in 1921ms
+ GET /api/nominees 200 in 125ms
+Processing nomination submission: {
+  type: 'person',
+  subcategoryId: 'recruiter-of-the-year',
+  nominatorEmail: 'debug@test.com'
+}
+Nomination submitted successfully: b6c705b7-baab-49ee-8b4d-76a6fd202d60
+ POST /api/nomination/submit 201 in 318ms
+ POST /api/uploads/image 200 in 2000ms
+Processing nomination submission: {
+  type: 'person',
+  subcategoryId: 'top-recruiter',
+  nominatorEmail: 'dajemi9865@ahanim.com'
+}
+Nomination submitted successfully: f312faf1-337d-4e3c-bca4-f8ed8dd99024
+ POST /api/nomination/submit 201 in 402ms
+Processing nomination submission: {
+  type: 'person',
+  subcategoryId: 'top-recruiter',
+  nominatorEmail: 'dajemi9865@ahanim.com'
+}
+Nomination submitted successfully: c370d95e-821a-4768-bf04-6dc3758cba61
+ POST /api/nomination/submit 201 in 943ms
+Processing nomination submission: {
+  type: 'person',
+  subcategoryId: 'top-recruiter',
+  nominatorEmail: 'dajemi9865@ahanim.com'
+}
+Nomination submitted successfully: e2f3812e-96a8-455b-aa60-9a68a8381c4e
+ POST /api/nomination/submit 201 in 489ms
+Processing nomination submission: {
+  type: 'person',
+  subcategoryId: 'top-recruiter',
+  nominatorEmail: 'dajemi9865@ahanim.com'
+}
+Nomination submitted successfully: 3cd73cd1-ab99-4433-a4bb-0d2aa9d1915c
+ POST /api/nomination/submit 201 in 435ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /nominate. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /nominate 200 in 76ms
+ ✓ Compiled in 351ms
+ ✓ Compiled in 127ms
+ ✓ Compiled in 83ms
+ ✓ Compiled in 136ms
+ ✓ Compiled in 74ms
+ ✓ Compiled in 227ms
+ ✓ Compiled in 135ms
+ ✓ Compiled in 61ms
+ POST /api/uploads/image 200 in 876ms
+Processing nomination submission: {
+  type: 'person',
+  subcategoryId: 'top-recruiter',
+  nominatorEmail: 'dajemi9865@ahanim.com'
+}
+Nomination submitted successfully: ef3f8348-440b-4ae1-a7c8-c5146c0d676f
+ POST /api/nomination/submit 201 in 505ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /apple-touch-icon-precomposed.png 404 in 172ms
+ GET /apple-touch-icon.png 404 in 171ms
+ ✓ Compiled /favicon.ico in 276ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /apple-touch-icon-precomposed.png 404 in 66ms
+ GET /apple-touch-icon.png 404 in 67ms
+ GET /favicon.ico?favicon.45db1c09.ico 200 in 505ms
+ GET /favicon.ico 200 in 502ms
+ GET /favicon.ico 200 in 225ms
+ GET /favicon.ico?favicon.45db1c09.ico 200 in 270ms
+ GET /api/nominations 200 in 165ms
+ GET /api/votes 200 in 169ms
+ GET /api/votes 200 in 92ms
+ GET /api/votes 200 in 99ms
+ GET /api/nominations 200 in 201ms
+ ✓ Compiled /api/votes in 483ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /admin. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /admin 200 in 488ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /admin. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /admin 200 in 26ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /admin. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /admin 200 in 47ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /admin. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /admin 200 in 25ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /admin. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /admin 200 in 14ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /admin. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /admin 200 in 14ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /admin. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /admin 200 in 20ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /admin. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /admin 200 in 14ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /admin. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /admin 200 in 16ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /admin. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /admin 200 in 22ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /admin. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /admin 200 in 16ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /admin. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /admin 200 in 15ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /admin. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /admin 200 in 24ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /admin. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /admin 200 in 18ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /nominate. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /nominate 200 in 234ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET / 200 in 218ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /admin. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /admin 200 in 67ms
+ GET /api/nominees 200 in 116ms
+ GET /api/votes 200 in 15ms
+ ✓ Compiled in 316ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⚠ Unsupported metadata viewport is configured in metadata export in /admin. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⨯ ReferenceError: useCallback is not defined
+    at AdminPage (src/app/admin/page.tsx:138:27)
+  136 |
+  137 |   // Real-time vote updates
+> 138 |   const handleVoteUpdate = useCallback(() => {
+      |                           ^
+  139 |     // Refresh votes data when new votes come in
+  140 |     fetch("/api/votes", {
+  141 |       cache: 'no-store', {
+  digest: '792298701'
+}
+ ⚠ Unsupported metadata viewport is configured in metadata export in /admin. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /admin 500 in 482ms
+ ✓ Compiled in 169ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⚠ Unsupported metadata viewport is configured in metadata export in /admin. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⨯ ReferenceError: useCallback is not defined
+    at AdminPage (src/app/admin/page.tsx:136:27)
+  134 |
+  135 |   // Real-time vote updates
+> 136 |   const handleVoteUpdate = useCallback(() => {
+      |                           ^
+  137 |     // Refresh votes data when new votes come in
+  138 |     fetch("/api/votes", {
+  139 |       cache: 'no-store', {
+  digest: '792298701'
+}
+ ⚠ Unsupported metadata viewport is configured in metadata export in /admin. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /admin 500 in 287ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ✓ Compiled in 160ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /admin. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⨯ ReferenceError: useCallback is not defined
+    at AdminPage (src/app/admin/page.tsx:154:27)
+  152 |
+  153 |   // Real-time vote updates
+> 154 |   const handleVoteUpdate = useCallback(() => {
+      |                           ^
+  155 |     // Refresh votes data when new votes come in
+  156 |     fetch("/api/votes", {
+  157 |       cache: 'no-store', {
+  digest: '792298701'
+}
+ ⚠ Unsupported metadata viewport is configured in metadata export in /admin. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /admin 500 in 464ms
+ ✓ Compiled in 139ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⚠ Unsupported metadata viewport is configured in metadata export in /admin. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /admin 200 in 361ms
+ GET /api/nominees 200 in 1250ms
+ GET /api/votes 200 in 192ms
+ ✓ Compiled /api/stats in 66ms
+ GET /api/stats 200 in 233ms
+ ✓ Compiled in 261ms
+ GET /api/stats 200 in 3626ms
+ GET /api/votes 200 in 112ms
+ GET /api/nominees 200 in 133ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⚠ Unsupported metadata viewport is configured in metadata export in /admin. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /admin 200 in 249ms
+ GET /api/nominees 200 in 134ms
+ GET /api/votes 200 in 93ms
+ GET /api/stats 200 in 162ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /admin. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /admin 200 in 80ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /admin. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /admin 200 in 18ms
+ ✓ Compiled in 108ms
+ ✓ Compiled in 191ms
+ ✓ Compiled in 142ms
+ ✓ Compiled in 204ms
+ ✓ Compiled in 73ms
+ ✓ Compiled /api/admin/nominations in 113ms
+ GET /api/admin/nominations 200 in 1712ms
+ GET /api/votes 200 in 129ms
+ GET /api/stats 200 in 173ms
+ ✓ Compiled in 106ms
+ ✓ Compiled in 223ms
+ ✓ Compiled in 60ms
+ GET /api/admin/nominations 200 in 175ms
+ GET /api/votes 200 in 103ms
+ GET /api/stats 200 in 167ms
+ ✓ Compiled in 204ms
+ ✓ Compiled in 70ms
+ ✓ Compiled in 139ms
+ ✓ Compiled in 181ms
+ ✓ Compiled in 98ms
+ ✓ Compiled in 141ms
+ ✓ Compiled in 94ms
+ ✓ Compiled in 221ms
+ ✓ Compiled in 141ms
+ ✓ Compiled /admin in 54ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/admin/page/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/admin/page/build-manifest.json'
+}
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 624ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.twts442h8x'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.twts442h8x'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/admin/page/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/admin/page/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.s367d057a'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.s367d057a'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.0dn1k8fxvvz'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.0dn1k8fxvvz'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/admin/page/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/admin/page/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.78ld7e5t3x9'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.78ld7e5t3x9'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/admin/page/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/admin/page/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.wuymjxtnkte'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.wuymjxtnkte'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.nykwm70hk2b'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.nykwm70hk2b'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.ou55nw0jryc'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.ou55nw0jryc'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.toki8yrx7s'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.toki8yrx7s'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.ra10n7us2xh'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.ra10n7us2xh'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.6f2ulimqflo'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.6f2ulimqflo'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.8cdz9uuyvfy'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.8cdz9uuyvfy'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.qpl6x8fz0e'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.qpl6x8fz0e'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.8n65lhvp5qg'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.8n65lhvp5qg'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.a6m8dgy1iq5'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.a6m8dgy1iq5'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.sszhpva4st9'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.sszhpva4st9'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.1yjlinuq37w'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.1yjlinuq37w'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.rc9p3kd048d'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.rc9p3kd048d'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.77pttqdxucu'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.77pttqdxucu'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.qo30ja2hdq'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.qo30ja2hdq'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.a8cuelktnz'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.a8cuelktnz'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.6irv9qvx17h'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.6irv9qvx17h'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.0ewdhr5x1g6d'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.0ewdhr5x1g6d'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.xd76ztp7oc'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.xd76ztp7oc'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.5fbghskqbbn'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.5fbghskqbbn'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.zh83o7m2p1'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.zh83o7m2p1'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.fw59phdjgf'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.fw59phdjgf'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.ublimhzdw9h'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.ublimhzdw9h'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.6i1ahhfmi58'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.6i1ahhfmi58'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.fv0z1n54sje'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.fv0z1n54sje'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.xl9juu5lqjg'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.xl9juu5lqjg'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.34sof7tdjn9'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.34sof7tdjn9'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.uc0i8b4iy6'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.uc0i8b4iy6'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.qoofzp0a0si'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.qoofzp0a0si'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.bcsvmzzjwuf'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.bcsvmzzjwuf'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.4jb1belhyqv'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.4jb1belhyqv'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.yd1h08hbn5'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.yd1h08hbn5'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.fdohm5gkjve'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.fdohm5gkjve'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.2alc9myvixf'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.2alc9myvixf'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.sw22a4jfobe'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.sw22a4jfobe'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.0ni2jdsyqyt'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.0ni2jdsyqyt'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.6x1fvz6ecc4'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.6x1fvz6ecc4'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.oiq2922l0fo'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.oiq2922l0fo'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.tjv85l5lz6q'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.tjv85l5lz6q'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.wo64myhokin'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.wo64myhokin'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.7p72zv6mb2j'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.7p72zv6mb2j'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.j0idy5ia39q'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.j0idy5ia39q'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.l87kogq5o5g'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.l87kogq5o5g'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.krw7gya2fy'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.krw7gya2fy'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.pikcb2mn4wa'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.pikcb2mn4wa'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.35yptapqlq2'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.35yptapqlq2'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.zv34400u4pr'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.zv34400u4pr'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.9f4ye9pzw0f'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.9f4ye9pzw0f'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.9pe288daaqr'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.9pe288daaqr'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.ips52c3wqq'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.ips52c3wqq'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.k20o2rbimqh'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.k20o2rbimqh'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.so38anc4qv'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.so38anc4qv'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.vnrbzsqejah'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.vnrbzsqejah'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.q6uisuqxu3'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.q6uisuqxu3'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.pq0v7eujqtg'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.pq0v7eujqtg'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.n4d41t6ojin'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.n4d41t6ojin'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/admin/page/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/admin/page/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.bqjei603h2s'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.bqjei603h2s'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/admin/page/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/admin/page/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.e987x8ydhf5'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.e987x8ydhf5'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.qvgn3unfzk9'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/static/development/_buildManifest.js.tmp.qvgn3unfzk9'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/admin/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/admin/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/admin/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/admin/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/nominate/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/nominate/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/nominate/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/nominate/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/nominate/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/nominate/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/nominate/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/nominate/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/nominate/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/nominate/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/nominate/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/nominate/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/nominate/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/nominate/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/nominate/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/nominate/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/_not-found/page/app-build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/nominations/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/nominations/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/nominations/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/nominations/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/stats/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/stats/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/stats/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/stats/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/votes/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/votes/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/votes/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/votes/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/nominees/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/nominees/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/nominees/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/nominees/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/nominations/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/nominations/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/nominations/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/nominations/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/stats/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/stats/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/stats/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/stats/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/votes/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/votes/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/votes/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/votes/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/nominees/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/nominees/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/nominees/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/nominees/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/nominations/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/nominations/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/nominations/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/nominations/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/stats/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/stats/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/stats/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/stats/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/votes/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/votes/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/votes/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/votes/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/nominees/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/nominees/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/nominees/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/nominees/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/nominees/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/nominees/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/nominees/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/nominees/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/nominations/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/nominations/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/nominations/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/nominations/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/stats/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/stats/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/stats/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/stats/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/votes/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/votes/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/votes/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/votes/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+ GET /api/nominees 200 in 234ms
+ GET /api/nominees?subcategoryId=top-recruiter 200 in 118ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/app/api/admin/nominations/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/rupeshkumar/wasss/world-staffing-awards/.next/server/pages/_app/build-manifest.json'
+}
+[?25h

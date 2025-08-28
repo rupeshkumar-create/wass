@@ -59,7 +59,7 @@ export function VoteButton({ showAfterScroll = 600, nominee }: VoteButtonProps) 
             <Button
               asChild
               size="lg"
-              className="bg-brand-500 hover:bg-brand-600 text-white shadow-lg hover:shadow-xl transition-all duration-200 rounded-full px-6 py-3"
+              className="bg-orange-500 hover:bg-orange-600 text-white shadow-lg hover:shadow-xl transition-all duration-200 rounded-full px-6 py-3"
             >
               <Link href={nominee?.liveUrl || "/directory"}>
                 <Vote className="mr-2 h-5 w-5" />
@@ -69,7 +69,7 @@ export function VoteButton({ showAfterScroll = 600, nominee }: VoteButtonProps) 
 
             {/* Pulse Animation */}
             <motion.div
-              className="absolute inset-0 bg-brand-500 rounded-full -z-10"
+              className="absolute inset-0 bg-orange-500 rounded-full -z-10"
               animate={{
                 scale: [1, 1.2, 1],
                 opacity: [0.7, 0, 0.7],

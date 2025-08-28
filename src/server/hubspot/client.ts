@@ -1,6 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
 
-// HubSpot API client with authentication, retries, and PII protection
+/**
+ * HubSpot API client with authentication, retries, and PII protection
+ * Server-side only - never expose tokens to browser
+ */
 export class HubSpotClient {
   private readonly baseUrl = 'https://api.hubapi.com';
   private readonly token: string;

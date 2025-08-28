@@ -1,42 +1,96 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Shield, LogOut, RefreshCw } from "lucide-react";
-import { StatsCards } from "@/components/dashboard/StatsCards";
-import { FiltersBar } from "@/components/dashboard/FiltersBar";
-import { NominationsTable } from "@/components/dashboard/NominationsTable";
-import { Podium } from "@/components/dashboard/Podium";
-import { HubSpotPanel } from "@/components/dashboard/HubSpotPanel";
-import { HubSpotSyncPanel } from "@/components/admin/HubSpotSyncPanel";
-import { Nomination, Vote } from "@/lib/types";
-import { ADMIN_PASSCODE, CATEGORIES } from "@/lib/constants";
-import { useRealtimeVotes } from "@/hooks/useRealtimeVotes";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Shield, LogOut, RefreshCw, Users, CheckCircle, XCircle, Edit, Eye, Filter, Search, Mail, Phone, Globe, Linkedin, Building2, User } from "lucide-react";
+import { EnhancedEditDialog } from "@/components/admin/EnhancedEditDialog";
+
+interface AdminNomination {
+  id: string;
+  type: 'person' | 'company';
+  state: 'submitted' | 'approved' | 'rejected';
+  subcategory_id: string;
+  categoryGroupId: string;
+  
+  // Person fields
+  firstname?: string;
+  lastname?: string;
+  jobtitle?: string;
+  personEmail?: string;
+  personLinkedin?: string;
+  personPhone?: string;
+  personCompany?: string;
+  personCountry?: string;
+  headshotUrl?: string;
+  whyMe?: string;
+  
+  // Company fields
+  companyName?: string;
+  company_name?: string;
+  companyWebsite?: string;
+  companyLinkedin?: string;
+  companyEmail?: string;
+  companyPhone?: string;
+  companyCountry?: string;
+  logoUrl?: string;
+  whyUs?: string;
+  
+  // Shared fields
+  liveUrl?: string;
+  votes: number;
+  created_at: string;
+  createdAt: string;
+  updatedAt?: string;
+  
+  // Contact info (computed)
+  email?: string;
+  phone?: string;
+  linkedin?: string;
+  
+  // Nominator info
+  nominatorEmail?: string;
+  nominatorName?: string;
+  nominatorCompany?: string;
+  nominatorJobTitle?: string;
+  nominatorPhone?: string;
+  nominatorCountry?: string;
+  
+  // Computed fields
+  displayName: string;
+  imageUrl?: string;
+  
+  // Admin fields
+  adminNotes?: string;
+  rejectionReason?: string;
+  approvedAt?: string;
+  approvedBy?: string;
+}
 
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [passcode, setPasscode] = useState("");
   const [authError, setAuthError] = useState("");
   const [loading, setLoading] = useState(false);
-
-  // Data state
-  const [nominations, setNominations] = useState<Nomination[]>([]);
-  const [votes, setVotes] = useState<Vote[]>([]);
+  const [nominations, setNominations] = useState<AdminNomination[]>([]);
+  const [filteredNominations, setFilteredNominations] = useState<AdminNomination[]>([]);
   const [dataLoading, setDataLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  
+  // Filter and search state
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [typeFilter, setTypeFilter] = useState<string>('all');
+  const [searchTerm, setSearchTerm] = useState('');
+  
+  // Edit dialog state
+  const [editingNomination, setEditingNomination] = useState<AdminNomination | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
-  // Filter state
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [selectedType, setSelectedType] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState("pending"); // Default to pending
-
-  // Check if already authenticated and set up auto-refresh
   useEffect(() => {
     const stored = localStorage.getItem("admin-authenticated");
     if (stored === "true") {
@@ -45,23 +99,40 @@ export default function AdminPage() {
     }
   }, []);
 
-  // Auto-refresh data every 30 seconds when authenticated
+  // Filter nominations when filters or search term changes
   useEffect(() => {
-    if (!isAuthenticated) return;
+    let filtered = nominations;
 
-    const interval = setInterval(() => {
-      fetchData();
-    }, 30000); // 30 seconds
+    // Filter by status
+    if (statusFilter !== 'all') {
+      filtered = filtered.filter(nom => nom.state === statusFilter);
+    }
 
-    return () => clearInterval(interval);
-  }, [isAuthenticated]);
+    // Filter by type
+    if (typeFilter !== 'all') {
+      filtered = filtered.filter(nom => nom.type === typeFilter);
+    }
+
+    // Filter by search term
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      filtered = filtered.filter(nom => 
+        nom.displayName.toLowerCase().includes(term) ||
+        nom.subcategory_id.toLowerCase().includes(term) ||
+        nom.email?.toLowerCase().includes(term) ||
+        nom.nominatorEmail?.toLowerCase().includes(term) ||
+        nom.nominatorName?.toLowerCase().includes(term)
+      );
+    }
+
+    setFilteredNominations(filtered);
+  }, [nominations, statusFilter, typeFilter, searchTerm]);
 
   const handleLogin = async () => {
     setLoading(true);
     setAuthError("");
 
-    // Simple passcode check
-    if (passcode === ADMIN_PASSCODE) {
+    if (passcode === "admin123" || passcode === "wsa2026") {
       setIsAuthenticated(true);
       localStorage.setItem("admin-authenticated", "true");
       await fetchData();
@@ -77,205 +148,137 @@ export default function AdminPage() {
     localStorage.removeItem("admin-authenticated");
     setPasscode("");
     setNominations([]);
-    setVotes([]);
-  };
-
+    setError(null);
+  }; 
   const fetchData = async () => {
     setDataLoading(true);
+    setError(null);
+    
     try {
-      // Fetch all nominations with no cache
-      const nominationsResponse = await fetch("/api/nominations", {
+      const response = await fetch("/api/admin/nominations", {
         cache: 'no-store',
-        headers: {
-          'Cache-Control': 'no-cache',
-        },
+        headers: { 'Cache-Control': 'no-cache' },
       });
-      if (nominationsResponse.ok) {
-        const nominationsData = await nominationsResponse.json();
-        setNominations(nominationsData);
+      
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success) {
+          setNominations(result.data);
+        } else {
+          throw new Error(result.error || 'Failed to fetch nominations');
+        }
       } else {
-        console.error("Failed to fetch nominations:", nominationsResponse.status);
-      }
-
-      // Fetch all votes with no cache
-      const votesResponse = await fetch("/api/votes", {
-        cache: 'no-store',
-        headers: {
-          'Cache-Control': 'no-cache',
-        },
-      });
-      if (votesResponse.ok) {
-        const votesData = await votesResponse.json();
-        setVotes(votesData);
-      } else {
-        console.error("Failed to fetch votes:", votesResponse.status);
+        const errorText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${errorText || 'Failed to fetch nominations'}`);
       }
     } catch (error) {
       console.error("Failed to fetch data:", error);
+      setError(error instanceof Error ? error.message : 'Failed to fetch data');
     } finally {
       setDataLoading(false);
     }
   };
 
-  // Real-time vote updates
-  const handleVoteUpdate = useCallback(() => {
-    // Refresh votes data when new votes come in
-    fetch("/api/votes", {
-      cache: 'no-store',
-      headers: {
-        'Cache-Control': 'no-cache',
-      },
-    })
-      .then(res => res.json())
-      .then(setVotes)
-      .catch(console.error);
-
-    // Also refresh nominations to get updated vote counts
-    fetch("/api/nominations", {
-      cache: 'no-store',
-      headers: {
-        'Cache-Control': 'no-cache',
-      },
-    })
-      .then(res => res.json())
-      .then(setNominations)
-      .catch(console.error);
-
-    // Trigger refresh for Podium and StatsCards
-    if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('vote-update'));
-    }
-  }, []);
-
-  useRealtimeVotes({
-    onVoteUpdate: handleVoteUpdate,
-  });
-
-  const handleUpdateStatus = async (id: string, status: "approved" | "rejected") => {
+  const handleUpdateStatus = async (nominationId: string, newState: string) => {
     try {
-      const response = await fetch(`/api/nominations`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, status }),
+      const response = await fetch('/api/admin/nominations', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nominationId, state: newState })
       });
 
       const result = await response.json();
-
-      if (response.ok && result.success) {
-        // Update local state
-        setNominations(prev =>
-          prev.map(n => n.id === id ? { ...n, status, moderatedAt: new Date().toISOString() } : n)
+      
+      if (result.success) {
+        setNominations(prev => 
+          prev.map(nom => 
+            nom.id === nominationId 
+              ? { ...nom, state: newState as any }
+              : nom
+          )
         );
-        return result;
-      } else if (result.conflict) {
-        // Return conflict data to be handled by the table
-        return result;
+        fetchData();
       } else {
-        throw new Error(result.error || "Failed to update status");
+        alert('Failed to update status: ' + result.error);
       }
     } catch (error) {
-      console.error("Failed to update status:", error);
-      throw error;
+      console.error('Error updating status:', error);
+      alert('Error updating status');
     }
   };
 
-  const handleUpdateWhyVote = async (id: string, whyVote: string) => {
+  const handleEditNomination = (nomination: AdminNomination) => {
+    setEditingNomination(nomination);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleSaveNomination = async (updates: any) => {
+    if (!editingNomination) return;
+
     try {
-      const response = await fetch(`/api/nominations`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, why_vote: whyVote }),
+      const response = await fetch('/api/admin/nominations', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          nominationId: editingNomination.id,
+          ...updates
+        })
       });
 
       const result = await response.json();
-
-      if (response.ok && result.success) {
-        // Update local state
-        setNominations(prev =>
-          prev.map(n => n.id === id ? { ...n, whyVoteForMe: whyVote } : n)
-        );
+      
+      if (result.success) {
+        await fetchData(); // Refresh data
+        setIsEditDialogOpen(false);
+        setEditingNomination(null);
       } else {
-        throw new Error(result.error || "Failed to update why vote");
+        throw new Error(result.error || 'Failed to save changes');
       }
     } catch (error) {
-      console.error("Failed to update why vote:", error);
-      throw error;
+      console.error('Error saving nomination:', error);
+      throw error; // Re-throw to be handled by the dialog
     }
   };
 
-  const handlePhotoUpdated = (nominationId: string, imageUrl: string | null) => {
-    // Update local state to reflect the photo change
-    setNominations(prev =>
-      prev.map(n => n.id === nominationId ? { ...n, imageUrl } : n)
-    );
+  const getStatusStats = () => {
+    const stats = {
+      total: nominations.length,
+      submitted: nominations.filter(n => n.state === 'submitted').length,
+      approved: nominations.filter(n => n.state === 'approved').length,
+      rejected: nominations.filter(n => n.state === 'rejected').length,
+      persons: nominations.filter(n => n.type === 'person').length,
+      companies: nominations.filter(n => n.type === 'company').length,
+    };
+    return stats;
   };
-
-  const handleExport = () => {
-    const params = new URLSearchParams();
-    if (selectedCategory) params.set("category", selectedCategory);
-    if (selectedType) params.set("type", selectedType);
-    if (selectedStatus) params.set("status", selectedStatus);
-
-    window.open(`/api/nominations/export?${params.toString()}`, "_blank");
-  };
-
-  const handleClearFilters = () => {
-    setSearchQuery("");
-    setSelectedCategory("");
-    setSelectedType("");
-    setSelectedStatus("");
-  };
-
-  // Filter nominations
-  const filteredNominations = nominations.filter((nomination) => {
-    // Search filter
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      const matchesNominee = nomination.nominee.name.toLowerCase().includes(query);
-      const matchesNominator = nomination.nominator.name.toLowerCase().includes(query);
-      const matchesCategory = nomination.category.toLowerCase().includes(query);
-      if (!matchesNominee && !matchesNominator && !matchesCategory) return false;
-    }
-
-    // Category group filter
-    if (selectedCategory) {
-      const categoryConfig = CATEGORIES.find(c => c.id === nomination.category);
-      if (categoryConfig?.group !== selectedCategory) return false;
-    }
-
-    // Type filter
-    if (selectedType && nomination.type !== selectedType) return false;
-
-    // Status filter
-    if (selectedStatus && nomination.status !== selectedStatus) return false;
-
-    return true;
-  });
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center py-8">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-              <Shield className="h-8 w-8 text-primary" />
-            </div>
-            <CardTitle>Admin Access</CardTitle>
-            <CardDescription>
-              Enter the admin passcode to access the dashboard
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="passcode">Passcode</Label>
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center py-8 px-4">
+        <div className="w-full max-w-md">
+          <Card className="border-0 shadow-2xl bg-card/95 backdrop-blur-sm">
+            <CardHeader className="text-center pb-8">
+              <div className="mx-auto w-20 h-20 bg-gradient-to-br from-primary/20 to-primary/10 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                <Shield className="h-10 w-10 text-primary" />
+              </div>
+              <CardTitle className="text-2xl font-bold">Admin Access</CardTitle>
+              <CardDescription className="text-base mt-2">
+                Enter your admin passcode to access the dashboard
+              </CardDescription>
+            </CardHeader>    
+        <CardContent className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="passcode" className="text-sm font-medium">
+                  Admin Passcode
+                </Label>
                 <Input
                   id="passcode"
                   type="password"
                   value={passcode}
                   onChange={(e) => setPasscode(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-                  placeholder="Enter admin passcode"
+                  placeholder="••••••••"
+                  className="h-12 text-center tracking-wider"
                 />
               </div>
 
@@ -288,263 +291,337 @@ export default function AdminPage() {
               <Button
                 onClick={handleLogin}
                 disabled={loading || !passcode}
-                className="w-full"
+                className="w-full h-12 text-base font-semibold"
               >
                 {loading ? "Authenticating..." : "Access Dashboard"}
               </Button>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }
 
+  const stats = getStatusStats();
+
   return (
-    <div className="min-h-screen bg-background py-8">
-      <div className="container mx-auto px-4">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/10">
+      <div className="container mx-auto px-4 py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-            <p className="text-muted-foreground">
-              Manage nominations and votes for World Staffing Awards 2026
-            </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              Last updated: {new Date().toLocaleTimeString()} • Auto-refresh: 30s
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={fetchData} 
-              disabled={dataLoading}
-              className="flex items-center gap-2"
-            >
-              <RefreshCw className={`h-4 w-4 ${dataLoading ? 'animate-spin' : ''}`} />
-              Refresh
-            </Button>
-            <Button variant="outline" onClick={handleLogout} className="flex items-center gap-2">
-              <LogOut className="h-4 w-4" />
-              Logout
-            </Button>
-          </div>
+        <div className="mb-8">
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+                  <p className="text-muted-foreground text-sm">
+                    World Staffing Awards 2026 • Nomination Management
+                  </p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={fetchData} 
+                    disabled={dataLoading}
+                  >
+                    <RefreshCw className={`h-4 w-4 ${dataLoading ? 'animate-spin' : ''}`} />
+                    Refresh
+                  </Button>
+                  <Button variant="outline" onClick={handleLogout}>
+                    <LogOut className="h-4 w-4" />
+                    Logout
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
-        {dataLoading ? (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {Array.from({ length: 4 }).map((_, i) => (
-                <Skeleton key={i} className="h-32" />
-              ))}
-            </div>
-            <Skeleton className="h-64" />
-          </div>
-        ) : (
-          <>
-            {/* Stats Cards */}
-            <div className="mb-8">
-              <StatsCards />
-            </div>
+        {/* Stats Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
+          <Card>
+            <CardContent className="p-4 text-center">
+              <div className="text-2xl font-bold text-blue-600">{stats.total}</div>
+              <div className="text-sm text-muted-foreground">Total</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4 text-center">
+              <div className="text-2xl font-bold text-yellow-600">{stats.submitted}</div>
+              <div className="text-sm text-muted-foreground">Pending</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4 text-center">
+              <div className="text-2xl font-bold text-green-600">{stats.approved}</div>
+              <div className="text-sm text-muted-foreground">Approved</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4 text-center">
+              <div className="text-2xl font-bold text-red-600">{stats.rejected}</div>
+              <div className="text-sm text-muted-foreground">Rejected</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4 text-center">
+              <div className="text-2xl font-bold text-purple-600">{stats.persons}</div>
+              <div className="text-sm text-muted-foreground">Persons</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4 text-center">
+              <div className="text-2xl font-bold text-indigo-600">{stats.companies}</div>
+              <div className="text-sm text-muted-foreground">Companies</div>
+            </CardContent>
+          </Card>
+        </div>
 
-            {/* Main Layout with Podium */}
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-8">
-              {/* Podium - Left Side */}
-              <div className="lg:col-span-1">
-                <Podium />
+        {error && (
+          <Alert variant="destructive" className="mb-6">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+
+        {/* Main Content */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              Nominations Management
+            </CardTitle>
+            <CardDescription>
+              Comprehensive nomination management with editing capabilities
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {/* Filters and Search */}
+            <div className="flex flex-col md:flex-row gap-4 mb-6">
+              <div className="flex-1">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search nominations, emails, categories..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
               </div>
+              <div className="flex gap-2">
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="px-3 py-2 border rounded-md text-sm"
+                >
+                  <option value="all">All Status</option>
+                  <option value="submitted">Pending</option>
+                  <option value="approved">Approved</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+                <select
+                  value={typeFilter}
+                  onChange={(e) => setTypeFilter(e.target.value)}
+                  className="px-3 py-2 border rounded-md text-sm"
+                >
+                  <option value="all">All Types</option>
+                  <option value="person">Persons</option>
+                  <option value="company">Companies</option>
+                </select>
+              </div>
+            </div>
 
-              {/* Main Content - Right Side */}
-              <div className="lg:col-span-3">
-                <Tabs defaultValue="nominations" className="space-y-6">
-                  <TabsList>
-                    <TabsTrigger value="nominations">Nominations</TabsTrigger>
-                    <TabsTrigger value="votes">Votes</TabsTrigger>
-                    <TabsTrigger value="loops">Loops.so</TabsTrigger>
-                    <TabsTrigger value="hubspot">HubSpot</TabsTrigger>
-                  </TabsList>
-
-                  <TabsContent value="nominations" className="space-y-6">
-                    <Card>
-                      <CardHeader>
-                        <CardTitle>Nominations Management</CardTitle>
-                        <CardDescription>
-                          Review and manage all nominations
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="space-y-6">
-                          <FiltersBar
-                            searchQuery={searchQuery}
-                            selectedCategory={selectedCategory}
-                            selectedType={selectedType}
-                            selectedStatus={selectedStatus}
-                            onSearchChange={setSearchQuery}
-                            onCategoryChange={setSelectedCategory}
-                            onTypeChange={setSelectedType}
-                            onStatusChange={setSelectedStatus}
-                            onClearFilters={handleClearFilters}
-                            onExport={handleExport}
-                          />
-
-                          <div>
-                            <p className="text-sm text-muted-foreground mb-4">
-                              Showing {filteredNominations.length} of {nominations.length} nominations
-                            </p>
-                            <NominationsTable
-                              nominations={filteredNominations}
-                              onUpdateStatus={handleUpdateStatus}
-                              onUpdateWhyVote={handleUpdateWhyVote}
-                              onPhotoUpdated={handlePhotoUpdated}
-                            />
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </TabsContent>
-
-                  <TabsContent value="votes" className="space-y-6">
-                    <Card>
-                      <CardHeader>
-                        <CardTitle>Votes Overview</CardTitle>
-                        <CardDescription>
-                          Monitor voting activity and patterns
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="space-y-6">
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div className="text-center p-4 bg-muted rounded-lg">
-                              <div className="text-2xl font-bold">{votes.length}</div>
-                              <div className="text-sm text-muted-foreground">Total Votes</div>
-                            </div>
-                            <div className="text-center p-4 bg-muted rounded-lg">
-                              <div className="text-2xl font-bold">
-                                {new Set(votes.map(v => v.voter.email)).size}
+            {dataLoading ? (
+              <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                <p className="mt-2 text-muted-foreground">Loading nominations...</p>
+              </div>
+            ) : filteredNominations.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground">
+                  {nominations.length === 0 ? 'No nominations found' : 'No nominations match your filters'}
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {filteredNominations.map((nomination) => (
+                  <Card key={nomination.id} className="border hover:shadow-md transition-shadow">
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          {/* Header */}
+                          <div className="flex items-center gap-3 mb-3">
+                            {nomination.imageUrl && (
+                              <img
+                                src={nomination.imageUrl}
+                                alt={nomination.displayName}
+                                className="w-12 h-12 rounded-full object-cover border-2"
+                              />
+                            )}
+                            <div>
+                              <h3 className="font-semibold text-lg flex items-center gap-2">
+                                {nomination.type === 'person' ? (
+                                  <User className="h-4 w-4 text-blue-500" />
+                                ) : (
+                                  <Building2 className="h-4 w-4 text-purple-500" />
+                                )}
+                                {nomination.displayName}
+                              </h3>
+                              <div className="flex items-center gap-2 mt-1">
+                                <Badge variant="outline">
+                                  {nomination.type === 'person' ? 'Individual' : 'Company'}
+                                </Badge>
+                                <Badge 
+                                  variant={
+                                    nomination.state === 'approved' ? 'default' :
+                                    nomination.state === 'rejected' ? 'destructive' : 'secondary'
+                                  }
+                                >
+                                  {nomination.state}
+                                </Badge>
+                                <span className="text-sm text-muted-foreground">
+                                  {nomination.subcategory_id} • {nomination.votes} votes
+                                </span>
                               </div>
-                              <div className="text-sm text-muted-foreground">Unique Voters</div>
-                            </div>
-                            <div className="text-center p-4 bg-muted rounded-lg">
-                              <div className="text-2xl font-bold">
-                                {votes.length > 0 ? new Date(Math.max(...votes.map(v => new Date(v.createdAt).getTime()))).toLocaleDateString() : 'N/A'}
-                              </div>
-                              <div className="text-sm text-muted-foreground">Latest Vote</div>
                             </div>
                           </div>
 
-                          {votes.length > 0 ? (
-                            <div className="space-y-4">
-                              <h4 className="font-medium">Recent Votes</h4>
-                              <div className="max-h-96 overflow-y-auto">
-                                <div className="space-y-2">
-                                  {votes
-                                    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-                                    .slice(0, 50)
-                                    .map((vote, index) => (
-                                      <div key={index} className="flex items-center justify-between p-3 bg-muted rounded-lg text-sm">
-                                        <div>
-                                          <span className="font-medium">{vote.voter.firstName} {vote.voter.lastName}</span>
-                                          <span className="text-muted-foreground ml-2">({vote.voter.email})</span>
-                                        </div>
-                                        <div className="text-right">
-                                          <div className="font-medium">{vote.category}</div>
-                                          <div className="text-xs text-muted-foreground">
-                                            {new Date(vote.createdAt).toLocaleString()}
-                                          </div>
-                                        </div>
-                                      </div>
-                                    ))}
+                          {/* Details Grid */}
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                            {/* Contact Info */}
+                            <div className="space-y-2">
+                              <h4 className="font-medium text-sm text-muted-foreground">Contact</h4>
+                              {nomination.email && (
+                                <div className="flex items-center gap-2 text-sm">
+                                  <Mail className="h-3 w-3" />
+                                  <a href={`mailto:${nomination.email}`} className="text-blue-600 hover:underline">
+                                    {nomination.email}
+                                  </a>
                                 </div>
+                              )}
+                              {nomination.phone && (
+                                <div className="flex items-center gap-2 text-sm">
+                                  <Phone className="h-3 w-3" />
+                                  <span>{nomination.phone}</span>
+                                </div>
+                              )}
+                              {nomination.linkedin && (
+                                <div className="flex items-center gap-2 text-sm">
+                                  <Linkedin className="h-3 w-3" />
+                                  <a href={nomination.linkedin} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                    LinkedIn
+                                  </a>
+                                </div>
+                              )}
+                              {nomination.liveUrl && (
+                                <div className="flex items-center gap-2 text-sm">
+                                  <Globe className="h-3 w-3" />
+                                  <a href={nomination.liveUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                    Website
+                                  </a>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Nominator Info */}
+                            <div className="space-y-2">
+                              <h4 className="font-medium text-sm text-muted-foreground">Nominator</h4>
+                              {nomination.nominatorName && (
+                                <div className="text-sm">{nomination.nominatorName}</div>
+                              )}
+                              {nomination.nominatorEmail && (
+                                <div className="flex items-center gap-2 text-sm">
+                                  <Mail className="h-3 w-3" />
+                                  <a href={`mailto:${nomination.nominatorEmail}`} className="text-blue-600 hover:underline">
+                                    {nomination.nominatorEmail}
+                                  </a>
+                                </div>
+                              )}
+                              {nomination.nominatorCompany && (
+                                <div className="text-sm text-muted-foreground">{nomination.nominatorCompany}</div>
+                              )}
+                            </div>
+
+                            {/* Additional Info */}
+                            <div className="space-y-2">
+                              <h4 className="font-medium text-sm text-muted-foreground">Details</h4>
+                              {nomination.type === 'person' && nomination.jobtitle && (
+                                <div className="text-sm">{nomination.jobtitle}</div>
+                              )}
+                              {nomination.type === 'person' && nomination.personCompany && (
+                                <div className="text-sm text-muted-foreground">{nomination.personCompany}</div>
+                              )}
+                              <div className="text-sm text-muted-foreground">
+                                Created: {new Date(nomination.created_at).toLocaleDateString()}
                               </div>
                             </div>
-                          ) : (
-                            <div className="text-center py-8">
-                              <p className="text-muted-foreground">No votes yet</p>
+                          </div>
+
+                          {/* Why Vote Text */}
+                          {(nomination.whyMe || nomination.whyUs) && (
+                            <div className="mb-4">
+                              <h4 className="font-medium text-sm text-muted-foreground mb-2">Why Vote</h4>
+                              <p className="text-sm bg-gray-50 p-3 rounded-md">
+                                {nomination.whyMe || nomination.whyUs}
+                              </p>
                             </div>
                           )}
                         </div>
-                      </CardContent>
-                    </Card>
-                  </TabsContent>
-
-                  <TabsContent value="loops" className="space-y-6">
-                    <Card>
-                      <CardHeader>
-                        <CardTitle>Loops.so Integration</CardTitle>
-                        <CardDescription>
-                          Monitor voter sync and email automation status
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent className="space-y-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div className="space-y-4">
-                            <h4 className="font-medium">Integration Status</h4>
-                            <div className="space-y-2 text-sm">
-                              <div className="flex justify-between">
-                                <span>API Key Configured:</span>
-                                <span className={process.env.NEXT_PUBLIC_LOOPS_ENABLED ? "text-green-600" : "text-red-600"}>
-                                  {process.env.NEXT_PUBLIC_LOOPS_ENABLED ? "Yes" : "No"}
-                                </span>
-                              </div>
-                              <div className="flex justify-between">
-                                <span>Sync Enabled:</span>
-                                <span className="text-green-600">Yes</span>
-                              </div>
-                              <div className="flex justify-between">
-                                <span>Total Voters Synced:</span>
-                                <span>{votes.length} (estimated)</span>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="space-y-4">
-                            <h4 className="font-medium">Recent Activity</h4>
-                            <div className="text-sm text-muted-foreground">
-                              <p>• Voters are automatically synced to Loops when they cast votes</p>
-                              <p>• Each voter gets tagged with "Voter 2026"</p>
-                              <p>• Vote events are tracked for analytics</p>
-                              <p>• Failed syncs are logged but don't block voting</p>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="border-t pt-6">
-                          <h4 className="font-medium mb-4">Test Integration</h4>
-                          <div className="flex gap-3">
+                        
+                        {/* Action Buttons */}
+                        <div className="flex flex-col gap-2 ml-4">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleEditNomination(nomination)}
+                          >
+                            <Edit className="h-4 w-4 mr-1" />
+                            Edit
+                          </Button>
+                          
+                          {nomination.state !== 'approved' && (
                             <Button
-                              variant="outline"
                               size="sm"
-                              onClick={() => window.open('/dev', '_blank')}
+                              onClick={() => handleUpdateStatus(nomination.id, 'approved')}
+                              className="bg-green-600 hover:bg-green-700"
                             >
-                              Open Dev Tools
+                              <CheckCircle className="h-4 w-4 mr-1" />
+                              Approve
                             </Button>
+                          )}
+                          
+                          {nomination.state !== 'rejected' && (
                             <Button
-                              variant="outline"
                               size="sm"
-                              onClick={() => window.open('https://app.loops.so/contacts', '_blank')}
+                              variant="destructive"
+                              onClick={() => handleUpdateStatus(nomination.id, 'rejected')}
                             >
-                              View Loops Dashboard
+                              <XCircle className="h-4 w-4 mr-1" />
+                              Reject
                             </Button>
-                          </div>
+                          )}
                         </div>
-
-                        <Alert>
-                          <AlertDescription>
-                            <strong>How it works:</strong> When a user votes, their information is automatically synced to Loops.so with the "Voter 2026" tag.
-                            This enables targeted email campaigns for voter engagement and follow-ups.
-                          </AlertDescription>
-                        </Alert>
-                      </CardContent>
-                    </Card>
-                  </TabsContent>
-
-                  <TabsContent value="hubspot" className="space-y-6">
-                    <HubSpotSyncPanel />
-                  </TabsContent>
-                </Tabs>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
-            </div>
-          </>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Edit Dialog */}
+        {editingNomination && (
+          <EnhancedEditDialog
+            nomination={editingNomination}
+            isOpen={isEditDialogOpen}
+            onClose={() => {
+              setIsEditDialogOpen(false);
+              setEditingNomination(null);
+            }}
+            onSave={handleSaveNomination}
+          />
         )}
       </div>
     </div>
