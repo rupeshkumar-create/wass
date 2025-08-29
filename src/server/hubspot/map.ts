@@ -37,6 +37,7 @@ export function contactProps(input: {
     source: 'WSA26',
     source_detail: 'WSS26',
     wsa_year: 2026,
+    lifecyclestage: 'lead', // Always set as lead for WSA contacts
     ...input.extras,
   };
 
@@ -75,6 +76,7 @@ export function companyProps(input: {
     source_detail: 'WSS26',
     wsa_year: 2026,
     wsa_role: 'Nominee_Company',
+    lifecyclestage: 'lead', // Always set as lead for WSA companies
     ...input.extras,
   };
 

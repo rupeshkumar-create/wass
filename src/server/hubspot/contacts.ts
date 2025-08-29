@@ -48,12 +48,18 @@ export async function upsertContactByEmail(
         updateProps.wsa_role = mergedRoles;
       }
 
+      // Always ensure lifecycle stage is set to lead for WSA contacts
+      updateProps.lifecyclestage = 'lead';
+
       // Remove empty/undefined values to avoid overwriting existing data
       Object.keys(updateProps).forEach(key => {
         if (updateProps[key] === undefined || updateProps[key] === null || updateProps[key] === '') {
           delete updateProps[key];
         }
       });
+
+      // But keep lifecyclestage even if it was empty
+      updateProps.lifecyclestage = 'lead';
 
       const response = await hubspotClient.hubFetch(`/crm/v3/objects/contacts/${existingContact.id}`, {
         method: 'PATCH',
