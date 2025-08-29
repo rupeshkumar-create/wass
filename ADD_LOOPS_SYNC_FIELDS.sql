@@ -27,8 +27,5 @@ CREATE INDEX IF NOT EXISTS idx_voters_loops_contact_id ON public.voters(loops_co
 CREATE INDEX IF NOT EXISTS idx_voters_loops_synced_at ON public.voters(loops_synced_at);
 
 -- Success message
-DO $
-BEGIN
-  RAISE NOTICE 'Loops sync fields added successfully!';
-  RAISE NOTICE 'Added loops_contact_id and loops_synced_at to nominees, nominators, and voters tables';
-END $;
+-- Loops sync fields added successfully!
+-- Added loops_contact_id and loops_synced_at to nominees, nominators, and voters tables
