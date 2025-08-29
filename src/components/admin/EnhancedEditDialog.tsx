@@ -185,14 +185,15 @@ export function EnhancedEditDialog({ nomination, isOpen, onClose, onSave }: Enha
                   className="flex-1"
                 />
                 {linkedin && (
-                  <a 
-                    href={linkedin} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3"
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-9 px-3"
+                    onClick={() => window.open(linkedin, '_blank', 'noopener,noreferrer')}
                   >
                     <ExternalLink className="h-4 w-4" />
-                  </a>
+                  </Button>
                 )}
               </div>
               <p className="text-xs text-gray-500 mt-1">
@@ -215,14 +216,15 @@ export function EnhancedEditDialog({ nomination, isOpen, onClose, onSave }: Enha
                   className="flex-1"
                 />
                 {liveUrl && (
-                  <a 
-                    href={liveUrl} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3"
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-9 px-3"
+                    onClick={() => window.open(liveUrl, '_blank', 'noopener,noreferrer')}
                   >
                     <ExternalLink className="h-4 w-4" />
-                  </a>
+                  </Button>
                 )}
               </div>
               <p className="text-xs text-gray-500 mt-1">

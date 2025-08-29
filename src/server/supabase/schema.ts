@@ -12,6 +12,8 @@ export interface Database {
           job_title: string | null;
           phone: string | null;
           country: string | null;
+          loops_contact_id: string | null;
+          loops_synced_at: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -25,6 +27,8 @@ export interface Database {
           job_title?: string | null;
           phone?: string | null;
           country?: string | null;
+          loops_contact_id?: string | null;
+          loops_synced_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -38,6 +42,8 @@ export interface Database {
           job_title?: string | null;
           phone?: string | null;
           country?: string | null;
+          loops_contact_id?: string | null;
+          loops_synced_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -73,6 +79,8 @@ export interface Database {
           bio: string | null;
           achievements: string | null;
           social_media: any; // JSONB
+          loops_contact_id: string | null;
+          loops_synced_at: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -103,6 +111,8 @@ export interface Database {
           bio?: string | null;
           achievements?: string | null;
           social_media?: any;
+          loops_contact_id?: string | null;
+          loops_synced_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -133,6 +143,8 @@ export interface Database {
           bio?: string | null;
           achievements?: string | null;
           social_media?: any;
+          loops_contact_id?: string | null;
+          loops_synced_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -194,6 +206,8 @@ export interface Database {
           company: string | null;
           job_title: string | null;
           country: string | null;
+          loops_contact_id: string | null;
+          loops_synced_at: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -206,6 +220,8 @@ export interface Database {
           company?: string | null;
           job_title?: string | null;
           country?: string | null;
+          loops_contact_id?: string | null;
+          loops_synced_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -218,6 +234,8 @@ export interface Database {
           company?: string | null;
           job_title?: string | null;
           country?: string | null;
+          loops_contact_id?: string | null;
+          loops_synced_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
