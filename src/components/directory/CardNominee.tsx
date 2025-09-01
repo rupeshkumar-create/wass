@@ -105,7 +105,7 @@ export function CardNominee({ nomination }: CardNomineeProps) {
                 size="sm" 
                 className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-200 text-xs rounded-md h-8 font-medium"
               >
-                <Link href={nomination.liveUrl || `/nominee/${nomination.id}`}>
+                <Link href={`/nominee/${nomination.id}`}>
                   View
                 </Link>
               </Button>
