@@ -11,6 +11,29 @@ import {
 // Secret header for cron job protection
 const CRON_SECRET = process.env.CRON_SECRET || 'dev-secret-key';
 
+export async function GET(request: NextRequest) {
+  try {
+    // Simple health check for HubSpot connection
+    const { testHubSpotRealTimeSync } = await import('@/server/hubspot/realtime-sync');
+    const testResult = await testHubSpotRealTimeSync();
+    
+    return NextResponse.json({
+      status: 'connected',
+      message: 'HubSpot API is accessible',
+      ...testResult
+    });
+  } catch (error) {
+    console.error('HubSpot health check failed:', error);
+    return NextResponse.json(
+      {
+        status: 'error',
+        message: error instanceof Error ? error.message : 'HubSpot connection failed'
+      },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json().catch(() => ({}));

@@ -1,103 +1,114 @@
 #!/usr/bin/env node
 
-const { createClient } = require('@supabase/supabase-js');
+/**
+ * Check current database schema
+ */
+
 require('dotenv').config({ path: '.env.local' });
+const { createClient } = require('@supabase/supabase-js');
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+// Initialize Supabase client
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-async function checkCurrentSchema() {
-  console.log('🔍 CHECKING CURRENT DATABASE SCHEMA\n');
-  
+const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+async function checkSchema() {
+  console.log('🔍 Checking Current Database Schema\n');
+
   try {
-    // Get table information
-    const { data: tables, error: tablesError } = await supabase
-      .rpc('get_table_info');
-      
-    if (tablesError) {
-      console.log('❌ Could not get table info via RPC, trying direct query...');
-      
-      // Try direct query to information_schema
-      const { data: directTables, error: directError } = await supabase
-        .from('information_schema.tables')
-        .select('table_name')
-        .eq('table_schema', 'public')
-        .eq('table_type', 'BASE TABLE');
-        
-      if (directError) {
-        console.log('❌ Direct query failed too:', directError.message);
-        
-        // Try simple table queries to see what exists
-        const testTables = ['nominations', 'votes', 'nominators', 'nominees', 'voters'];
-        
-        for (const tableName of testTables) {
-          try {
-            const { data, error } = await supabase.from(tableName).select('*').limit(1);
-            if (error) {
-              console.log(`❌ Table ${tableName}: ${error.message}`);
-            } else {
-              console.log(`✅ Table ${tableName}: exists`);
-              
-              // Try to get column info by selecting with specific columns
-              const { data: sample, error: sampleError } = await supabase
-                .from(tableName)
-                .select('*')
-                .limit(1);
-                
-              if (sample && sample.length > 0) {
-                console.log(`   Columns: ${Object.keys(sample[0]).join(', ')}`);
-              } else {
-                console.log(`   Table is empty, checking structure...`);
-                
-                // Try common columns to see what exists
-                const commonColumns = {
-                  nominations: ['id', 'created_at', 'status', 'category', 'nominator_name', 'nominee_name'],
-                  votes: ['id', 'created_at', 'voter_email', 'nomination_id', 'voter_name'],
-                  nominators: ['id', 'email', 'firstname', 'lastname'],
-                  nominees: ['id', 'type', 'firstname', 'lastname'],
-                  voters: ['id', 'email', 'firstname', 'lastname']
-                };
-                
-                if (commonColumns[tableName]) {
-                  const existingColumns = [];
-                  for (const col of commonColumns[tableName]) {
-                    try {
-                      const { error: colError } = await supabase
-                        .from(tableName)
-                        .select(col)
-                        .limit(1);
-                      if (!colError) {
-                        existingColumns.push(col);
-                      }
-                    } catch (e) {
-                      // Column doesn't exist
-                    }
-                  }
-                  console.log(`   Existing columns: ${existingColumns.join(', ')}`);
-                  
-                  const missingColumns = commonColumns[tableName].filter(col => !existingColumns.includes(col));
-                  if (missingColumns.length > 0) {
-                    console.log(`   Missing columns: ${missingColumns.join(', ')}`);
-                  }
-                }
-              }
-            }
-          } catch (err) {
-            console.log(`❌ Table ${tableName}: Exception - ${err.message}`);
-          }
-        }
-      } else {
-        console.log('✅ Found tables:', directTables.map(t => t.table_name).join(', '));
-      }
+    // Check nominations table
+    console.log('📋 Nominations Table:');
+    const { data: nominations, error: nomError } = await supabase
+      .from('nominations')
+      .select('*')
+      .limit(1);
+
+    if (nomError) {
+      console.error('❌ Nominations error:', nomError.message);
     } else {
-      console.log('✅ Got table info via RPC:', tables);
+      console.log('✅ Nominations table accessible');
+      if (nominations && nominations.length > 0) {
+        console.log('   Columns:', Object.keys(nominations[0]).join(', '));
+      }
     }
+
+    // Check votes table
+    console.log('\n🗳️  Votes Table:');
+    const { data: votes, error: voteError } = await supabase
+      .from('votes')
+      .select('*')
+      .limit(1);
+
+    if (voteError) {
+      console.error('❌ Votes error:', voteError.message);
+    } else {
+      console.log('✅ Votes table accessible');
+      if (votes && votes.length > 0) {
+        console.log('   Columns:', Object.keys(votes[0]).join(', '));
+      }
+    }
+
+    // Check nominees table
+    console.log('\n👤 Nominees Table:');
+    const { data: nominees, error: nomineeError } = await supabase
+      .from('nominees')
+      .select('*')
+      .limit(1);
+
+    if (nomineeError) {
+      console.error('❌ Nominees error:', nomineeError.message);
+    } else {
+      console.log('✅ Nominees table accessible');
+      if (nominees && nominees.length > 0) {
+        console.log('   Columns:', Object.keys(nominees[0]).join(', '));
+      }
+    }
+
+    // Check nominators table
+    console.log('\n📝 Nominators Table:');
+    const { data: nominators, error: nominatorError } = await supabase
+      .from('nominators')
+      .select('*')
+      .limit(1);
+
+    if (nominatorError) {
+      console.error('❌ Nominators error:', nominatorError.message);
+    } else {
+      console.log('✅ Nominators table accessible');
+      if (nominators && nominators.length > 0) {
+        console.log('   Columns:', Object.keys(nominators[0]).join(', '));
+      }
+    }
+
+    // Check views
+    console.log('\n👁️  Views:');
     
-  } catch (err) {
-    console.log('❌ General error:', err.message);
+    const { data: adminView, error: adminViewError } = await supabase
+      .from('admin_nominations')
+      .select('*')
+      .limit(1);
+
+    if (adminViewError) {
+      console.error('❌ Admin view error:', adminViewError.message);
+    } else {
+      console.log('✅ Admin view accessible');
+    }
+
+    const { data: publicView, error: publicViewError } = await supabase
+      .from('public_nominees')
+      .select('*')
+      .limit(1);
+
+    if (publicViewError) {
+      console.error('❌ Public view error:', publicViewError.message);
+    } else {
+      console.log('✅ Public view accessible');
+    }
+
+  } catch (error) {
+    console.error('\n❌ Schema check failed:', error.message);
   }
 }
 
-checkCurrentSchema().catch(console.error);
+checkSchema();

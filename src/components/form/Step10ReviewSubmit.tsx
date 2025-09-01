@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +20,16 @@ interface NomineeData {
   imageUrl?: string;
 }
 
+interface SubmitResult {
+  success?: boolean;
+  duplicate?: boolean;
+  liveUrl?: string;
+  error?: string;
+  reason?: string;
+  nominationId?: string;
+  state?: string;
+}
+
 interface Step10ReviewSubmitProps {
   category: Category;
   nominator: NominatorData;
@@ -27,7 +37,7 @@ interface Step10ReviewSubmitProps {
   onSubmit: () => Promise<void>;
   onBack: () => void;
   isSubmitting: boolean;
-  submitResult: { success?: boolean; duplicate?: boolean; liveUrl?: string; error?: string } | null;
+  submitResult: SubmitResult | null;
 }
 
 export function Step10ReviewSubmit({ 
@@ -54,12 +64,12 @@ export function Step10ReviewSubmit({
             }`} />
           </div>
           <CardTitle className="text-2xl">
-            {submitResult.duplicate ? "Already Nominated" : "Nomination Submitted Successfully!"}
+            {submitResult.duplicate ? "Already Nominated" : "Nominee Submitted Successfully!"}
           </CardTitle>
           <CardDescription>
             {submitResult.duplicate 
               ? submitResult.reason || "A nomination for this category with the same LinkedIn URL already exists."
-              : "Thank you for your nomination. It has been submitted and will be reviewed before appearing in the directory."
+              : "Thank you for submitting your nomination! It has been received and will be reviewed by our team before appearing in the public directory. The nominee will be notified via email once approved."
             }
           </CardDescription>
         </CardHeader>
@@ -125,9 +135,7 @@ export function Step10ReviewSubmit({
           <div className="space-y-1 text-sm">
             <p><span className="font-medium">Name:</span> {nominator.name || `${nominator.firstName || ''} ${nominator.lastName || ''}`.trim()}</p>
             <p><span className="font-medium">Email:</span> {nominator.email}</p>
-            {nominator.phone && (
-              <p><span className="font-medium">Phone:</span> {nominator.phone}</p>
-            )}
+            <p><span className="font-medium">LinkedIn:</span> <a href={nominator.linkedin} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">View Profile</a></p>
           </div>
         </div>
 
@@ -192,7 +200,7 @@ export function Step10ReviewSubmit({
             <li>• Your nomination will be reviewed by our team</li>
             <li>• Approved nominations appear in the public directory</li>
             <li>• The nominee will be notified via email</li>
-            <li>• Public voting opens on September 15, 2025</li>
+            <li>• Public voting opens on February 15, 2025</li>
           </ul>
         </div>
 

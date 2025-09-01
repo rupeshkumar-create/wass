@@ -27,7 +27,27 @@ export default function NomineeProfilePage() {
         setLoading(true);
         setError(null);
         
-        // Fetch all approved nominees
+        console.log('🔍 Looking for nominee with identifier:', slug);
+        
+        // Try to fetch specific nominee by identifier first
+        const specificResponse = await fetch(`/api/nominees/${slug}?_t=${Date.now()}`, {
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+          },
+        });
+        
+        if (specificResponse.ok) {
+          const specificResult = await specificResponse.json();
+          if (specificResult.success && specificResult.data) {
+            console.log('✅ Found nominee via specific API');
+            setNominee(specificResult.data);
+            return;
+          }
+        }
+        
+        // Fallback: Fetch all approved nominees and search
+        console.log('🔄 Fallback: Searching all nominees');
         const response = await fetch(`/api/nominees?_t=${Date.now()}`, {
           cache: 'no-store',
           headers: {
@@ -45,30 +65,48 @@ export default function NomineeProfilePage() {
           throw new Error(result.error || 'Failed to get nominees');
         }
         
-        // Find nominee by slug - prioritize ID matching for new schema
+        // Find nominee by multiple matching strategies
         const foundNominee = result.data.find((n: any) => {
-          // Primary matching: nomination ID or nominee ID
+          // Strategy 1: Direct ID matching (UUID)
           if (n.id === slug || n.nomineeId === slug) {
+            console.log('✅ Found by ID match');
             return true;
           }
           
-          // Secondary matching: liveUrl (for backward compatibility)
+          // Strategy 2: Live URL path matching
           const liveUrl = n.liveUrl || n.nominee?.liveUrl || '';
           if (liveUrl) {
-            return (
-              liveUrl === slug || 
-              liveUrl === `/nominee/${slug}` ||
-              liveUrl.replace('/nominee/', '') === slug
-            );
+            const urlPath = liveUrl.replace('https://worldstaffingawards.com/nominee/', '');
+            if (urlPath === slug) {
+              console.log('✅ Found by live URL path match');
+              return true;
+            }
+          }
+          
+          // Strategy 3: Display name slug matching
+          const displayName = n.displayName || n.name || n.nominee?.displayName || n.nominee?.name || '';
+          if (displayName) {
+            const nameSlug = displayName
+              .toLowerCase()
+              .replace(/[^a-z0-9\s-]/g, '')
+              .replace(/\s+/g, '-')
+              .replace(/-+/g, '-')
+              .trim();
+            if (nameSlug === slug.toLowerCase()) {
+              console.log('✅ Found by name slug match');
+              return true;
+            }
           }
           
           return false;
         });
         
         if (!foundNominee) {
+          console.log('❌ Nominee not found with any strategy');
           throw new Error('Nominee not found');
         }
         
+        console.log('✅ Found nominee:', foundNominee.displayName || foundNominee.name);
         setNominee(foundNominee);
       } catch (err) {
         console.error('Error fetching nominee:', err);

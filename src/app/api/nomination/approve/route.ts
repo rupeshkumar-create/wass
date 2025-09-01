@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/server/supabase/client';
 import { NominationApproveSchema } from '@/lib/zod/nomination';
+import { validateAdminAuth, createAuthErrorResponse } from '@/lib/auth/admin';
 import { z } from 'zod';
 
 export async function POST(request: NextRequest) {
+  // Validate admin authentication
+  if (!validateAdminAuth(request)) {
+    return createAuthErrorResponse();
+  }
   try {
     const body = await request.json();
     
@@ -54,6 +59,11 @@ export async function POST(request: NextRequest) {
     if (action === 'approve') {
       updateData.approved_at = new Date().toISOString();
       updateData.approved_by = 'admin'; // Could be dynamic based on auth
+      
+      // CRITICAL: Store the live URL in the database
+      if (validatedData.liveUrl) {
+        updateData.live_url = validatedData.liveUrl;
+      }
     } else {
       updateData.rejection_reason = validatedData.rejectionReason || 'Rejected by admin';
     }
@@ -251,14 +261,24 @@ export async function POST(request: NextRequest) {
       console.warn('Loops outbox not available (non-blocking):', loopsOutboxError);
     }
 
-    console.log('Nomination approved successfully:', validatedData.nominationId);
+    console.log('Nomination processed successfully:', {
+      nominationId: validatedData.nominationId,
+      action,
+      liveUrl: validatedData.liveUrl
+    });
 
     return NextResponse.json({
+      success: true,
       nominationId: validatedData.nominationId,
+      action,
       state: updatedNomination.state,
       approvedAt: updatedNomination.approved_at,
       adminNotes: updatedNomination.admin_notes,
-      liveUrl: validatedData.liveUrl
+      liveUrl: validatedData.liveUrl,
+      displayName: displayName,
+      message: action === 'approve' 
+        ? `Nomination approved successfully! Live URL: ${validatedData.liveUrl}`
+        : 'Nomination rejected successfully'
     });
 
   } catch (error) {

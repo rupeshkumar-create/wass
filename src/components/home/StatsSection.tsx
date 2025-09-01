@@ -48,7 +48,7 @@ export function StatsSection() {
             totalCategories: CATEGORIES.length,
             totalNominations: result.data.totalNominations || 0,
             approvedNominations: result.data.approvedNominations || 0,
-            totalVotes: result.data.totalVotes || 0
+            totalVotes: result.data.totalVotes || result.data.totalCombinedVotes || 0 // Use public total votes
           });
         }
       } else {
@@ -137,32 +137,32 @@ export function StatsSection() {
     // Return static content during SSR to prevent hydration mismatch
     return (
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card>
+        <Card className="bg-white border-gray-200 hover:shadow-lg transition-shadow">
           <CardContent className="p-6 text-center">
-            <Award className="h-8 w-8 mx-auto mb-2 text-primary" />
-            <div className="text-2xl font-bold">{CATEGORIES.length}</div>
-            <div className="text-sm text-muted-foreground">Award Categories</div>
+            <Award className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+            <div className="text-2xl font-bold text-gray-900">{CATEGORIES.length}</div>
+            <div className="text-sm text-gray-600">Award Categories</div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="bg-white border-gray-200 hover:shadow-lg transition-shadow">
           <CardContent className="p-6 text-center">
-            <Users className="h-8 w-8 mx-auto mb-2 text-primary" />
-            <div className="text-2xl font-bold">-</div>
-            <div className="text-sm text-muted-foreground">Approved Nominees</div>
+            <Users className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+            <div className="text-2xl font-bold text-gray-900">-</div>
+            <div className="text-sm text-gray-600">Approved Nominees</div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="bg-white border-gray-200 hover:shadow-lg transition-shadow">
           <CardContent className="p-6 text-center">
-            <Vote className="h-8 w-8 mx-auto mb-2 text-primary" />
-            <div className="text-2xl font-bold">-</div>
-            <div className="text-sm text-muted-foreground">Votes Cast</div>
+            <Vote className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+            <div className="text-2xl font-bold text-gray-900">-</div>
+            <div className="text-sm text-gray-600">Votes Cast</div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="bg-white border-gray-200 hover:shadow-lg transition-shadow">
           <CardContent className="p-6 text-center">
-            <Calendar className="h-8 w-8 mx-auto mb-2 text-primary" />
-            <div className="text-2xl font-bold">Jan 30</div>
-            <div className="text-sm text-muted-foreground">Awards Ceremony</div>
+            <Calendar className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+            <div className="text-2xl font-bold text-gray-900">Jan 30</div>
+            <div className="text-sm text-gray-600">Awards Ceremony</div>
           </CardContent>
         </Card>
       </div>
@@ -171,32 +171,32 @@ export function StatsSection() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-      <Card>
+      <Card className="bg-white border-gray-200 hover:shadow-lg transition-shadow">
         <CardContent className="p-6 text-center">
-          <Award className="h-8 w-8 mx-auto mb-2 text-primary" />
-          <div className="text-2xl font-bold">{stats.totalCategories}</div>
-          <div className="text-sm text-muted-foreground">Award Categories</div>
+          <Award className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+          <div className="text-2xl font-bold text-gray-900">{stats.totalCategories}</div>
+          <div className="text-sm text-gray-600">Award Categories</div>
         </CardContent>
       </Card>
-      <Card>
+      <Card className="bg-white border-gray-200 hover:shadow-lg transition-shadow">
         <CardContent className="p-6 text-center">
-          <Users className="h-8 w-8 mx-auto mb-2 text-primary" />
-          <div className="text-2xl font-bold">{stats.approvedNominations}</div>
-          <div className="text-sm text-muted-foreground">Approved Nominees</div>
+          <Users className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+          <div className="text-2xl font-bold text-gray-900">{stats.approvedNominations}</div>
+          <div className="text-sm text-gray-600">Approved Nominees</div>
         </CardContent>
       </Card>
-      <Card>
+      <Card className="bg-white border-gray-200 hover:shadow-lg transition-shadow">
         <CardContent className="p-6 text-center">
-          <Vote className="h-8 w-8 mx-auto mb-2 text-primary" />
-          <div className="text-2xl font-bold">{stats.totalVotes}</div>
-          <div className="text-sm text-muted-foreground">Votes Cast</div>
+          <Vote className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+          <div className="text-2xl font-bold text-gray-900">{stats.totalVotes}</div>
+          <div className="text-sm text-gray-600">Votes Cast</div>
         </CardContent>
       </Card>
-      <Card>
+      <Card className="bg-white border-gray-200 hover:shadow-lg transition-shadow">
         <CardContent className="p-6 text-center">
-          <Calendar className="h-8 w-8 mx-auto mb-2 text-primary" />
-          <div className="text-2xl font-bold">Jan 30</div>
-          <div className="text-sm text-muted-foreground">Awards Ceremony</div>
+          <Calendar className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+          <div className="text-2xl font-bold text-gray-900">Jan 30</div>
+          <div className="text-sm text-gray-600">Awards Ceremony</div>
         </CardContent>
       </Card>
     </div>

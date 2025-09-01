@@ -48,11 +48,12 @@ export async function GET(request: NextRequest) {
     }
 
     // Get approved nominations for this category using the new schema
+    // FIXED: Order by total_votes (real + additional) instead of just votes
     const { data: nominees, error } = await supabase
       .from('public_nominees')
       .select('*')
       .eq('subcategory_id', category)
-      .order('votes', { ascending: false })
+      .order('total_votes', { ascending: false })
       .order('approved_at', { ascending: true })
       .order('display_name', { ascending: true })
       .limit(3);
@@ -63,6 +64,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Transform to podium items
+    // FIXED: Use total_votes instead of just votes to include additional votes
     const podiumItems: PodiumItem[] = (nominees || []).map((nominee, index) => ({
       rank: (index + 1) as 1 | 2 | 3,
       nomineeId: nominee.nominee_id,
@@ -70,7 +72,7 @@ export async function GET(request: NextRequest) {
       category: nominee.subcategory_id,
       type: nominee.type,
       image_url: nominee.image_url || null,
-      votes: nominee.votes,
+      votes: nominee.total_votes || nominee.votes || 0,
       live_slug: nominee.live_url || '',
     }));
 

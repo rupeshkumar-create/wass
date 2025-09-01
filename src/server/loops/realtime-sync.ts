@@ -378,7 +378,7 @@ export async function updateNominatorToLive(
   try {
     console.log(`🔄 Updating nominator to "Nominator Live": ${nominatorEmail}`);
 
-    // Update contact with nominee live link
+    // Update contact with nominee live link and user group in single call
     await loopsClient.loopsFetch('/contacts/update', {
       method: 'PUT',
       body: {
@@ -386,22 +386,11 @@ export async function updateNominatorToLive(
         nomineeName: nomineeData.name,
         nomineeLiveUrl: nomineeData.liveUrl,
         approvalDate: new Date().toISOString(),
+        userGroup: 'Nominator Live', // Update user group in same call
       },
     });
 
-    // Update user group to "Nominator Live"
-    try {
-      await loopsClient.loopsFetch('/contacts/update', {
-        method: 'PUT',
-        body: {
-          email: nominatorEmail.toLowerCase(),
-          userGroup: 'Nominator Live',
-        },
-      });
-      console.log(`✅ Updated userGroup property to "Nominator Live": ${nominatorEmail}`);
-    } catch (updateError) {
-      console.warn(`⚠️ Failed to update userGroup property: ${updateError}`);
-    }
+    console.log(`✅ Updated contact to "Nominator Live" with nominee link: ${nominatorEmail}`);
 
     // The userGroup property will distinguish between regular and live nominators
 

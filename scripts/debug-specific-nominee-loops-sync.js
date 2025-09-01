@@ -61,21 +61,31 @@ async function debugSpecificNomineeLoops() {
       });
       
       if (response.ok) {
-        const loopsContact = await response.json();
-        console.log('✅ Found in Loops:');
-        console.log('- Contact ID:', loopsContact.id);
-        console.log('- Email:', loopsContact.email);
-        console.log('- First Name:', loopsContact.firstName);
-        console.log('- Last Name:', loopsContact.lastName);
-        console.log('- User Group:', loopsContact.userGroup);
-        console.log('- Source:', loopsContact.source);
-        console.log('- Created:', loopsContact.createdAt);
+        const loopsResponse = await response.json();
         
-        // Check if user group is correct
-        if (loopsContact.userGroup !== 'nominees') {
-          console.log(`⚠️  User group is '${loopsContact.userGroup}', should be 'nominees'`);
+        // Loops API returns an array
+        if (Array.isArray(loopsResponse) && loopsResponse.length > 0) {
+          const loopsContact = loopsResponse[0];
+          console.log('✅ Found in Loops:');
+          console.log('- Contact ID:', loopsContact.id);
+          console.log('- Email:', loopsContact.email);
+          console.log('- First Name:', loopsContact.firstName);
+          console.log('- Last Name:', loopsContact.lastName);
+          console.log('- User Group:', loopsContact.userGroup);
+          console.log('- Source:', loopsContact.source);
+          console.log('- Job Title:', loopsContact.jobTitle);
+          console.log('- LinkedIn:', loopsContact.linkedin);
+          console.log('- Category:', loopsContact.category);
+          console.log('- Nomination State:', loopsContact.nominationState);
+          
+          // Check if user group is correct
+          if (loopsContact.userGroup !== 'nominees') {
+            console.log(`⚠️  User group is '${loopsContact.userGroup}', should be 'nominees'`);
+          } else {
+            console.log('✅ User group is correct: nominees');
+          }
         } else {
-          console.log('✅ User group is correct: nominees');
+          console.log('❌ Contact not found in Loops (empty response)');
         }
       } else if (response.status === 404) {
         console.log('❌ Contact not found in Loops');
@@ -91,7 +101,10 @@ async function debugSpecificNomineeLoops() {
     console.log('\n👤 Checking nominator...');
     const { data: nominations, error: nominationsError } = await supabase
       .from('nominations')
-      .select('*')
+      .select(`
+        *,
+        nominators (*)
+      `)
       .eq('nominee_id', nominee.id);
     
     if (nominationsError) {
@@ -99,16 +112,25 @@ async function debugSpecificNomineeLoops() {
     } else if (nominations && nominations.length > 0) {
       const nomination = nominations[0];
       console.log('✅ Found nomination:');
-      console.log('- Nominator Email:', nomination.nominator_email);
-      console.log('- Nominator Name:', nomination.nominator_name);
+      console.log('- Nomination ID:', nomination.id);
       console.log('- State:', nomination.state);
       console.log('- Created At:', nomination.created_at);
       
+      if (nomination.nominators) {
+        const nominator = nomination.nominators;
+        console.log('- Nominator Email:', nominator.email);
+        console.log('- Nominator Name:', `${nominator.firstname} ${nominator.lastname}`);
+        console.log('- Nominator Company:', nominator.company);
+      } else {
+        console.log('- Nominator: Not found in join');
+      }
+      
       // Check if nominator exists in Loops
-      if (nomination.nominator_email) {
+      if (nomination.nominators && nomination.nominators.email) {
         console.log('\n👤 Checking nominator in Loops...');
         try {
-          const nominatorResponse = await fetch(`https://app.loops.so/api/v1/contacts/find?email=${encodeURIComponent(nomination.nominator_email)}`, {
+          const nominatorEmail = nomination.nominators.email;
+          const nominatorResponse = await fetch(`https://app.loops.so/api/v1/contacts/find?email=${encodeURIComponent(nominatorEmail)}`, {
             headers: {
               'Authorization': `Bearer ${loopsApiKey}`,
               'Content-Type': 'application/json'
@@ -116,16 +138,24 @@ async function debugSpecificNomineeLoops() {
           });
           
           if (nominatorResponse.ok) {
-            const nominatorContact = await nominatorResponse.json();
-            console.log('✅ Nominator found in Loops:');
-            console.log('- Contact ID:', nominatorContact.id);
-            console.log('- Email:', nominatorContact.email);
-            console.log('- User Group:', nominatorContact.userGroup);
+            const nominatorLoopsResponse = await nominatorResponse.json();
             
-            if (nominatorContact.userGroup !== 'nominators') {
-              console.log(`⚠️  Nominator user group is '${nominatorContact.userGroup}', should be 'nominators'`);
+            if (Array.isArray(nominatorLoopsResponse) && nominatorLoopsResponse.length > 0) {
+              const nominatorContact = nominatorLoopsResponse[0];
+              console.log('✅ Nominator found in Loops:');
+              console.log('- Contact ID:', nominatorContact.id);
+              console.log('- Email:', nominatorContact.email);
+              console.log('- User Group:', nominatorContact.userGroup);
+              console.log('- First Name:', nominatorContact.firstName);
+              console.log('- Last Name:', nominatorContact.lastName);
+              
+              if (nominatorContact.userGroup !== 'nominators') {
+                console.log(`⚠️  Nominator user group is '${nominatorContact.userGroup}', should be 'nominators'`);
+              } else {
+                console.log('✅ Nominator user group is correct: nominators');
+              }
             } else {
-              console.log('✅ Nominator user group is correct: nominators');
+              console.log('❌ Nominator not found in Loops (empty response)');
             }
           } else if (nominatorResponse.status === 404) {
             console.log('❌ Nominator not found in Loops');

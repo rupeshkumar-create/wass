@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
         category: nominee.subcategory_id,
         categoryGroup: nominee.category_group_id,
         type: nominee.type,
-        votes: nominee.votes || 0,
+        votes: (nominee.votes || 0) + (nominee.additional_votes || 0), // Total votes (real + additional)
         status: 'approved' as const,
         createdAt: nominee.created_at,
         approvedAt: nominee.approved_at,

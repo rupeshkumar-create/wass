@@ -5,7 +5,7 @@ import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { Toaster } from "@/components/ui/sonner";
 import { MotionProvider } from "@/components/animations/MotionProvider";
-import { ThemeProvider } from "@/components/theme-provider";
+// Removed theme provider - using light mode only
 
 const inter = Inter({
   subsets: ["latin"],
@@ -14,7 +14,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "World Staffing Awards 2026",
-  description: "Celebrating excellence in the global staffing industry. Nominate outstanding individuals and companies making a difference in talent acquisition and workforce solutions.",
+  description: "Celebrating excellence in the global staffing industry. Vote for outstanding individuals and companies making a difference in talent acquisition and workforce solutions.",
   keywords: "staffing awards, recruitment excellence, talent acquisition, workforce solutions, HR awards",
   authors: [{ name: "World Staffing Awards" }],
   openGraph: {
@@ -39,22 +39,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans antialiased`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem={false}
-          disableTransitionOnChange
-        >
-          <MotionProvider>
-            <Navigation />
-            <main className="min-h-screen">
-              {children}
-            </main>
-            <Footer />
-            <Toaster />
-          </MotionProvider>
-        </ThemeProvider>
+      <body className={`${inter.variable} font-sans antialiased bg-white text-gray-900`}>
+        <MotionProvider>
+          <Navigation />
+          <main className="min-h-screen bg-white">
+            {children}
+          </main>
+          <Footer />
+          <Toaster />
+        </MotionProvider>
       </body>
     </html>
   );

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { validateAdminAuth, createAuthErrorResponse } from '@/lib/auth/admin';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -17,6 +18,10 @@ export const dynamic = 'force-dynamic';
  * GET /api/admin/nominations - Get all nominations for admin panel
  */
 export async function GET(request: NextRequest) {
+  // Validate admin authentication
+  if (!validateAdminAuth(request)) {
+    return createAuthErrorResponse();
+  }
   try {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
@@ -27,6 +32,7 @@ export async function GET(request: NextRequest) {
         nomination_id,
         state,
         votes,
+        additional_votes,
         subcategory_id,
         category_group_id,
         admin_notes,
@@ -120,7 +126,9 @@ export async function GET(request: NextRequest) {
       
       // Shared fields
       liveUrl: nom.nominee_live_url,
-      votes: nom.votes,
+      votes: nom.votes, // Real votes from actual voting
+      additionalVotes: nom.additional_votes || 0, // Manual votes added by admin
+      totalVotes: (nom.votes || 0) + (nom.additional_votes || 0), // Total for display
       createdAt: nom.created_at,
       created_at: nom.created_at, // Frontend expects this
       updatedAt: nom.updated_at,
@@ -168,6 +176,11 @@ export async function GET(request: NextRequest) {
  * PATCH /api/admin/nominations - Update nomination status or details
  */
 export async function PATCH(request: NextRequest) {
+  // Validate admin authentication
+  if (!validateAdminAuth(request)) {
+    return createAuthErrorResponse();
+  }
+  
   try {
     const body = await request.json();
     const { nominationId, state, liveUrl, whyMe, whyUs, headshotUrl, logoUrl, linkedin, adminNotes, rejectionReason } = body;
@@ -193,18 +206,29 @@ export async function PATCH(request: NextRequest) {
 
     // Add fields that are provided
     if (state) updateData.state = state;
+    if (liveUrl !== undefined) {
+      // Ensure live URL follows consistent format
+      const cleanUrl = liveUrl.trim();
+      if (cleanUrl && !cleanUrl.startsWith('https://worldstaffingawards.com/nominee/')) {
+        // If it's just an ID or slug, create full URL
+        if (!cleanUrl.startsWith('http')) {
+          updateData.live_url = `https://worldstaffingawards.com/nominee/${cleanUrl}`;
+        } else {
+          updateData.live_url = cleanUrl;
+        }
+      } else {
+        updateData.live_url = cleanUrl;
+      }
+    }
     if (adminNotes !== undefined) updateData.admin_notes = adminNotes;
     if (rejectionReason !== undefined) updateData.rejection_reason = rejectionReason;
 
     // Update the nomination
     const { data: nominationData, error: nominationError } = await supabaseAdmin
       .from('nominations')
-      .update({
-        state: state || undefined,
-        updated_at: new Date().toISOString()
-      })
+      .update(updateData)
       .eq('id', nominationId)
-      .select('id, state, nominee_id, updated_at')
+      .select('id, state, nominee_id, updated_at, live_url')
       .single();
 
     if (nominationError) {
@@ -214,7 +238,7 @@ export async function PATCH(request: NextRequest) {
 
     // Update nominee data if provided
     const nomineeUpdateData: any = {};
-    if (liveUrl !== undefined) nomineeUpdateData.live_url = liveUrl;
+    // Note: live_url is stored in nominations table, not nominees table
     if (whyMe !== undefined) nomineeUpdateData.why_me = whyMe;
     if (whyUs !== undefined) nomineeUpdateData.why_us = whyUs;
     if (headshotUrl !== undefined) nomineeUpdateData.headshot_url = headshotUrl;

@@ -2,328 +2,226 @@
 
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Trophy, Medal, Award, ExternalLink, User, Building2, RefreshCw } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Trophy, Medal, Award, Crown } from "lucide-react";
 import { CATEGORIES } from "@/lib/constants";
 
 interface TopNominee {
   id: string;
-  nominationId: string;
-  rank: number;
-  type: 'person' | 'company';
   displayName: string;
-  imageUrl?: string;
+  subcategoryId: string;
   votes: number;
-  category: string;
-  firstname?: string;
-  lastname?: string;
-  email?: string;
-  linkedin?: string;
-  jobtitle?: string;
-  headshotUrl?: string;
-  whyMe?: string;
-  companyName?: string;
-  companyWebsite?: string;
-  companyLinkedin?: string;
-  logoUrl?: string;
-  whyUs?: string;
-  liveUrl?: string;
-  state: string;
+  imageUrl?: string;
+  type: 'person' | 'company';
 }
 
 interface TopNomineesPanelProps {
-  onEditNominee?: (nominee: TopNominee) => void;
+  nominations: any[];
+  onCategoryChange?: (category: string) => void;
 }
 
-export function TopNomineesPanel({ onEditNominee }: TopNomineesPanelProps) {
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
+export function TopNomineesPanel({ nominations, onCategoryChange }: TopNomineesPanelProps) {
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [topNominees, setTopNominees] = useState<TopNominee[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchTopNominees = async (category: string) => {
-    if (!category) return;
-    
-    setLoading(true);
-    setError(null);
-    
-    try {
-      const response = await fetch(`/api/admin/top-nominees?category=${encodeURIComponent(category)}`, {
-        cache: 'no-store',
-        headers: { 'Cache-Control': 'no-cache' }
-      });
-      
-      if (response.ok) {
-        const result = await response.json();
-        if (result.success) {
-          setTopNominees(result.data);
-        } else {
-          throw new Error(result.error || 'Failed to fetch top nominees');
-        }
-      } else {
-        throw new Error(`HTTP ${response.status}: Failed to fetch top nominees`);
-      }
-    } catch (error) {
-      console.error('Failed to fetch top nominees:', error);
-      setError(error instanceof Error ? error.message : 'Failed to fetch top nominees');
-      setTopNominees([]);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
-    if (selectedCategory) {
-      fetchTopNominees(selectedCategory);
+    // Filter by category if selected
+    let filtered = nominations.filter(n => n.state === 'approved');
+    
+    if (selectedCategory !== 'all') {
+      filtered = filtered.filter(n => n.subcategory_id === selectedCategory);
     }
-  }, [selectedCategory]);
 
-  const getRankIcon = (rank: number) => {
-    switch (rank) {
-      case 1:
-        return <Trophy className="h-5 w-5 text-yellow-500" />;
-      case 2:
-        return <Medal className="h-5 w-5 text-gray-400" />;
-      case 3:
-        return <Award className="h-5 w-5 text-amber-600" />;
-      default:
-        return <Award className="h-5 w-5 text-gray-400" />;
+    // Get top 3 nominees by votes
+    const top3 = filtered
+      .sort((a, b) => (b.totalVotes || b.votes || 0) - (a.totalVotes || a.votes || 0))
+      .slice(0, 3)
+      .map(n => ({
+        id: n.id,
+        displayName: n.displayName,
+        subcategoryId: n.subcategory_id,
+        votes: n.totalVotes || n.votes || 0,
+        imageUrl: n.imageUrl,
+        type: n.type
+      }));
+
+    setTopNominees(top3);
+  }, [nominations, selectedCategory]);
+
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category);
+    onCategoryChange?.(category);
+  };
+
+  const getRankIcon = (index: number) => {
+    switch (index) {
+      case 0: return <Crown className="h-5 w-5 text-yellow-500" />;
+      case 1: return <Trophy className="h-5 w-5 text-gray-400" />;
+      case 2: return <Medal className="h-5 w-5 text-amber-600" />;
+      default: return null;
     }
   };
 
-  const getRankColor = (rank: number) => {
-    switch (rank) {
-      case 1:
-        return "bg-gradient-to-r from-yellow-400 to-yellow-600 text-white";
-      case 2:
-        return "bg-gradient-to-r from-gray-300 to-gray-500 text-white";
-      case 3:
-        return "bg-gradient-to-r from-amber-400 to-amber-600 text-white";
-      default:
-        return "bg-gray-100 text-gray-700";
+  const getRankBg = (index: number) => {
+    switch (index) {
+      case 0: return "bg-gradient-to-r from-yellow-50 to-yellow-100 border-yellow-200";
+      case 1: return "bg-gradient-to-r from-gray-50 to-gray-100 border-gray-200";
+      case 2: return "bg-gradient-to-r from-amber-50 to-amber-100 border-amber-200";
+      default: return "bg-muted/30";
     }
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Trophy className="h-5 w-5" />
-          Top 3 Nominees by Category
-        </CardTitle>
-        <CardDescription>
-          View the top 3 nominees in each category based on vote count
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-6">
-          {/* Category Selection */}
-          <div className="flex items-center gap-4">
-            <div className="flex-1">
-              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a category to view top nominees" />
-                </SelectTrigger>
-                <SelectContent>
-                  {CATEGORIES.map((category) => (
-                    <SelectItem key={category.id} value={category.id}>
-                      <div className="flex items-center gap-2">
-                        {category.type === 'person' ? (
-                          <User className="h-4 w-4" />
-                        ) : (
-                          <Building2 className="h-4 w-4" />
-                        )}
-                        {category.label}
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            {selectedCategory && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => fetchTopNominees(selectedCategory)}
-                disabled={loading}
-                className="flex items-center gap-2"
+    <div className="space-y-4">
+      {/* Category Selector */}
+      <Card className="border-0 shadow-lg">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg">Category Filter</CardTitle>
+          <CardDescription>Select category to view top nominees</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Select value={selectedCategory} onValueChange={handleCategoryChange}>
+            <SelectTrigger className="w-full bg-white border-gray-200 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              <SelectValue placeholder="Select a category" />
+            </SelectTrigger>
+            <SelectContent className="bg-white border-gray-200 shadow-lg z-[100] max-h-[300px] overflow-y-auto">
+              <SelectItem value="all" className="text-gray-900 hover:bg-gray-50 focus:bg-gray-50">
+                All Categories
+              </SelectItem>
+              {CATEGORIES.map(category => (
+                <SelectItem 
+                  key={category.id} 
+                  value={category.id}
+                  className="text-gray-900 hover:bg-gray-50 focus:bg-gray-50"
+                >
+                  {category.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </CardContent>
+      </Card>
+
+      {/* Top 3 Nominees */}
+      <Card className="border-0 shadow-lg">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Trophy className="h-5 w-5 text-yellow-500" />
+            Top 3 Nominees
+          </CardTitle>
+          <CardDescription>
+            {selectedCategory === 'all' 
+              ? 'Highest vote counts across all categories'
+              : `Top nominees in ${CATEGORIES.find(c => c.id === selectedCategory)?.name || selectedCategory}`
+            }
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {topNominees.map((nominee, index) => (
+              <div 
+                key={nominee.id} 
+                className={`flex items-center gap-3 p-4 rounded-lg border transition-all hover:shadow-md ${getRankBg(index)}`}
               >
-                <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-                Refresh
-              </Button>
+                <div className="flex-shrink-0">
+                  {getRankIcon(index)}
+                </div>
+                
+                {nominee.imageUrl && (
+                  <img 
+                    src={nominee.imageUrl} 
+                    alt={nominee.displayName}
+                    className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm"
+                  />
+                )}
+                
+                <div className="flex-1 min-w-0">
+                  <div className="font-semibold text-sm truncate">{nominee.displayName}</div>
+                  <div className="text-xs text-muted-foreground truncate">
+                    {CATEGORIES.find(c => c.id === nominee.subcategoryId)?.name || nominee.subcategoryId}
+                  </div>
+                  <Badge variant="outline" className="text-xs px-1 py-0 mt-1">
+                    {nominee.type === 'person' ? 'Individual' : 'Company'}
+                  </Badge>
+                </div>
+                
+                <div className="flex flex-col items-end">
+                  <div className="text-lg font-bold text-primary">{nominee.votes}</div>
+                  <div className="text-xs text-muted-foreground">votes</div>
+                </div>
+              </div>
+            ))}
+            
+            {topNominees.length === 0 && (
+              <div className="text-center py-8 text-muted-foreground">
+                <Trophy className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                <div className="text-sm">No nominees found</div>
+                <div className="text-xs">
+                  {selectedCategory === 'all' 
+                    ? 'No approved nominees available'
+                    : 'No nominees in this category'
+                  }
+                </div>
+              </div>
+            )}
+            
+            {topNominees.length > 0 && topNominees.length < 3 && (
+              <div className="text-center py-4 text-muted-foreground text-xs">
+                Showing top {topNominees.length} nominee{topNominees.length > 1 ? 's' : ''}
+              </div>
             )}
           </div>
+        </CardContent>
+      </Card>
 
-          {/* Loading State */}
-          {loading && (
-            <div className="space-y-4">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <Skeleton key={i} className="h-32" />
-              ))}
-            </div>
-          )}
-
-          {/* Error State */}
-          {error && (
-            <div className="text-center py-8">
-              <div className="text-red-500 mb-2">Error loading top nominees</div>
-              <div className="text-sm text-muted-foreground">{error}</div>
-            </div>
-          )}
-
-          {/* No Category Selected */}
-          {!selectedCategory && !loading && (
-            <div className="text-center py-12">
-              <Trophy className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-medium mb-2">Select a Category</h3>
-              <p className="text-muted-foreground">
-                Choose a category from the dropdown above to view the top 3 nominees
-              </p>
-            </div>
-          )}
-
-          {/* No Nominees Found */}
-          {selectedCategory && !loading && topNominees.length === 0 && !error && (
-            <div className="text-center py-12">
-              <Award className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-medium mb-2">No Nominees Found</h3>
-              <p className="text-muted-foreground">
-                No approved nominees found for this category yet
-              </p>
-            </div>
-          )}
-
-          {/* Top Nominees List */}
-          {!loading && topNominees.length > 0 && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-medium">
-                  Top {topNominees.length} in {CATEGORIES.find(c => c.id === selectedCategory)?.label}
-                </h3>
-                <Badge variant="outline">
-                  {CATEGORIES.find(c => c.id === selectedCategory)?.type === 'person' ? 'Individual' : 'Company'} Category
-                </Badge>
+      {/* Quick Stats */}
+      <Card className="border-0 shadow-lg">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg">Quick Stats</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 gap-3 mb-3">
+            <div className="text-center p-3 bg-muted/30 rounded-lg">
+              <div className="text-lg font-bold text-blue-600">
+                {nominations.filter(n => n.state === 'approved' && (selectedCategory === 'all' || n.subcategory_id === selectedCategory)).length}
               </div>
-
-              {topNominees.map((nominee) => (
-                <Card key={nominee.id} className={`relative overflow-hidden ${nominee.rank === 1 ? 'ring-2 ring-yellow-400' : ''}`}>
-                  <CardContent className="p-6">
-                    <div className="flex items-start gap-4">
-                      {/* Rank Badge */}
-                      <div className={`flex items-center justify-center w-12 h-12 rounded-full ${getRankColor(nominee.rank)}`}>
-                        <div className="flex items-center gap-1">
-                          {getRankIcon(nominee.rank)}
-                          <span className="font-bold text-sm">#{nominee.rank}</span>
-                        </div>
-                      </div>
-
-                      {/* Nominee Image */}
-                      {nominee.imageUrl && (
-                        <div className="w-16 h-16 rounded-lg overflow-hidden border bg-white flex-shrink-0">
-                          <img 
-                            src={nominee.imageUrl} 
-                            alt={nominee.displayName}
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                              e.currentTarget.style.display = 'none';
-                            }}
-                          />
-                        </div>
-                      )}
-
-                      {/* Nominee Details */}
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <h4 className="font-semibold text-lg">{nominee.displayName}</h4>
-                          <Badge variant={nominee.type === 'person' ? 'default' : 'secondary'}>
-                            {nominee.type === 'person' ? 'Individual' : 'Company'}
-                          </Badge>
-                        </div>
-
-                        <div className="text-sm text-muted-foreground space-y-1 mb-3">
-                          {nominee.type === 'person' && nominee.jobtitle && (
-                            <p><strong>Title:</strong> {nominee.jobtitle}</p>
-                          )}
-                          {nominee.type === 'person' && nominee.email && (
-                            <p><strong>Email:</strong> {nominee.email}</p>
-                          )}
-                          {nominee.type === 'company' && nominee.companyWebsite && (
-                            <p><strong>Website:</strong> {nominee.companyWebsite}</p>
-                          )}
-                          <p><strong>Votes:</strong> {nominee.votes}</p>
-                        </div>
-
-                        {/* Why Vote Text */}
-                        {(nominee.whyMe || nominee.whyUs) && (
-                          <div className="text-sm mb-3">
-                            <p className="font-medium mb-1">Why Vote:</p>
-                            <p className="text-muted-foreground italic line-clamp-2">
-                              {nominee.whyMe || nominee.whyUs}
-                            </p>
-                          </div>
-                        )}
-
-                        {/* Action Buttons */}
-                        <div className="flex gap-2 flex-wrap">
-                          {onEditNominee && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => onEditNominee(nominee)}
-                            >
-                              Edit Details
-                            </Button>
-                          )}
-                          
-                          {nominee.linkedin && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              asChild
-                            >
-                              <a 
-                                href={nominee.linkedin} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="flex items-center gap-1"
-                              >
-                                LinkedIn
-                                <ExternalLink className="h-3 w-3" />
-                              </a>
-                            </Button>
-                          )}
-                          
-                          {nominee.liveUrl && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              asChild
-                            >
-                              <a 
-                                href={nominee.liveUrl} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="flex items-center gap-1"
-                              >
-                                Live URL
-                                <ExternalLink className="h-3 w-3" />
-                              </a>
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+              <div className="text-xs text-muted-foreground">Approved</div>
             </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+            <div className="text-center p-3 bg-muted/30 rounded-lg">
+              <div className="text-lg font-bold text-green-600">
+                {nominations
+                  .filter(n => n.state === 'approved' && (selectedCategory === 'all' || n.subcategory_id === selectedCategory))
+                  .reduce((sum, n) => sum + (n.totalVotes || n.votes || 0), 0)
+                }
+              </div>
+              <div className="text-xs text-muted-foreground">Total Votes</div>
+            </div>
+          </div>
+          
+          {/* Vote Breakdown */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="text-center p-3 bg-blue-50 rounded-lg border border-blue-200">
+              <div className="text-lg font-bold text-blue-700">
+                {nominations
+                  .filter(n => n.state === 'approved' && (selectedCategory === 'all' || n.subcategory_id === selectedCategory))
+                  .reduce((sum, n) => sum + (n.votes || 0), 0)
+                }
+              </div>
+              <div className="text-xs text-blue-600">Real Votes</div>
+            </div>
+            <div className="text-center p-3 bg-orange-50 rounded-lg border border-orange-200">
+              <div className="text-lg font-bold text-orange-700">
+                {nominations
+                  .filter(n => n.state === 'approved' && (selectedCategory === 'all' || n.subcategory_id === selectedCategory))
+                  .reduce((sum, n) => sum + (n.additionalVotes || 0), 0)
+                }
+              </div>
+              <div className="text-xs text-orange-600">Additional</div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

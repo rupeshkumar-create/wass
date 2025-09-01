@@ -3,11 +3,24 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Award } from "lucide-react";
+import { Award, Vote } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { useNominationStatus } from "@/hooks/useNominationStatus";
+import { useState, useEffect } from "react";
 
 export function Navigation() {
   const pathname = usePathname();
+  const nominationStatus = useNominationStatus();
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  
+  // Prevent hydration mismatch by showing default text until mounted and loaded
+  const navText = !mounted || nominationStatus.loading ? "Vote" : (nominationStatus.enabled ? "Nominate" : "Vote");
+  const buttonText = !mounted || nominationStatus.loading ? "Vote Now" : (nominationStatus.enabled ? "Submit Nomination" : "Vote Now");
+  const buttonHref = !mounted || nominationStatus.loading ? "/directory" : (nominationStatus.enabled ? "/nominate" : "/directory");
 
   const isActive = (path: string) => {
     if (path === "/" && pathname === "/") return true;
@@ -41,7 +54,7 @@ export function Navigation() {
                 isActive("/nominate") ? "text-primary" : "text-muted-foreground"
               }`}
             >
-              Nominate
+              {navText}
             </Link>
             <Link 
               href="/directory" 
@@ -58,7 +71,9 @@ export function Navigation() {
           <div className="flex items-center gap-2 sm:gap-4">
             <ThemeToggle />
             <Button asChild className="hidden sm:inline-flex">
-              <Link href="/nominate">Submit Nomination</Link>
+              <Link href={buttonHref}>
+                {buttonText}
+              </Link>
             </Button>
           </div>
         </div>

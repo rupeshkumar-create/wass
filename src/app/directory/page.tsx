@@ -193,22 +193,22 @@ function DirectoryContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background py-8">
+      <div className="min-h-screen bg-white text-gray-900 py-8">
         <div className="container mx-auto px-4">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-4">Nominee Directory</h1>
+            <h1 className="text-3xl font-bold mb-4 text-gray-900">Nominee Directory</h1>
             <div className="space-y-4">
-              <Skeleton className="h-10 w-full max-w-md" />
+              <Skeleton className="h-10 w-full max-w-md bg-gray-200" />
               <div className="flex gap-4">
-                <Skeleton className="h-10 w-48" />
-                <Skeleton className="h-10 w-32" />
+                <Skeleton className="h-10 w-48 bg-gray-200" />
+                <Skeleton className="h-10 w-32 bg-gray-200" />
               </div>
             </div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {Array.from({ length: 6 }).map((_, i) => (
-              <Skeleton key={i} className="h-64 w-full" />
+              <Skeleton key={i} className="h-64 w-full bg-gray-200" />
             ))}
           </div>
         </div>
@@ -218,9 +218,9 @@ function DirectoryContent() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-background py-8">
+      <div className="min-h-screen bg-white text-gray-900 py-8">
         <div className="container mx-auto px-4">
-          <Alert variant="destructive">
+          <Alert variant="destructive" className="bg-red-50 border-red-200 text-red-800">
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         </div>
@@ -229,15 +229,15 @@ function DirectoryContent() {
   }
 
   return (
-    <div className="min-h-screen bg-background py-8">
+    <div className="min-h-screen bg-white text-gray-900 py-8">
       <div className="container mx-auto px-4">
         {/* Header */}
         <ScrollReveal>
           <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2">
+            <h1 className="text-3xl font-bold mb-2 text-gray-900">
               {selectedCategory ? `Directory — ${selectedCategory}` : 'Nominee Directory'}
             </h1>
-            <p className="text-muted-foreground mb-6">
+            <p className="text-gray-600 mb-6">
               {selectedCategory 
                 ? `Browse and vote for nominees in the ${selectedCategory} category`
                 : 'Browse and vote for outstanding nominees in the World Staffing Awards 2026'
@@ -260,7 +260,7 @@ function DirectoryContent() {
         {/* Results Count */}
         <ScrollReveal delay={0.1}>
           <div className="mb-6">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-gray-600">
               Showing {nominees.length} nominees
               {selectedCategory && ` in ${selectedCategory}`}
             </p>
@@ -273,7 +273,7 @@ function DirectoryContent() {
             <Grid nominations={nominees} />
           ) : (
             <div className="text-center py-12">
-              <p className="text-muted-foreground">No nominees found.</p>
+              <p className="text-gray-600">No nominees found.</p>
             </div>
           )}
         </ScrollReveal>
@@ -288,22 +288,22 @@ function DirectoryContent() {
 export default function DirectoryPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-background py-8">
+      <div className="min-h-screen bg-white text-gray-900 py-8">
         <div className="container mx-auto px-4">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-4">Nominee Directory</h1>
+            <h1 className="text-3xl font-bold mb-4 text-gray-900">Nominee Directory</h1>
             <div className="space-y-4">
-              <Skeleton className="h-10 w-full max-w-md" />
+              <Skeleton className="h-10 w-full max-w-md bg-gray-200" />
               <div className="flex gap-4">
-                <Skeleton className="h-10 w-48" />
-                <Skeleton className="h-10 w-32" />
+                <Skeleton className="h-10 w-48 bg-gray-200" />
+                <Skeleton className="h-10 w-32 bg-gray-200" />
               </div>
             </div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {Array.from({ length: 6 }).map((_, i) => (
-              <Skeleton key={i} className="h-64 w-full" />
+              <Skeleton key={i} className="h-64 w-full bg-gray-200" />
             ))}
           </div>
         </div>

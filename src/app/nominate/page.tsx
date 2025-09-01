@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Progress } from "@/components/ui/progress";
+import { useNominationStatus } from "@/hooks/useNominationStatus";
+import { NominationClosedDialog } from "@/components/NominationClosedDialog";
 import { Step1Welcome } from "@/components/form/Step1Welcome";
 import { Step2Nominator } from "@/components/form/Step2Nominator";
 import { Step3Category } from "@/components/form/Step3Category";
@@ -62,6 +64,17 @@ export default function NominatePage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitResult, setSubmitResult] = useState<any>(null);
+  const [showClosedDialog, setShowClosedDialog] = useState(false);
+  
+  // Check nomination status
+  const nominationStatus = useNominationStatus();
+  
+  // Show closed dialog if nominations are disabled
+  useEffect(() => {
+    if (!nominationStatus.loading && !nominationStatus.enabled) {
+      setShowClosedDialog(true);
+    }
+  }, [nominationStatus.loading, nominationStatus.enabled]);
   
   const [formData, setFormData] = useState<FormData>({
     nominator: {},
@@ -307,6 +320,11 @@ export default function NominatePage() {
   };
 
   const renderStep = () => {
+    // If nominations are disabled, show the first step but disable progression
+    if (!nominationStatus.loading && !nominationStatus.enabled) {
+      return <Step1Welcome onNext={() => setShowClosedDialog(true)} disabled={true} />;
+    }
+    
     switch (currentStep) {
       case 1:
         return <Step1Welcome onNext={() => setCurrentStep(2)} />;
@@ -459,11 +477,16 @@ export default function NominatePage() {
     }
   };
 
+  // If nominations are disabled and we're past step 1, redirect to step 1
+  if (!nominationStatus.loading && !nominationStatus.enabled && currentStep > 1) {
+    setCurrentStep(1);
+  }
+
   return (
     <div className="min-h-screen bg-background py-8">
       <div className="container mx-auto px-4">
-        {/* Progress Bar */}
-        {currentStep > 1 && !submitResult?.success && !submitResult?.duplicate && (
+        {/* Progress Bar - only show if nominations are enabled */}
+        {nominationStatus.enabled && currentStep > 1 && !submitResult?.success && !submitResult?.duplicate && (
           <div className="max-w-2xl mx-auto mb-8">
             <div className="flex justify-between text-sm text-muted-foreground mb-2">
               <span>Step {currentStep} of {totalSteps}</span>
@@ -476,6 +499,13 @@ export default function NominatePage() {
         {/* Form Steps */}
         {renderStep()}
       </div>
+
+      {/* Nomination Closed Dialog */}
+      <NominationClosedDialog
+        isOpen={showClosedDialog}
+        onClose={() => setShowClosedDialog(false)}
+        message={nominationStatus.closeMessage}
+      />
     </div>
   );
 }

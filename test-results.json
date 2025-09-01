@@ -1,0 +1,96 @@
+{
+  "summary": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0,
+    "skipped": 0,
+    "successRate": 100
+  },
+  "timestamp": "2025-08-31T20:35:51.558Z",
+  "results": [
+    {
+      "test": "Home Page Stats API",
+      "status": "PASS",
+      "details": "Combined votes: 139",
+      "error": null,
+      "timestamp": "2025-08-31T20:35:49.279Z"
+    },
+    {
+      "test": "Security - Additional Votes Hidden",
+      "status": "PASS",
+      "details": "Additional votes properly hidden",
+      "error": null,
+      "timestamp": "2025-08-31T20:35:49.282Z"
+    },
+    {
+      "test": "Nominees API Response",
+      "status": "PASS",
+      "details": "Found 47 nominees",
+      "error": null,
+      "timestamp": "2025-08-31T20:35:49.405Z"
+    },
+    {
+      "test": "Nominees Vote Display",
+      "status": "PASS",
+      "details": "Combined votes displayed correctly",
+      "error": null,
+      "timestamp": "2025-08-31T20:35:49.405Z"
+    },
+    {
+      "test": "Security - Admin Fields Hidden",
+      "status": "PASS",
+      "details": "Admin fields properly hidden",
+      "error": null,
+      "timestamp": "2025-08-31T20:35:49.405Z"
+    },
+    {
+      "test": "Admin API Security",
+      "status": "PASS",
+      "details": "Admin endpoints properly protected",
+      "error": null,
+      "timestamp": "2025-08-31T20:35:49.436Z"
+    },
+    {
+      "test": "Vote Calculation Logic",
+      "status": "PASS",
+      "details": "Public API - Combined votes: 139",
+      "error": null,
+      "timestamp": "2025-08-31T20:35:49.757Z"
+    },
+    {
+      "test": "Vote Values Validation",
+      "status": "PASS",
+      "details": "All vote counts are non-negative",
+      "error": null,
+      "timestamp": "2025-08-31T20:35:49.757Z"
+    },
+    {
+      "test": "Database Consistency",
+      "status": "PASS",
+      "details": "Consistent vote count: 139",
+      "error": null,
+      "timestamp": "2025-08-31T20:35:51.155Z"
+    },
+    {
+      "test": "404 Error Handling",
+      "status": "PASS",
+      "details": "Invalid endpoints return 404",
+      "error": null,
+      "timestamp": "2025-08-31T20:35:51.228Z"
+    },
+    {
+      "test": "Malformed Request Handling",
+      "status": "PASS",
+      "details": "Malformed requests properly rejected",
+      "error": null,
+      "timestamp": "2025-08-31T20:35:51.268Z"
+    },
+    {
+      "test": "API Response Time",
+      "status": "PASS",
+      "details": "Response time: 289ms",
+      "error": null,
+      "timestamp": "2025-08-31T20:35:51.557Z"
+    }
+  ]
+}

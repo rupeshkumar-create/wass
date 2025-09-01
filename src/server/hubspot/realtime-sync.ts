@@ -154,7 +154,7 @@ export async function syncNomineeToHubSpot(data: NomineeData): Promise<{
         email: data.email.toLowerCase(),
         firstname: data.firstname || '',
         lastname: data.lastname || '',
-        lifecyclestage: 'customer',
+        // Remove lifecyclestage for nominees - let HubSpot manage this
         
         // Custom WSA properties
         wsa_role: 'Nominee_Person',
@@ -212,7 +212,7 @@ export async function syncNomineeToHubSpot(data: NomineeData): Promise<{
         email: companyEmail,
         firstname: 'Company',
         lastname: data.companyName || 'Nominee',
-        lifecyclestage: 'customer',
+        // Remove lifecyclestage for nominees - let HubSpot manage this
         
         // Custom WSA properties
         wsa_role: 'Nominee_Company',
@@ -338,7 +338,7 @@ export async function syncNomineeToHubSpot(data: NomineeData): Promise<{
 
 /**
  * Sync voter to HubSpot when vote is cast
- * Tags: "voter", "wsa-2026"
+ * Tags: "WSA 2026 Voters", "wsa-2026"
  */
 export async function syncVoterToHubSpot(data: VoterData): Promise<{
   success: boolean;
@@ -354,7 +354,7 @@ export async function syncVoterToHubSpot(data: VoterData): Promise<{
       lastname: data.lastname,
       lifecyclestage: 'lead',
       
-      // Custom WSA properties
+      // Custom WSA properties - FIXED TAGS
       wsa_role: 'Voter',
       wsa_year: '2026',
       wsa_source: 'World Staffing Awards',
@@ -362,6 +362,8 @@ export async function syncVoterToHubSpot(data: VoterData): Promise<{
       wsa_last_vote_date: new Date().toISOString(),
       wsa_voted_for: data.votedFor,
       wsa_vote_category: data.subcategoryId,
+      wsa_tags: 'WSA 2026 Voters', // Ensure tags field is set
+      wsa_contact_tag: 'WSA 2026 Voters', // Ensure dropdown tag is set
     };
 
     // Add optional fields
@@ -392,9 +394,46 @@ export async function syncVoterToHubSpot(data: VoterData): Promise<{
     }
 
     const result = await upsertContactByEmail(properties, 'Voter');
+    
+    // CRITICAL: Add the correct WSA 2026 Voters tag
     await addContactTags(result.id, 'Voter');
 
+    // UPDATE DATABASE WITH SYNC INFO
+    try {
+      const { createClient } = await import('@supabase/supabase-js');
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+      const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+      
+      const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+        auth: { autoRefreshToken: false, persistSession: false }
+      });
+
+      // Update voter record with HubSpot sync info and WSA tags
+      await supabase
+        .from('voters')
+        .update({
+          hubspot_contact_id: result.id,
+          hubspot_synced_at: new Date().toISOString(),
+          wsa_tags: 'WSA 2026 Voters',
+          wsa_contact_tag: 'WSA 2026 Voters',
+          wsa_role: 'Voter',
+          wsa_year: '2026',
+          wsa_source: 'World Staffing Awards',
+          wsa_voter_status: 'active',
+          wsa_last_vote_date: new Date().toISOString(),
+          wsa_voted_for: data.votedFor,
+          wsa_vote_category: data.subcategoryId,
+        })
+        .eq('email', data.email.toLowerCase());
+
+      console.log(`📊 Updated voter database record with HubSpot sync info and WSA tags`);
+    } catch (dbError) {
+      console.warn(`⚠️ Failed to update voter database record:`, dbError);
+      // Don't fail the sync if database update fails
+    }
+
     console.log(`✅ Voter synced successfully: ${data.email} (Contact ID: ${result.id})`);
+    console.log(`🏷️ Voter tagged as "WSA 2026 Voters" in HubSpot and database`);
 
     return {
       success: true,
