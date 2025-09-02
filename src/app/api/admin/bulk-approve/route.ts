@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { supabase } from '@/lib/supabase/server';
 
 interface BulkApprovalRequest {
   nominationIds: string[];
@@ -8,7 +8,7 @@ interface BulkApprovalRequest {
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createClient();
+    // Use the imported supabase client
     
     // Check if user is admin
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -185,7 +185,7 @@ export async function POST(request: NextRequest) {
 // GET endpoint to fetch nominees pending bulk approval
 export async function GET(request: NextRequest) {
   try {
-    const supabase = createClient();
+    // Use the imported supabase client
     
     // Check if user is admin
     const { data: { user }, error: authError } = await supabase.auth.getUser();

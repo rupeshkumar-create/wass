@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
-import Papa from 'papaparse';
+import { supabase } from '@/lib/supabase/server';
+import * as Papa from 'papaparse';
 
 interface CSVRow {
   type: 'person' | 'company';
@@ -44,7 +44,7 @@ interface ValidationError {
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createClient();
+    // Use the imported supabase client
     
     // Check if user is admin
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -598,7 +598,7 @@ function isValidUrl(url: string): boolean {
 // GET endpoint to fetch bulk upload status and batches
 export async function GET(request: NextRequest) {
   try {
-    const supabase = createClient();
+    // Use the imported supabase client
     
     // Check if user is admin
     const { data: { user }, error: authError } = await supabase.auth.getUser();

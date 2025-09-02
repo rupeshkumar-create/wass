@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { supabase } from '@/lib/supabase/server';
 
 interface DeadlineUpdateRequest {
   deadline?: string | null; // ISO date string or null to remove deadline
@@ -10,7 +10,7 @@ interface DeadlineUpdateRequest {
 
 export async function GET(request: NextRequest) {
   try {
-    const supabase = createClient();
+    // Use the imported supabase client
     
     // Check if user is admin (for detailed settings) or allow public access for basic status
     const { data: { user } } = await supabase.auth.getUser();
@@ -111,7 +111,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createClient();
+    // Use the imported supabase client
     
     // Check if user is admin
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -221,7 +221,7 @@ export async function POST(request: NextRequest) {
 // PUT endpoint for batch settings update
 export async function PUT(request: NextRequest) {
   try {
-    const supabase = createClient();
+    // Use the imported supabase client
     
     // Check if user is admin
     const { data: { user }, error: authError } = await supabase.auth.getUser();
