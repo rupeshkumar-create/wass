@@ -1,0 +1,34 @@
+
+> world-staffing-awards@0.1.0 dev
+> next dev --turbopack
+
+   ▲ Next.js 15.4.6 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.1.4:3000
+   - Environments: .env.local, .env
+
+ ✓ Starting...
+ ✓ Compiled middleware in 111ms
+ ✓ Ready in 1348ms
+ ○ Compiling / ...
+ ✓ Compiled / in 3.6s
+ ⚠ Unsupported metadata viewport is configured in metadata export in /. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ HEAD / 200 in 4148ms
+ ✓ Compiled /api/nominees in 350ms
+Fetching nominees with params: { subcategoryId: undefined, limit: undefined }
+Found 53 nominees
+ GET /api/nominees 200 in 1253ms
+ ✓ Compiled /api/stats in 87ms
+ GET /api/stats 200 in 349ms
+ ✓ Compiled /api/podium in 53ms
+ GET /api/podium 400 in 72ms
+ ✓ Compiled /api/settings in 50ms
+GET /api/settings error: {
+  code: '42703',
+  details: null,
+  hint: null,
+  message: 'column app_settings.boolean_value does not exist'
+}
+ GET /api/settings 200 in 230ms
+[?25h
