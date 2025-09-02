@@ -69,7 +69,7 @@ export default function NominatePage() {
   // Check nomination status
   const nominationStatus = useNominationStatus();
   
-  // Show closed dialog if nominations are disabled
+  // Show closed dialog if nominations are disabled (voting only mode)
   useEffect(() => {
     if (!nominationStatus.loading && !nominationStatus.enabled) {
       setShowClosedDialog(true);
@@ -298,7 +298,7 @@ export default function NominatePage() {
         let errorMessage = result.error || "Failed to submit nomination. Please try again.";
         
         if (result.details && Array.isArray(result.details)) {
-          const fieldErrors = result.details.map(detail => {
+          const fieldErrors = result.details.map((detail: { path?: string[]; message: string }) => {
             const field = detail.path ? detail.path.join('.') : 'unknown';
             return `${field}: ${detail.message}`;
           }).join(', ');
@@ -442,14 +442,14 @@ export default function NominatePage() {
       // Review & Submit
       case 10:
         const nominee = isPersonFlow ? {
-          name: formData.personDetails.name,
+          name: formData.personDetails.name || '',
           email: formData.personDetails.email,
           title: formData.personDetails.title,
           country: formData.personDetails.country,
           linkedin: formData.personLinkedIn.linkedin,
           imageUrl: formData.imageUrl,
         } : {
-          name: formData.companyDetails.name,
+          name: formData.companyDetails.name || '',
           email: '', // Companies don't have email, but interface requires it
           website: formData.companyDetails.website,
           country: formData.companyDetails.country,

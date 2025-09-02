@@ -77,8 +77,8 @@ export const FREE_EMAIL_DOMAINS = [
   "mail.com",
 ];
 
-// Admin passcode (change this for production)
-export const ADMIN_PASSCODE = "WSA2026";
+// Admin authentication is now handled via JWT sessions
+// See /api/admin/login for authentication
 
 // File upload limits
 export const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB

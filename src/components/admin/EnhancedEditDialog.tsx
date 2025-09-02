@@ -29,7 +29,15 @@ export function EnhancedEditDialog({ nomination, isOpen, onClose, onSave }: Enha
       setActiveTab("basic");
       setWhyText(nomination.whyMe || nomination.whyUs || "");
       setLiveUrl(nomination.liveUrl || "");
-      setLinkedin(nomination.linkedin || nomination.personLinkedin || nomination.companyLinkedin || "");
+      // Get LinkedIn URL from various possible fields
+      const linkedinUrl = nomination.linkedin || 
+                         nomination.personLinkedin || 
+                         nomination.companyLinkedin ||
+                         nomination.nominee?.linkedin ||
+                         nomination.nominee?.personLinkedin ||
+                         nomination.nominee?.companyLinkedin ||
+                         "";
+      setLinkedin(linkedinUrl);
       setAdminNotes(nomination.adminNotes || "");
       setRejectionReason(nomination.rejectionReason || "");
       setImagePreview(null);
@@ -250,7 +258,7 @@ export function EnhancedEditDialog({ nomination, isOpen, onClose, onSave }: Enha
               {/* Live URL */}
               <div>
                 <label htmlFor="liveUrl" className="block text-sm font-medium mb-2">
-                  Live URL (Optional)
+                  Live URL (Auto-Generated)
                 </label>
                 <div className="flex gap-2">
                   <input
@@ -258,8 +266,9 @@ export function EnhancedEditDialog({ nomination, isOpen, onClose, onSave }: Enha
                     type="url"
                     value={liveUrl}
                     onChange={(e) => setLiveUrl(e.target.value)}
-                    placeholder="https://example.com"
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    placeholder="Auto-generated when nomination is approved"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 bg-gray-50"
+                    readOnly
                   />
                   {liveUrl && (
                     <button
@@ -272,7 +281,7 @@ export function EnhancedEditDialog({ nomination, isOpen, onClose, onSave }: Enha
                   )}
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  URL where voters can learn more about this nomination
+                  Live URL is automatically generated when the nomination is approved. Format: {typeof window !== 'undefined' ? window.location.origin : 'https://yoursite.com'}/nominee/nominee-name
                 </p>
               </div>
             </div>

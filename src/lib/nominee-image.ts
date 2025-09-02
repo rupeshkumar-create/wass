@@ -10,9 +10,23 @@ export function getNomineeImage(nomination: Nomination): {
   alt: string;
 } {
   const nominee = nomination.nominee;
-  const name = nominee.name || 'Unknown';
+  const name = nominee.name || nominee.displayName || nomination.displayName || nomination.name || 'Unknown';
   
-  // Check for uploaded image URL (admin-uploaded or form-uploaded)
+  // Debug logging in development
+  if (process.env.NODE_ENV === 'development') {
+    console.log('getNomineeImage debug:', {
+      name,
+      type: nomination.type,
+      nominationImageUrl: nomination.imageUrl,
+      nomineeImageUrl: nominee.imageUrl,
+      headshotUrl: nominee.headshotUrl,
+      logoUrl: nominee.logoUrl,
+      headshotBase64: nominee.headshotBase64 ? 'present' : 'missing',
+      logoBase64: nominee.logoBase64 ? 'present' : 'missing'
+    });
+  }
+  
+  // Priority 1: Check nomination-level imageUrl (from API)
   if (nomination.imageUrl && nomination.imageUrl.trim()) {
     return {
       src: nomination.imageUrl,
@@ -21,7 +35,7 @@ export function getNomineeImage(nomination: Nomination): {
     };
   }
   
-  // Fallback to nominee imageUrl for backward compatibility
+  // Priority 2: Check nominee-level imageUrl
   if (nominee.imageUrl && nominee.imageUrl.trim()) {
     return {
       src: nominee.imageUrl,
@@ -30,21 +44,45 @@ export function getNomineeImage(nomination: Nomination): {
     };
   }
   
-  // Legacy fallback for backward compatibility
-  if (nomination.type === "person" && "headshotBase64" in nominee && nominee.headshotBase64) {
-    return {
-      src: nominee.headshotBase64,
-      isInitials: false,
-      alt: `${name} - ${nomination.category}`
-    };
-  }
-  
-  if (nomination.type === "company" && "logoBase64" in nominee && nominee.logoBase64) {
-    return {
-      src: nominee.logoBase64,
-      isInitials: false,
-      alt: `${name} - ${nomination.category}`
-    };
+  // Priority 3: Check type-specific URLs
+  if (nomination.type === "person") {
+    // Check headshotUrl variations
+    const headshotUrl = nominee.headshotUrl || nominee.headshot_url || (nominee as any).personHeadshotUrl;
+    if (headshotUrl && headshotUrl.trim()) {
+      return {
+        src: headshotUrl,
+        isInitials: false,
+        alt: `${name} - ${nomination.category}`
+      };
+    }
+    
+    // Check base64 headshot
+    if ("headshotBase64" in nominee && nominee.headshotBase64) {
+      return {
+        src: nominee.headshotBase64,
+        isInitials: false,
+        alt: `${name} - ${nomination.category}`
+      };
+    }
+  } else if (nomination.type === "company") {
+    // Check logoUrl variations
+    const logoUrl = nominee.logoUrl || nominee.logo_url || (nominee as any).companyLogoUrl;
+    if (logoUrl && logoUrl.trim()) {
+      return {
+        src: logoUrl,
+        isInitials: false,
+        alt: `${name} - ${nomination.category}`
+      };
+    }
+    
+    // Check base64 logo
+    if ("logoBase64" in nominee && nominee.logoBase64) {
+      return {
+        src: nominee.logoBase64,
+        isInitials: false,
+        alt: `${name} - ${nomination.category}`
+      };
+    }
   }
   
   // No image found - return initials avatar

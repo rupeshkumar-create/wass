@@ -1,6 +1,6 @@
 "use client";
 
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ControlledDialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/controlled-dialog";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ExternalLink, AlertTriangle } from "lucide-react";
@@ -30,7 +30,7 @@ export function ConflictDialog({
   if (!conflictData) return null;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <ControlledDialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -91,6 +91,6 @@ export function ConflictDialog({
           </div>
         </div>
       </DialogContent>
-    </Dialog>
+    </ControlledDialog>
   );
 }

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ExternalLink, Vote, ArrowLeft, Building2, User } from "lucide-react";
-import { VoteDialog } from "@/components/VoteDialog";
+// VoteDialog removed - client-side functionality disabled
 import { ShareButtons } from "@/components/ShareButtons";
 import { useRealtimeVotes } from "@/hooks/useRealtimeVotes";
 import { Nomination } from "@/lib/types";
@@ -55,7 +55,7 @@ interface NomineeProfileClientProps {
 export function NomineeProfileClient({ nominee: nomineeData }: NomineeProfileClientProps) {
   const [isClient, setIsClient] = useState(false);
   const [voteCount, setVoteCount] = useState<number>(nomineeData?.votes || 0);
-  const [showVoteDialog, setShowVoteDialog] = useState(false);
+  // Vote dialog state removed - client-side functionality disabled
 
   useEffect(() => {
     setIsClient(true);
@@ -95,10 +95,7 @@ export function NomineeProfileClient({ nominee: nomineeData }: NomineeProfileCli
     onVoteUpdate: handleVoteUpdate,
   } : {});
 
-  const handleVoteSuccess = (newTotal: number) => {
-    // Optimistically update vote count
-    setVoteCount(newTotal);
-  };
+  // Vote success handler removed - client-side functionality disabled
 
   const isPersonNomination = nomineeData.type === "person";
   const nominee = nomineeData.nominee || {};
@@ -304,13 +301,7 @@ export function NomineeProfileClient({ nominee: nomineeData }: NomineeProfileCli
                     <div className="text-3xl font-bold text-primary">{voteCount}</div>
                     <div className="text-sm text-muted-foreground">votes received</div>
                   </div>
-                  <Button 
-                    onClick={() => setShowVoteDialog(true)}
-                    className="w-full"
-                    size="lg"
-                  >
-                    Cast Your Vote
-                  </Button>
+                  {/* Vote button removed - client-side functionality disabled */}
                   <p className="text-xs text-muted-foreground mt-2">
                     One vote per nominee per category
                   </p>
@@ -342,13 +333,7 @@ export function NomineeProfileClient({ nominee: nomineeData }: NomineeProfileCli
                   <div className="text-3xl font-bold text-primary">{voteCount}</div>
                   <div className="text-sm text-muted-foreground">votes received</div>
                 </div>
-                <Button 
-                  onClick={() => setShowVoteDialog(true)}
-                  className="w-full"
-                  size="lg"
-                >
-                  Cast Your Vote
-                </Button>
+                {/* Vote button removed - client-side functionality disabled */}
                 <p className="text-xs text-muted-foreground mt-2">
                   One vote per nominee per category
                 </p>
@@ -379,19 +364,7 @@ export function NomineeProfileClient({ nominee: nomineeData }: NomineeProfileCli
           </div>
         </div>
 
-        {/* Vote Dialog */}
-        <VoteDialog
-          open={showVoteDialog}
-          onOpenChange={setShowVoteDialog}
-          nomination={{
-            ...nomineeData,
-            nominee: {
-              name: nominee.displayName || nominee.name || 'Unknown Nominee',
-              ...nominee
-            }
-          }}
-          onVoteSuccess={handleVoteSuccess}
-        />
+        {/* Vote Dialog removed - client-side functionality disabled */}
       </div>
     </div>
   );

@@ -1,33 +1,23 @@
 import { NextRequest } from 'next/server';
+import { verifyAdminSession } from './session';
 
 /**
- * Admin Authentication Middleware
- * Validates admin access for protected endpoints
+ * DEPRECATED: Legacy admin authentication - use middleware.ts instead
+ * This file is kept for backward compatibility during migration
  */
 
-const ADMIN_PASSCODES = ['admin123', 'wsa2026'];
-
-export function validateAdminAuth(request: NextRequest): boolean {
+export async function validateAdminAuth(request: NextRequest): Promise<boolean> {
   try {
-    // Check for admin passcode in headers
-    const authHeader = request.headers.get('authorization');
-    const adminPasscode = request.headers.get('x-admin-passcode');
-    
-    // Check Authorization header (Bearer token)
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      const token = authHeader.substring(7);
-      return ADMIN_PASSCODES.includes(token);
+    // Check for session cookie (new method)
+    const sessionCookie = request.cookies.get('admin_session')?.value;
+    if (sessionCookie) {
+      const session = await verifyAdminSession(sessionCookie);
+      return !!session;
     }
     
-    // Check custom admin passcode header
-    if (adminPasscode && ADMIN_PASSCODES.includes(adminPasscode)) {
-      return true;
-    }
-    
-    // Check query parameter (for development only)
-    const url = new URL(request.url);
-    const queryPasscode = url.searchParams.get('admin_key');
-    if (queryPasscode && ADMIN_PASSCODES.includes(queryPasscode)) {
+    // Check for admin user header set by middleware
+    const adminUser = request.headers.get('x-admin-user');
+    if (adminUser) {
       return true;
     }
     

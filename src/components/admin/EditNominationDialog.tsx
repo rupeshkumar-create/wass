@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ControlledDialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/controlled-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -90,7 +90,7 @@ export function EditNominationDialog({ nomination, isOpen, onClose, onSave }: Ed
   const currentImage = imagePreview || nomination?.imageUrl;
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <ControlledDialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Edit Nomination</DialogTitle>
@@ -205,6 +205,6 @@ export function EditNominationDialog({ nomination, isOpen, onClose, onSave }: Ed
           </Button>
         </DialogFooter>
       </DialogContent>
-    </Dialog>
+    </ControlledDialog>
   );
 }

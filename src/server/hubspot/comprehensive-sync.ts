@@ -133,7 +133,7 @@ export async function syncVoteComplete(vote: Vote, nomination: Nomination): Prom
     if (nomination.type === 'person') {
       // Search for person nominee by LinkedIn or email
       const personEmail = (nomination.nominee as any).email || 
-        `${(nomination.nominee as any).firstName?.toLowerCase()}.${(nomination.nominee as any).lastName?.toLowerCase()}@nominee.wsa2026.com`;
+        `${(nomination.nominee as any).firstName?.toLowerCase()}.${(nomination.nominee as any).lastName?.toLowerCase()}@nominee.wsa-2026.com`;
       
       const searchResult = await searchContactByEmail(personEmail);
       if (searchResult.length > 0) {
@@ -266,7 +266,7 @@ async function syncPersonNominee(nomination: Nomination): Promise<{
     const nominee = nomination.nominee as any;
     
     const contactProps = personNomineeContactProps({
-      email: nominee.email || `${nominee.firstName?.toLowerCase()}.${nominee.lastName?.toLowerCase()}@nominee.wsa2026.com`,
+      email: nominee.email || `${nominee.firstName?.toLowerCase()}.${nominee.lastName?.toLowerCase()}@nominee.wsa-2026.com`,
       name: nominee.name,
       firstName: nominee.firstName || nominee.name.split(' ')[0],
       lastName: nominee.lastName || nominee.name.split(' ').slice(1).join(' '),

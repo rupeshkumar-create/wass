@@ -155,10 +155,10 @@ export function NominationToggle({ className }: NominationToggleProps) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Settings className="h-5 w-5" />
-          Voting Control
+          Nomination Open
         </CardTitle>
         <CardDescription>
-          Control whether voting is open or closed to the public
+          Control whether nominations are open or closed to the public
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -182,12 +182,12 @@ export function NominationToggle({ className }: NominationToggleProps) {
         <div className="flex items-center justify-between">
           <div className="space-y-1">
             <Label htmlFor="nominations-toggle" className="text-base font-medium">
-              Voting Status
+              Nomination Status
             </Label>
             <p className="text-sm text-muted-foreground">
               {nominationsEnabled 
-                ? 'Voting is currently open and accepting submissions'
-                : 'Voting is currently closed - form will be disabled'
+                ? 'Nominations are currently open - people can nominate and vote'
+                : 'Nominations are currently closed - people can only vote'
               }
             </p>
           </div>
@@ -211,7 +211,7 @@ export function NominationToggle({ className }: NominationToggleProps) {
             Closed Message
           </Label>
           <p className="text-sm text-muted-foreground">
-            Message shown to users when voting is closed
+            Message shown to users when nominations are closed
           </p>
           <Textarea
             id="close-message"
@@ -251,15 +251,15 @@ export function NominationToggle({ className }: NominationToggleProps) {
           <h4 className="font-medium mb-2">Current Configuration</h4>
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
-              <span>Voting:</span>
+              <span>Nominations:</span>
               <span className={`font-medium ${nominationsEnabled ? 'text-green-600' : 'text-red-600'}`}>
                 {nominationsEnabled ? 'OPEN' : 'CLOSED'}
               </span>
             </div>
             <div className="flex justify-between">
-              <span>Form Access:</span>
+              <span>User Action:</span>
               <span className={`font-medium ${nominationsEnabled ? 'text-green-600' : 'text-red-600'}`}>
-                {nominationsEnabled ? 'Enabled' : 'Disabled'}
+                {nominationsEnabled ? 'Nominate & Vote' : 'Vote Only'}
               </span>
             </div>
             <div className="flex justify-between">

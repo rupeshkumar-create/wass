@@ -21,42 +21,13 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: NextRequest) {
   const isAdmin = validateAdminAuth(request);
   try {
-    // Get nominations with additional votes
+    // Use admin_nominations view for consistent data
     const { data: nominations, error: nominationsError } = await supabaseAdmin
-      .from('nominations')
-      .select('id, state, subcategory_id, additional_votes');
+      .from('admin_nominations')
+      .select('nomination_id, state, subcategory_id, votes, additional_votes');
 
     if (nominationsError) {
       throw new Error(`Failed to get nominations: ${nominationsError.message}`);
-    }
-
-    // Get real votes count by nomination
-    const { data: votesByNomination, error: votesError } = await supabaseAdmin
-      .from('votes')
-      .select('nomination_id')
-      .then(result => {
-        if (result.error) return result;
-        
-        // Count votes per nomination
-        const voteCounts: Record<string, number> = {};
-        result.data.forEach(vote => {
-          voteCounts[vote.nomination_id] = (voteCounts[vote.nomination_id] || 0) + 1;
-        });
-        
-        return { data: voteCounts, error: null };
-      });
-
-    if (votesError) {
-      throw new Error(`Failed to get votes: ${votesError.message}`);
-    }
-
-    // Get total votes count
-    const { data: allVotes, error: allVotesError } = await supabaseAdmin
-      .from('votes')
-      .select('id', { count: 'exact' });
-
-    if (allVotesError) {
-      throw new Error(`Failed to get total votes: ${allVotesError.message}`);
     }
 
     // Get unique voters count
@@ -68,13 +39,13 @@ export async function GET(request: NextRequest) {
       throw new Error(`Failed to get voters: ${votersError.message}`);
     }
 
-    // Calculate vote statistics
+    // Calculate vote statistics using the same logic as admin panel
     let totalRealVotes = 0;
     let totalAdditionalVotes = 0;
     let totalCombinedVotes = 0;
 
     nominations.forEach(nomination => {
-      const realVotes = votesByNomination[nomination.id] || 0;
+      const realVotes = nomination.votes || 0;
       const additionalVotes = nomination.additional_votes || 0;
       
       totalRealVotes += realVotes;
@@ -103,7 +74,7 @@ export async function GET(request: NextRequest) {
         byCategory[category] = { nominees: 0, realVotes: 0, additionalVotes: 0, totalVotes: 0 };
       }
       
-      const realVotes = votesByNomination[nomination.id] || 0;
+      const realVotes = nomination.votes || 0;
       const additionalVotes = nomination.additional_votes || 0;
       
       byCategory[category].nominees++;
@@ -116,46 +87,46 @@ export async function GET(request: NextRequest) {
     const stats = {
       success: true,
       data: isAdmin ? {
-        // Admin view - full breakdown
+        // Admin view - full breakdown with separate vote counts
         totalNominations,
         pendingNominations,
         approvedNominations,
         rejectedNominations,
         
-        // Vote statistics (admin only)
+        // Vote statistics (admin only - separate counts)
         totalRealVotes,
         totalAdditionalVotes,
         totalCombinedVotes,
+        totalVotes: totalCombinedVotes, // For consistency with public API
         uniqueVoters,
         
         // Calculated metrics
         averageVotesPerNominee: totalNominations > 0 ? Math.round(totalCombinedVotes / totalNominations) : 0,
         averageRealVotesPerNominee: totalNominations > 0 ? Math.round(totalRealVotes / totalNominations) : 0,
         
-        // Category breakdown
+        // Category breakdown (admin gets full breakdown)
         byCategory,
         
         // Additional insights (admin only)
         nominationsWithAdditionalVotes: nominations.filter(n => (n.additional_votes || 0) > 0).length,
         percentageAdditionalVotes: totalCombinedVotes > 0 ? Math.round((totalAdditionalVotes / totalCombinedVotes) * 100) : 0
       } : {
-        // Public view - combined votes only
+        // Public view - ONLY combined votes (no breakdown)
         totalNominations,
         approvedNominations,
-        totalVotes: totalCombinedVotes, // Only combined votes for public
-        totalCombinedVotes: totalCombinedVotes, // Also include this for backward compatibility
+        totalVotes: totalCombinedVotes, // ONLY show combined total
         uniqueVoters,
         
         // Basic metrics
         averageVotesPerNominee: totalNominations > 0 ? Math.round(totalCombinedVotes / totalNominations) : 0,
         
-        // Category breakdown (public version - only total votes)
+        // Category breakdown (public version - only combined votes)
         byCategory: Object.fromEntries(
           Object.entries(byCategory).map(([category, data]) => [
             category,
             {
               nominees: data.nominees,
-              votes: data.totalVotes // Only show combined votes
+              votes: data.totalVotes // Only combined votes for public
             }
           ])
         )

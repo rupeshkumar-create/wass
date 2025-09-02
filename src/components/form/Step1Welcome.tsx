@@ -11,7 +11,7 @@ interface Step1WelcomeProps {
 
 export function Step1Welcome({ onNext, disabled = false }: Step1WelcomeProps) {
   const nominationStatus = useNominationStatus();
-  const isNominationMode = !disabled && nominationStatus.enabled;
+  const isNominationMode = !disabled && !nominationStatus.enabled;
   
   return (
     <Card className="w-full max-w-2xl mx-auto">

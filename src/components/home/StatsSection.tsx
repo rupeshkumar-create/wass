@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Award, Users, Vote, Calendar } from "lucide-react";
 import { CATEGORIES } from "@/lib/constants";
+import { subscribeToDataSync, fetchWithCacheBusting } from "@/lib/utils/data-sync";
 
 interface Stats {
   totalCategories: number;
@@ -28,18 +29,8 @@ export function StatsSection() {
 
   const fetchStats = useCallback(async () => {
     try {
-      // Add timestamp to prevent caching
-      const timestamp = Date.now();
-      
-      // Fetch stats from the new schema with cache busting
-      const statsResponse = await fetch(`/api/stats?_t=${timestamp}`, {
-        cache: "no-store",
-        headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0',
-        }
-      });
+      // Fetch stats using cache-busting utility
+      const statsResponse = await fetchWithCacheBusting('/api/stats');
       
       if (statsResponse.ok) {
         const result = await statsResponse.json();
@@ -48,24 +39,14 @@ export function StatsSection() {
             totalCategories: CATEGORIES.length,
             totalNominations: result.data.totalNominations || 0,
             approvedNominations: result.data.approvedNominations || 0,
-            totalVotes: result.data.totalVotes || result.data.totalCombinedVotes || 0 // Use public total votes
+            totalVotes: result.data.totalVotes || result.data.totalCombinedVotes || 0 // Use same combined votes as admin panel
           });
         }
       } else {
         // Fallback: fetch from individual endpoints with cache busting
         const [nomineesResponse, votesResponse] = await Promise.all([
-          fetch(`/api/nominees?_t=${timestamp}`, { 
-            cache: "no-store",
-            headers: {
-              'Cache-Control': 'no-cache, no-store, must-revalidate',
-            }
-          }),
-          fetch(`/api/votes?_t=${timestamp}`, { 
-            cache: "no-store",
-            headers: {
-              'Cache-Control': 'no-cache, no-store, must-revalidate',
-            }
-          })
+          fetchWithCacheBusting('/api/nominees'),
+          fetchWithCacheBusting('/api/votes')
         ]);
 
         let approvedNominations = 0;
@@ -79,12 +60,7 @@ export function StatsSection() {
         }
 
         // Get total nominations from admin API
-        const adminResponse = await fetch(`/api/admin/nominations?_t=${timestamp}`, {
-          cache: "no-store",
-          headers: {
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-          }
-        });
+        const adminResponse = await fetchWithCacheBusting('/api/admin/nominations');
         
         if (adminResponse.ok) {
           const adminResult = await adminResponse.json();
@@ -120,6 +96,11 @@ export function StatsSection() {
     // Set up real-time updates every 30 seconds
     const interval = setInterval(fetchStats, 30000);
     
+    // Subscribe to data sync events for real-time updates
+    const unsubscribeStats = subscribeToDataSync('stats-updated', fetchStats);
+    const unsubscribeAdmin = subscribeToDataSync('admin-action', fetchStats);
+    const unsubscribeVote = subscribeToDataSync('vote-cast', fetchStats);
+    
     // Also refresh when window gains focus
     const handleFocus = () => {
       fetchStats();
@@ -130,6 +111,9 @@ export function StatsSection() {
     return () => {
       clearInterval(interval);
       window.removeEventListener('focus', handleFocus);
+      unsubscribeStats();
+      unsubscribeAdmin();
+      unsubscribeVote();
     };
   }, [fetchStats, isClient]);
 
@@ -139,28 +123,44 @@ export function StatsSection() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card className="bg-white border-gray-200 hover:shadow-lg transition-shadow">
           <CardContent className="p-6 text-center">
-            <Award className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+<<<<<<< HEAD
+            <Award className="h-8 w-8 mx-auto mb-2 text-orange-500" />
+=======
+            <Award className="h-8 w-8 mx-auto mb-2 text-orange-600" />
+>>>>>>> 12cdef4183d5e285187ff86b0db4bd8aabb1cc6a
             <div className="text-2xl font-bold text-gray-900">{CATEGORIES.length}</div>
             <div className="text-sm text-gray-600">Award Categories</div>
           </CardContent>
         </Card>
         <Card className="bg-white border-gray-200 hover:shadow-lg transition-shadow">
           <CardContent className="p-6 text-center">
-            <Users className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+<<<<<<< HEAD
+            <Users className="h-8 w-8 mx-auto mb-2 text-orange-500" />
+=======
+            <Users className="h-8 w-8 mx-auto mb-2 text-orange-600" />
+>>>>>>> 12cdef4183d5e285187ff86b0db4bd8aabb1cc6a
             <div className="text-2xl font-bold text-gray-900">-</div>
             <div className="text-sm text-gray-600">Approved Nominees</div>
           </CardContent>
         </Card>
         <Card className="bg-white border-gray-200 hover:shadow-lg transition-shadow">
           <CardContent className="p-6 text-center">
-            <Vote className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+<<<<<<< HEAD
+            <Vote className="h-8 w-8 mx-auto mb-2 text-orange-500" />
+=======
+            <Vote className="h-8 w-8 mx-auto mb-2 text-orange-600" />
+>>>>>>> 12cdef4183d5e285187ff86b0db4bd8aabb1cc6a
             <div className="text-2xl font-bold text-gray-900">-</div>
             <div className="text-sm text-gray-600">Votes Cast</div>
           </CardContent>
         </Card>
         <Card className="bg-white border-gray-200 hover:shadow-lg transition-shadow">
           <CardContent className="p-6 text-center">
-            <Calendar className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+<<<<<<< HEAD
+            <Calendar className="h-8 w-8 mx-auto mb-2 text-orange-500" />
+=======
+            <Calendar className="h-8 w-8 mx-auto mb-2 text-orange-600" />
+>>>>>>> 12cdef4183d5e285187ff86b0db4bd8aabb1cc6a
             <div className="text-2xl font-bold text-gray-900">Jan 30</div>
             <div className="text-sm text-gray-600">Awards Ceremony</div>
           </CardContent>
@@ -172,33 +172,63 @@ export function StatsSection() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
       <Card className="bg-white border-gray-200 hover:shadow-lg transition-shadow">
+<<<<<<< HEAD
         <CardContent className="p-6 text-center">
-          <Award className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+          <Award className="h-8 w-8 mx-auto mb-2 text-orange-500" />
           <div className="text-2xl font-bold text-gray-900">{stats.totalCategories}</div>
           <div className="text-sm text-gray-600">Award Categories</div>
         </CardContent>
       </Card>
       <Card className="bg-white border-gray-200 hover:shadow-lg transition-shadow">
         <CardContent className="p-6 text-center">
-          <Users className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+          <Users className="h-8 w-8 mx-auto mb-2 text-orange-500" />
           <div className="text-2xl font-bold text-gray-900">{stats.approvedNominations}</div>
           <div className="text-sm text-gray-600">Approved Nominees</div>
         </CardContent>
       </Card>
       <Card className="bg-white border-gray-200 hover:shadow-lg transition-shadow">
         <CardContent className="p-6 text-center">
-          <Vote className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+          <Vote className="h-8 w-8 mx-auto mb-2 text-orange-500" />
           <div className="text-2xl font-bold text-gray-900">{stats.totalVotes}</div>
           <div className="text-sm text-gray-600">Votes Cast</div>
         </CardContent>
       </Card>
       <Card className="bg-white border-gray-200 hover:shadow-lg transition-shadow">
         <CardContent className="p-6 text-center">
-          <Calendar className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+          <Calendar className="h-8 w-8 mx-auto mb-2 text-orange-500" />
           <div className="text-2xl font-bold text-gray-900">Jan 30</div>
           <div className="text-sm text-gray-600">Awards Ceremony</div>
         </CardContent>
       </Card>
+=======
+          <CardContent className="p-6 text-center">
+            <Award className="h-8 w-8 mx-auto mb-2 text-orange-600" />
+            <div className="text-2xl font-bold text-gray-900">{stats.totalCategories}</div>
+            <div className="text-sm text-gray-600">Award Categories</div>
+          </CardContent>
+        </Card>
+        <Card className="bg-white border-gray-200 hover:shadow-lg transition-shadow">
+          <CardContent className="p-6 text-center">
+            <Users className="h-8 w-8 mx-auto mb-2 text-orange-600" />
+            <div className="text-2xl font-bold text-gray-900">{stats.approvedNominations}</div>
+            <div className="text-sm text-gray-600">Approved Nominees</div>
+          </CardContent>
+        </Card>
+        <Card className="bg-white border-gray-200 hover:shadow-lg transition-shadow">
+          <CardContent className="p-6 text-center">
+            <Vote className="h-8 w-8 mx-auto mb-2 text-orange-600" />
+            <div className="text-2xl font-bold text-gray-900">{stats.totalVotes}</div>
+            <div className="text-sm text-gray-600">Votes Cast</div>
+          </CardContent>
+        </Card>
+        <Card className="bg-white border-gray-200 hover:shadow-lg transition-shadow">
+          <CardContent className="p-6 text-center">
+            <Calendar className="h-8 w-8 mx-auto mb-2 text-orange-600" />
+            <div className="text-2xl font-bold text-gray-900">Jan 30</div>
+            <div className="text-sm text-gray-600">Awards Ceremony</div>
+          </CardContent>
+        </Card>
+>>>>>>> 12cdef4183d5e285187ff86b0db4bd8aabb1cc6a
     </div>
   );
 }

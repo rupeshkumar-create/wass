@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseService } from '@/lib/supabase/service';
 import { PersonNominationInputSchema, CompanyNominationInputSchema } from '@/lib/data-types';
+import { validateAdminAuth, createAuthErrorResponse } from '@/lib/auth/admin';
 import { z } from 'zod';
 
 // Combined input schema
@@ -11,8 +12,16 @@ const NominationInputSchema = z.discriminatedUnion('type', [
 
 /**
  * GET /api/nominations - Get all nominations with optional filters
+ * Requires admin authentication for full access
  */
 export async function GET(request: NextRequest) {
+  // Check if this is an admin request
+  const isAdminRequest = request.headers.get('x-admin-passcode') || request.url.includes('admin=true');
+  
+  if (isAdminRequest && !validateAdminAuth(request)) {
+    return createAuthErrorResponse();
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     
@@ -20,11 +29,29 @@ export async function GET(request: NextRequest) {
       category: searchParams.get('category') || undefined,
       type: (searchParams.get('type') as 'person' | 'company') || undefined,
       status: (searchParams.get('status') as 'pending' | 'approved' | 'rejected') || undefined,
+      state: searchParams.get('state') || undefined,
       limit: searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : undefined,
       offset: searchParams.get('offset') ? parseInt(searchParams.get('offset')!) : undefined,
     };
 
     const nominations = await supabaseService.getNominations(filters);
+
+    // For admin requests, include additional statistics
+     if (isAdminRequest) {
+       const stats = {
+         total: nominations.length,
+         pending: nominations.filter(n => n.status === 'pending').length,
+         approved: nominations.filter(n => n.status === 'approved').length,
+         rejected: nominations.filter(n => n.status === 'rejected').length,
+       };
+
+      return NextResponse.json({
+        success: true,
+        nominations,
+        stats,
+        count: nominations.length
+      });
+    }
 
     return NextResponse.json({
       success: true,

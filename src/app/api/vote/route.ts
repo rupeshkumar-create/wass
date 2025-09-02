@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { VoteSchema } from '@/lib/zod/vote';
 import { z } from 'zod';
+import { voteRateLimit, dailyVoteRateLimit } from '@/lib/rate-limit';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -15,6 +16,48 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey, {
 
 export async function POST(request: NextRequest) {
   try {
+    // Apply rate limiting
+    const minuteLimit = voteRateLimit(request);
+    const dailyLimit = dailyVoteRateLimit(request);
+    
+    if (!minuteLimit.success) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: 'Too many votes. Please wait before voting again.',
+          rateLimitExceeded: true,
+          resetTime: minuteLimit.resetTime
+        },
+        { 
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': minuteLimit.limit.toString(),
+            'X-RateLimit-Remaining': minuteLimit.remaining.toString(),
+            'X-RateLimit-Reset': minuteLimit.resetTime.toString()
+          }
+        }
+      );
+    }
+    
+    if (!dailyLimit.success) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: 'Daily vote limit exceeded. Please try again tomorrow.',
+          rateLimitExceeded: true,
+          resetTime: dailyLimit.resetTime
+        },
+        { 
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': dailyLimit.limit.toString(),
+            'X-RateLimit-Remaining': dailyLimit.remaining.toString(),
+            'X-RateLimit-Reset': dailyLimit.resetTime.toString()
+          }
+        }
+      );
+    }
+    
     const body = await request.json();
     
     // Validate input

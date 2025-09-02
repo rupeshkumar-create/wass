@@ -28,6 +28,19 @@ export function CardNominee({ nomination }: CardNomineeProps) {
   const displayName = nomineeData.name || nomination.displayName || nomination.name || 'Unknown';
   
   const imageData = getNomineeImage(nomination);
+  
+  // Debug logging for image issues
+  if (process.env.NODE_ENV === 'development') {
+    console.log('CardNominee image debug:', {
+      name: displayName,
+      type: nomination.type,
+      imageUrl: nomination.imageUrl,
+      nomineeImageUrl: nomineeData.imageUrl,
+      headshotUrl: nomineeData.headshotUrl,
+      logoUrl: nomineeData.logoUrl,
+      finalImageData: imageData
+    });
+  }
 
   return (
     <motion.div

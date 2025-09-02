@@ -459,7 +459,7 @@ async function addContactTags(contactId: string, role: 'Nominator' | 'Nominee_Pe
     // Map roles to your HubSpot dropdown tags (matching exact values in HubSpot)
     switch (role) {
       case 'Nominator':
-        properties.wsa_contact_tag = 'WSA2026 Nominator';
+        properties.wsa_contact_tag = 'WSA 2026 Nominator';
         break;
       case 'Nominee_Person':
       case 'Nominee_Company':
@@ -593,7 +593,7 @@ export async function setupHubSpotCustomProperties(): Promise<{
     { name: 'wsa_year', label: 'WSA Year', type: 'string' },
     { name: 'wsa_source', label: 'WSA Source', type: 'string' },
     { name: 'wsa_tags', label: 'WSA Tags', type: 'string' },
-    { name: 'wsa_contact_tag', label: 'WSA Contact Tag', type: 'enumeration', options: ['WSA2026 Nominator', 'WSA 2026 Nominees', 'WSA 2026 Voters'] },
+    { name: 'wsa_contact_tag', label: 'WSA Contact Tag', type: 'enumeration', options: ['WSA 2026 Nominator', 'WSA 2026 Nominees', 'WSA 2026 Voters'] },
     { name: 'wsa_linkedin', label: 'WSA LinkedIn', type: 'string' },
     { name: 'wsa_company', label: 'WSA Company', type: 'string' },
     { name: 'wsa_job_title', label: 'WSA Job Title', type: 'string' },

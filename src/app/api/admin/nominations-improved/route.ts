@@ -46,26 +46,32 @@ export async function GET(request: NextRequest) {
       state: nom.state,
       categoryGroupId: nom.category_group_id,
       subcategoryId: nom.subcategory_id,
+      subcategory_id: nom.subcategory_id, // Frontend expects this
       
       // Nominee data
       nomineeId: nom.nominee_id,
       firstname: nom.nominee_firstname,
       lastname: nom.nominee_lastname,
       jobtitle: nom.nominee_jobtitle,
-      personEmail: nom.nominee_email,
-      personLinkedin: nom.nominee_linkedin,
-      headshotUrl: nom.headshot_url,
-      whyMe: nom.why_me,
+      personEmail: nom.nominee_person_email,
+      personLinkedin: nom.nominee_person_linkedin,
+      headshotUrl: nom.nominee_headshot_url,
+      headshot_url: nom.nominee_headshot_url, // Frontend expects this
+      whyMe: nom.nominee_why_me,
       
-      companyName: nom.company_name,
-      companyWebsite: nom.company_website,
-      companyLinkedin: nom.company_linkedin,
-      logoUrl: nom.logo_url,
-      whyUs: nom.why_us,
+      companyName: nom.nominee_company_name,
+      company_name: nom.nominee_company_name, // Frontend expects this
+      companyWebsite: nom.nominee_company_website,
+      companyLinkedin: nom.nominee_company_linkedin,
+      logoUrl: nom.nominee_logo_url,
+      logo_url: nom.nominee_logo_url, // Frontend expects this
+      whyUs: nom.nominee_why_us,
       
-      liveUrl: nom.live_url,
-      votes: nom.votes,
+      liveUrl: nom.nominee_live_url,
+      votes: nom.votes || 0, // Real votes
+      additionalVotes: nom.additional_votes || 0, // Manual votes
       createdAt: nom.created_at,
+      created_at: nom.created_at, // Frontend expects this
       updatedAt: nom.updated_at,
       approvedAt: nom.approved_at,
       approvedBy: nom.approved_by,
@@ -77,13 +83,20 @@ export async function GET(request: NextRequest) {
       nominatorEmail: nom.nominator_email,
       nominatorFirstname: nom.nominator_firstname,
       nominatorLastname: nom.nominator_lastname,
+      nominatorName: `${nom.nominator_firstname || ''} ${nom.nominator_lastname || ''}`.trim(),
       nominatorLinkedin: nom.nominator_linkedin,
       nominatorCompany: nom.nominator_company,
       nominatorJobTitle: nom.nominator_job_title,
       
-      // Computed fields
-      displayName: nom.nominee_display_name,
-      imageUrl: nom.nominee_image_url
+      // Computed fields for display
+      displayName: nom.nominee_display_name || (nom.nominee_type === 'person' 
+        ? `${nom.nominee_firstname || ''} ${nom.nominee_lastname || ''}`.trim()
+        : nom.nominee_company_name || 'Unknown'
+      ),
+      imageUrl: nom.nominee_image_url || (nom.nominee_type === 'person' 
+        ? nom.nominee_headshot_url 
+        : nom.nominee_logo_url
+      )
     }));
 
     return NextResponse.json({
@@ -282,13 +295,42 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const { error } = await supabaseAdmin
+    // Get nomination details before deletion for cleanup
+    const { data: nomination, error: fetchError } = await supabaseAdmin
+      .from('nominations')
+      .select('nominee_id, state')
+      .eq('id', nominationId)
+      .single();
+
+    if (fetchError) {
+      return NextResponse.json(
+        { error: 'Nomination not found' },
+        { status: 404 }
+      );
+    }
+
+    // Delete the nomination (this will cascade to related records)
+    const { error: deleteError } = await supabaseAdmin
       .from('nominations')
       .delete()
       .eq('id', nominationId);
 
-    if (error) {
-      throw new Error(`Failed to delete nomination: ${error.message}`);
+    if (deleteError) {
+      throw new Error(`Failed to delete nomination: ${deleteError.message}`);
+    }
+
+    // Also delete the nominee if no other nominations reference it
+    const { data: otherNominations } = await supabaseAdmin
+      .from('nominations')
+      .select('id')
+      .eq('nominee_id', nomination.nominee_id);
+
+    if (!otherNominations || otherNominations.length === 0) {
+      // Safe to delete the nominee as well
+      await supabaseAdmin
+        .from('nominees')
+        .delete()
+        .eq('id', nomination.nominee_id);
     }
 
     return NextResponse.json({
@@ -304,3 +346,4 @@ export async function DELETE(request: NextRequest) {
     );
   }
 }
+

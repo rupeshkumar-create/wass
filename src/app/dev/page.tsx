@@ -350,7 +350,7 @@ export default function DevUtilitiesPage() {
             <div>
               <h4 className="font-medium mb-2">2. Test Admin Flow</h4>
               <p className="text-sm text-muted-foreground">
-                Go to Admin Dashboard (password: WSA2026), review pending nominations, and approve some.
+                Go to Admin Dashboard (use proper admin login), review pending nominations, and approve some.
               </p>
             </div>
             

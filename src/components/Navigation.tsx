@@ -3,8 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
+<<<<<<< HEAD
+import { Award } from "lucide-react";
+=======
 import { Award, Vote } from "lucide-react";
-import { ThemeToggle } from "@/components/theme-toggle";
+
+>>>>>>> 12cdef4183d5e285187ff86b0db4bd8aabb1cc6a
 import { useNominationStatus } from "@/hooks/useNominationStatus";
 import { useState, useEffect } from "react";
 
@@ -18,9 +22,9 @@ export function Navigation() {
   }, []);
   
   // Prevent hydration mismatch by showing default text until mounted and loaded
-  const navText = !mounted || nominationStatus.loading ? "Vote" : (nominationStatus.enabled ? "Nominate" : "Vote");
-  const buttonText = !mounted || nominationStatus.loading ? "Vote Now" : (nominationStatus.enabled ? "Submit Nomination" : "Vote Now");
-  const buttonHref = !mounted || nominationStatus.loading ? "/directory" : (nominationStatus.enabled ? "/nominate" : "/directory");
+  const navText = !mounted || nominationStatus.loading ? "Nominate" : (nominationStatus.enabled ? "Nominate" : "Vote");
+  const buttonText = !mounted || nominationStatus.loading ? "Nominate Now" : (nominationStatus.enabled ? "Nominate Now" : "Vote Now");
+  const buttonHref = !mounted || nominationStatus.loading ? "/nominate" : (nominationStatus.enabled ? "/nominate" : "/vote");
 
   const isActive = (path: string) => {
     if (path === "/" && pathname === "/") return true;
@@ -69,9 +73,13 @@ export function Navigation() {
 
           {/* CTA Button */}
           <div className="flex items-center gap-2 sm:gap-4">
-            <ThemeToggle />
+<<<<<<< HEAD
             <Button asChild className="hidden sm:inline-flex">
+=======
+            <Button asChild className="hidden sm:inline-flex bg-orange-600 hover:bg-orange-700">
+>>>>>>> 12cdef4183d5e285187ff86b0db4bd8aabb1cc6a
               <Link href={buttonHref}>
+                <Vote className="mr-2 h-4 w-4" />
                 {buttonText}
               </Link>
             </Button>

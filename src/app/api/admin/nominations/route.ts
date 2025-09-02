@@ -200,22 +200,68 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
+    // Get current nomination data to check if we need to auto-generate URL
+    const { data: currentNomination, error: fetchError } = await supabaseAdmin
+      .from('admin_nominations')
+      .select('nomination_id, state, nominee_type, nominee_display_name, nominee_live_url')
+      .eq('nomination_id', nominationId)
+      .single();
+
+    if (fetchError) {
+      throw new Error(`Failed to fetch nomination: ${fetchError.message}`);
+    }
+
     const updateData: any = {
       updated_at: new Date().toISOString()
     };
 
     // Add fields that are provided
-    if (state) updateData.state = state;
+    if (state) {
+      updateData.state = state;
+      
+      // Auto-generate live URL when approving if not already set
+      if (state === 'approved' && !currentNomination.nominee_live_url && liveUrl === undefined) {
+        const displayName = currentNomination.nominee_display_name || `nominee-${nominationId}`;
+        const slug = displayName
+          .toLowerCase()
+          .trim()
+          .replace(/[^\w\s-]/g, '')
+          .replace(/\s+/g, '-')
+          .replace(/-+/g, '-')
+          .replace(/^-|-$/g, '');
+        
+        // Get base URL - always use localhost for development
+        let baseUrl = 'http://localhost:3000';
+        
+        // Only use production URLs if explicitly in production
+        if (process.env.NODE_ENV === 'production') {
+          if (process.env.VERCEL_URL) {
+            baseUrl = `https://${process.env.VERCEL_URL}`;
+          } else if (process.env.NEXT_PUBLIC_SITE_URL) {
+            baseUrl = process.env.NEXT_PUBLIC_SITE_URL;
+          }
+        }
+        
+        updateData.live_url = `${baseUrl}/nominee/${slug}`;
+        console.log(`Auto-generated live URL: ${updateData.live_url} for ${displayName}`);
+      }
+    }
+    
     if (liveUrl !== undefined) {
       // Ensure live URL follows consistent format
       const cleanUrl = liveUrl.trim();
-      if (cleanUrl && !cleanUrl.startsWith('https://worldstaffingawards.com/nominee/')) {
-        // If it's just an ID or slug, create full URL
-        if (!cleanUrl.startsWith('http')) {
-          updateData.live_url = `https://worldstaffingawards.com/nominee/${cleanUrl}`;
-        } else {
-          updateData.live_url = cleanUrl;
+      if (cleanUrl && !cleanUrl.startsWith('http')) {
+        // If it's just a slug, create full URL
+        let baseUrl = 'http://localhost:3000';
+        
+        // Only use production URLs if explicitly in production
+        if (process.env.NODE_ENV === 'production') {
+          baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 
+                   (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 
+                    'https://worldstaffingawards.com');
         }
+        
+        updateData.live_url = `${baseUrl}/nominee/${cleanUrl}`;
       } else {
         updateData.live_url = cleanUrl;
       }

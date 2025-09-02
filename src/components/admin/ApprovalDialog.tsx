@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { X, CheckCircle, XCircle, ExternalLink, Loader2 } from "lucide-react";
+import { ControlledDialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/controlled-dialog";
 
 interface ApprovalDialogProps {
   nomination: any;
@@ -12,35 +13,59 @@ interface ApprovalDialogProps {
 }
 
 export function ApprovalDialog({ nomination, isOpen, onClose, onApprove, onReject }: ApprovalDialogProps) {
-  const [loading, setLoading] = useState(false);
-  const [action, setAction] = useState<'approve' | 'reject' | null>(null);
-  const [liveUrl, setLiveUrl] = useState(nomination?.liveUrl || "");
-  const [adminNotes, setAdminNotes] = useState(nomination?.adminNotes || "");
-  const [rejectionReason, setRejectionReason] = useState("");
-
   const generateLiveUrl = () => {
     if (!nomination) return "";
     
+    // Generate display name
+    const displayName = nomination.displayName || 
+      (nomination.type === 'person' 
+        ? `${nomination.firstname || ''} ${nomination.lastname || ''}`.trim()
+        : nomination.companyName || nomination.company_name || 'nominee');
+    
     // Create a slug from the display name
-    const slug = nomination.displayName
+    const slug = displayName
       .toLowerCase()
       .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
       .replace(/\s+/g, '-') // Replace spaces with hyphens
       .replace(/-+/g, '-') // Replace multiple hyphens with single
       .trim();
     
-    return `https://worldstaffingawards.com/nominee/${slug}`;
+<<<<<<< HEAD
+    // Use localhost for development, production URL for production
+    const baseUrl = typeof window !== 'undefined' 
+      ? window.location.origin 
+      : 'http://localhost:3000';
+=======
+    // Use current host for dynamic URL generation
+    const baseUrl = typeof window !== 'undefined' 
+      ? `${window.location.protocol}//${window.location.host}`
+      : process.env.NEXT_PUBLIC_APP_URL || 'https://worldstaffingawards.com';
+>>>>>>> 12cdef4183d5e285187ff86b0db4bd8aabb1cc6a
+    
+    return `${baseUrl}/nominee/${slug}`;
   };
 
+  const [loading, setLoading] = useState(false);
+  const [action, setAction] = useState<'approve' | 'reject' | null>(null);
+  const [liveUrl, setLiveUrl] = useState(() => {
+    // Auto-generate URL on component mount
+    return nomination?.liveUrl || generateLiveUrl();
+  });
+  const [adminNotes, setAdminNotes] = useState(nomination?.adminNotes || "");
+  const [rejectionReason, setRejectionReason] = useState("");
+
   const handleApprove = async () => {
-    if (!liveUrl.trim()) {
-      alert("Please provide a live URL for the approved nominee");
+    // Auto-generate URL if not already set
+    const finalUrl = liveUrl.trim() || generateLiveUrl();
+    
+    if (!finalUrl) {
+      alert("Unable to generate live URL for the nominee");
       return;
     }
 
     setLoading(true);
     try {
-      await onApprove(liveUrl.trim(), adminNotes.trim() || undefined);
+      await onApprove(finalUrl, adminNotes.trim() || undefined);
       onClose();
     } catch (error) {
       console.error('Error approving nomination:', error);
@@ -73,11 +98,11 @@ export function ApprovalDialog({ nomination, isOpen, onClose, onApprove, onRejec
     setLiveUrl(generatedUrl);
   };
 
-  if (!nomination || !isOpen) return null;
+  if (!nomination) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-lg max-w-2xl w-full max-h-[90vh] flex flex-col">
+    <ControlledDialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-2xl w-full max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b">
           <div>
@@ -124,7 +149,14 @@ export function ApprovalDialog({ nomination, isOpen, onClose, onApprove, onRejec
                 <h4 className="font-medium">Choose Action</h4>
                 <div className="flex gap-4">
                   <button
-                    onClick={() => setAction('approve')}
+                    onClick={() => {
+                      setAction('approve');
+                      // Auto-generate URL when approve is selected
+                      if (!liveUrl) {
+                        const generatedUrl = generateLiveUrl();
+                        setLiveUrl(generatedUrl);
+                      }
+                    }}
                     className="flex-1 p-4 border-2 border-orange-200 rounded-lg hover:border-orange-300 hover:bg-orange-50 transition-colors"
                   >
                     <CheckCircle className="h-6 w-6 text-orange-600 mx-auto mb-2" />
@@ -153,26 +185,42 @@ export function ApprovalDialog({ nomination, isOpen, onClose, onApprove, onRejec
               {/* Live URL Assignment */}
               <div>
                 <label htmlFor="liveUrl" className="block text-sm font-medium mb-2">
-                  Live URL <span className="text-red-500">*</span>
+<<<<<<< HEAD
+                  Live URL (Auto-Generated)
+=======
+                  Live URL <span className="text-green-600">(Auto-generated)</span>
+>>>>>>> 12cdef4183d5e285187ff86b0db4bd8aabb1cc6a
                 </label>
                 <div className="space-y-2">
                   <div className="flex gap-2">
                     <input
                       id="liveUrl"
-                      type="url"
+                      type="text"
                       value={liveUrl}
+<<<<<<< HEAD
                       onChange={(e) => setLiveUrl(e.target.value)}
-                      placeholder="https://worldstaffingawards.com/nominee/..."
+                      placeholder="Auto-generated based on nominee name"
                       className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-                      required
                     />
                     <button
                       type="button"
-                      onClick={handleAutoGenerateUrl}
-                      className="px-3 py-2 bg-orange-100 text-orange-700 rounded-md hover:bg-orange-200 text-sm"
+                      onClick={() => setLiveUrl(generateLiveUrl())}
+                      className="px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+                      title="Regenerate URL"
                     >
-                      Auto Generate
+                      🔄
                     </button>
+                    {liveUrl && (
+                      <button
+                        type="button"
+                        onClick={() => window.open(liveUrl, '_blank', 'noopener,noreferrer')}
+                        className="px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+                        title="Preview URL"
+=======
+                      readOnly
+                      placeholder="URL will be automatically generated..."
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-700 cursor-not-allowed"
+                    />
                   </div>
                   {liveUrl && (
                     <div className="flex items-center gap-2 text-sm">
@@ -182,14 +230,19 @@ export function ApprovalDialog({ nomination, isOpen, onClose, onApprove, onRejec
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="text-orange-600 hover:underline"
+>>>>>>> 12cdef4183d5e285187ff86b0db4bd8aabb1cc6a
                       >
-                        Preview URL
-                      </a>
-                    </div>
-                  )}
+                        <ExternalLink className="h-4 w-4" />
+                      </button>
+                    )}
+                  </div>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  This URL will be shown to voters and used in notifications
+<<<<<<< HEAD
+                  🤖 Live URL is automatically generated based on the nominee's name. This URL will be shown to voters and used in notifications.
+=======
+                  This URL is automatically generated based on the nominee's name and will be shown to voters
+>>>>>>> 12cdef4183d5e285187ff86b0db4bd8aabb1cc6a
                 </p>
               </div>
 
@@ -216,7 +269,11 @@ export function ApprovalDialog({ nomination, isOpen, onClose, onApprove, onRejec
                 <h4 className="font-medium text-orange-800 mb-2">Approval Summary</h4>
                 <ul className="text-sm text-orange-700 space-y-1">
                   <li>• Nominee will be marked as approved</li>
-                  <li>• Live URL will be assigned: <code className="bg-orange-100 px-1 rounded">{liveUrl || 'Not set'}</code></li>
+                  <li>• Live URL: {liveUrl ? (
+                    <code className="bg-orange-100 px-1 rounded">{liveUrl}</code>
+                  ) : (
+                    <span className="text-orange-600 font-medium">🤖 Will be auto-generated</span>
+                  )}</li>
                   <li>• Nominator will be notified via email</li>
                   <li>• Nominee will be synced to HubSpot and Loops</li>
                   <li>• Nominee will appear in the public directory</li>
@@ -353,7 +410,7 @@ export function ApprovalDialog({ nomination, isOpen, onClose, onApprove, onRejec
             </div>
           )}
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </ControlledDialog>
   );
 }

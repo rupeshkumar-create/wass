@@ -274,7 +274,7 @@ export function extractDomain(website: string): string | null {
 export function generatePlaceholderEmail(firstname: string, lastname: string): string {
   const cleanFirst = firstname.toLowerCase().replace(/[^a-z0-9]/g, '');
   const cleanLast = lastname.toLowerCase().replace(/[^a-z0-9]/g, '');
-  return `${cleanFirst}.${cleanLast}@nominee.wsa2026.com`;
+  return `${cleanFirst}.${cleanLast}@nominee.wsa-2026.com`;
 }
 
 /**

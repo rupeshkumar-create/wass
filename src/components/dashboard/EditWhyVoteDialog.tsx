@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ControlledDialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/controlled-dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -53,7 +53,7 @@ export function EditWhyVoteDialog({ open, onOpenChange, nomination, onSave }: Ed
   const remainingChars = 1000 - whyVote.length;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <ControlledDialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Edit "Why Vote" for {nomination.nominee.name}</DialogTitle>
@@ -100,6 +100,6 @@ export function EditWhyVoteDialog({ open, onOpenChange, nomination, onSave }: Ed
           </Button>
         </DialogFooter>
       </DialogContent>
-    </Dialog>
+    </ControlledDialog>
   );
 }

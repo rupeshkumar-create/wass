@@ -58,7 +58,9 @@ export async function GET(request: NextRequest) {
       
       // Use the computed fields from the view
       const displayName = nominee.display_name || 'Unknown';
-      const imageUrl = nominee.image_url;
+      const imageUrl = nominee.image_url || 
+                      (nominee.type === 'person' ? nominee.headshot_url : nominee.logo_url) || 
+                      null;
       const email = nominee.email;
       const linkedinUrl = nominee.linkedin_url;
       const whyVote = nominee.why_vote;
@@ -110,7 +112,7 @@ export async function GET(request: NextRequest) {
             lastName: nominee.lastname || '',
             jobTitle: nominee.jobtitle || '',
             company: nominee.person_company || '',
-            headshotUrl: nominee.headshot_url || '',
+            headshotUrl: nominee.headshot_url || imageUrl || '',
             whyMe: nominee.why_me || '',
             
             // Enhanced field mappings
@@ -127,8 +129,8 @@ export async function GET(request: NextRequest) {
             companyDomain: nominee.company_domain || '',
             companyWebsite: nominee.company_website || '',
             companySize: nominee.company_size || '',
-            industry: nominee.company_industry_display || '',
-            logoUrl: nominee.logo_url || '',
+            industry: nominee.company_industry_display || nominee.company_industry || '',
+            logoUrl: nominee.logo_url || imageUrl || '',
             whyUs: nominee.why_us || '',
             
             // Enhanced field mappings

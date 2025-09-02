@@ -36,6 +36,32 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    // Check for CRON secret or admin authentication
+    const cronSecret = request.headers.get('x-cron-secret');
+    const adminUser = request.headers.get('x-admin-user');
+    const syncSecret = request.headers.get('x-sync-secret');
+    
+    if (!cronSecret && !adminUser && !syncSecret) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized - Admin or CRON authentication required' },
+        { status: 401 }
+      );
+    }
+    
+    if (cronSecret && cronSecret !== CRON_SECRET) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid CRON secret' },
+        { status: 401 }
+      );
+    }
+    
+    if (syncSecret && syncSecret !== process.env.SYNC_SECRET) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid sync secret' },
+        { status: 401 }
+      );
+    }
+    
     const body = await request.json().catch(() => ({}));
     
     // Handle test requests

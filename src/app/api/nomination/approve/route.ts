@@ -52,6 +52,11 @@ export async function POST(request: NextRequest) {
 
     // 3. Determine action and update nomination
     const action = validatedData.action || 'approve';
+    let liveUrl = validatedData.liveUrl;
+    const displayName = nominee.type === 'person' 
+      ? `${nominee.firstname || ''} ${nominee.lastname || ''}`.trim()
+      : nominee.company_name || '';
+    
     const updateData: any = {
       state: action === 'approve' ? 'approved' : 'rejected',
     };
@@ -60,9 +65,46 @@ export async function POST(request: NextRequest) {
       updateData.approved_at = new Date().toISOString();
       updateData.approved_by = 'admin'; // Could be dynamic based on auth
       
-      // CRITICAL: Store the live URL in the database
-      if (validatedData.liveUrl) {
-        updateData.live_url = validatedData.liveUrl;
+      // Auto-generate Live URL if not provided
+      if (!liveUrl && displayName) {
+          // Generate slug
+          const slug = displayName
+            .toLowerCase()
+            .trim()
+            .replace(/[^\w\s-]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-')
+            .replace(/^-|-$/g, '');
+          
+          // Get base URL - always use localhost for development
+          let baseUrl = 'http://localhost:3000';
+          
+          // Only use production URLs if explicitly in production
+          if (process.env.NODE_ENV === 'production') {
+            // Get host from request headers
+            const host = request.headers.get('host');
+            const protocol = request.headers.get('x-forwarded-proto') || 'https';
+            
+            // Use request host if available
+            if (host) {
+              baseUrl = `${protocol}://${host}`;
+            }
+            // Fallback to environment variables
+            else if (process.env.VERCEL_URL) {
+              baseUrl = `https://${process.env.VERCEL_URL}`;
+            } 
+            else if (process.env.NEXT_PUBLIC_SITE_URL) {
+              baseUrl = process.env.NEXT_PUBLIC_SITE_URL;
+            }
+          }
+          
+        liveUrl = `${baseUrl}/nominee/${slug}`;
+        console.log(`Generated live URL: ${liveUrl} for ${displayName}`);
+      }
+      
+      // Store the live URL in the database
+      if (liveUrl) {
+        updateData.live_url = liveUrl;
       }
     } else {
       updateData.rejection_reason = validatedData.rejectionReason || 'Rejected by admin';
@@ -82,10 +124,6 @@ export async function POST(request: NextRequest) {
     if (updateError) throw updateError;
 
     // 4. Find and update related nominator(s) to 'approved' status
-    const displayName = nominee.type === 'person' 
-      ? `${nominee.firstname || ''} ${nominee.lastname || ''}`.trim()
-      : nominee.company_name || '';
-
     const { error: nominatorUpdateError } = await supabaseAdmin
       .from('nominators')
       .update({ status: 'approved' })
@@ -105,7 +143,7 @@ export async function POST(request: NextRequest) {
         type: nominee.type as 'person' | 'company',
         subcategoryId: nomination.subcategory_id,
         nominationId: validatedData.nominationId,
-        liveUrl: validatedData.liveUrl, // CRITICAL: Include the live URL
+        liveUrl: liveUrl, // CRITICAL: Include the live URL (auto-generated or provided)
         // Person fields
         firstname: nominee.firstname,
         lastname: nominee.lastname,
@@ -157,7 +195,7 @@ export async function POST(request: NextRequest) {
             type: nominee.type as 'person' | 'company',
             subcategoryId: nomination.subcategory_id,
             nominationId: validatedData.nominationId,
-            liveUrl: validatedData.liveUrl,
+            liveUrl: liveUrl,
             // Person fields
             firstname: nominee.firstname,
             lastname: nominee.lastname,
@@ -193,7 +231,7 @@ export async function POST(request: NextRequest) {
             .eq('id', nomination.nominator_id)
             .single();
 
-          if (nominatorData && validatedData.liveUrl) {
+          if (nominatorData && liveUrl) {
             const nomineeName = nominee.type === 'person' 
               ? `${nominee.firstname || ''} ${nominee.lastname || ''}`.trim()
               : nominee.company_name || '';
@@ -202,7 +240,7 @@ export async function POST(request: NextRequest) {
               nominatorData.email,
               {
                 name: nomineeName,
-                liveUrl: validatedData.liveUrl
+                liveUrl: liveUrl
               }
             );
 
@@ -228,7 +266,7 @@ export async function POST(request: NextRequest) {
     // Insert hubspot_outbox row for backup sync
     const outboxPayload = {
       nominationId: validatedData.nominationId,
-      liveUrl: validatedData.liveUrl,
+      liveUrl: liveUrl,
       type: nominee.type,
       subcategoryId: nomination.subcategory_id,
       displayName,
@@ -274,10 +312,10 @@ export async function POST(request: NextRequest) {
       state: updatedNomination.state,
       approvedAt: updatedNomination.approved_at,
       adminNotes: updatedNomination.admin_notes,
-      liveUrl: validatedData.liveUrl,
+      liveUrl: liveUrl,
       displayName: displayName,
       message: action === 'approve' 
-        ? `Nomination approved successfully! Live URL: ${validatedData.liveUrl}`
+        ? `Nomination approved successfully! Live URL: ${liveUrl}`
         : 'Nomination rejected successfully'
     });
 
