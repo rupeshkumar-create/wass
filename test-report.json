@@ -1,0 +1,192 @@
+{
+  "timestamp": "2025-08-25T19:50:14.960Z",
+  "summary": {
+    "passed": 21,
+    "failed": 7,
+    "warnings": 2,
+    "total": 30,
+    "successRate": "70.0"
+  },
+  "details": [
+    {
+      "name": "Env Var NEXT_PUBLIC_SUPABASE_URL",
+      "status": "pass",
+      "message": "Present",
+      "details": null
+    },
+    {
+      "name": "Env Var SUPABASE_SERVICE_ROLE_KEY",
+      "status": "pass",
+      "message": "Present",
+      "details": null
+    },
+    {
+      "name": "Env Var NEXT_PUBLIC_SUPABASE_ANON_KEY",
+      "status": "pass",
+      "message": "Present",
+      "details": null
+    },
+    {
+      "name": "Database Connection",
+      "status": "pass",
+      "message": "Connected successfully",
+      "details": null
+    },
+    {
+      "name": "Table nominations",
+      "status": "pass",
+      "message": "Table exists and accessible",
+      "details": null
+    },
+    {
+      "name": "Table nominators",
+      "status": "pass",
+      "message": "Table exists and accessible",
+      "details": null
+    },
+    {
+      "name": "Table voters",
+      "status": "pass",
+      "message": "Table exists and accessible",
+      "details": null
+    },
+    {
+      "name": "API Admin Nominations",
+      "status": "fail",
+      "message": "Status 500: Internal Server Error",
+      "details": null
+    },
+    {
+      "name": "API Stats API",
+      "status": "fail",
+      "message": "Status 500: Internal Server Error",
+      "details": null
+    },
+    {
+      "name": "API Votes API",
+      "status": "fail",
+      "message": "Status 500: Internal Server Error",
+      "details": null
+    },
+    {
+      "name": "API Public Nominations",
+      "status": "fail",
+      "message": "Status 500: Internal Server Error",
+      "details": null
+    },
+    {
+      "name": "File src/app/admin/page.tsx",
+      "status": "pass",
+      "message": "Exists (7101 bytes)",
+      "details": null
+    },
+    {
+      "name": "File src/app/api/admin/nominations/route.ts",
+      "status": "pass",
+      "message": "Exists (5519 bytes)",
+      "details": null
+    },
+    {
+      "name": "File src/app/api/nomination/submit/route.ts",
+      "status": "pass",
+      "message": "Exists (4717 bytes)",
+      "details": null
+    },
+    {
+      "name": "File src/app/api/uploads/image/route.ts",
+      "status": "pass",
+      "message": "Exists (2231 bytes)",
+      "details": null
+    },
+    {
+      "name": "File src/components/form/Step6PersonHeadshot.tsx",
+      "status": "pass",
+      "message": "Exists (7628 bytes)",
+      "details": null
+    },
+    {
+      "name": "File src/lib/supabase/storage.ts",
+      "status": "pass",
+      "message": "Exists (2832 bytes)",
+      "details": null
+    },
+    {
+      "name": "File src/lib/zod/nomination.ts",
+      "status": "pass",
+      "message": "Exists (2864 bytes)",
+      "details": null
+    },
+    {
+      "name": "Image Upload Endpoint",
+      "status": "warn",
+      "message": "Unexpected status: 500",
+      "details": null
+    },
+    {
+      "name": "Storage Functions",
+      "status": "pass",
+      "message": "Upload functions defined",
+      "details": null
+    },
+    {
+      "name": "Validation Schema",
+      "status": "pass",
+      "message": "Schema defined",
+      "details": null
+    },
+    {
+      "name": "Submission Validation",
+      "status": "warn",
+      "message": "Unexpected status: 500",
+      "details": null
+    },
+    {
+      "name": "Admin Component useState",
+      "status": "pass",
+      "message": "Present",
+      "details": null
+    },
+    {
+      "name": "Admin Component useEffect",
+      "status": "pass",
+      "message": "Present",
+      "details": null
+    },
+    {
+      "name": "Admin Component fetchData",
+      "status": "pass",
+      "message": "Present",
+      "details": null
+    },
+    {
+      "name": "Admin Component handleLogin",
+      "status": "pass",
+      "message": "Present",
+      "details": null
+    },
+    {
+      "name": "Admin Component handleUpdateStatus",
+      "status": "fail",
+      "message": "Missing",
+      "details": null
+    },
+    {
+      "name": "Data Fetch",
+      "status": "fail",
+      "message": "Database error: column nominations.type does not exist",
+      "details": null
+    },
+    {
+      "name": "TypeScript Check",
+      "status": "fail",
+      "message": "Type errors found",
+      "details": null
+    },
+    {
+      "name": "Next.js Build",
+      "status": "pass",
+      "message": "Build successful",
+      "details": null
+    }
+  ]
+}
